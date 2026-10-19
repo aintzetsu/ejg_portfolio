@@ -2,192 +2,84 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EJG_Portfolio</title>
-
-  <!-- SEO (safe, no layout impact) -->
-  <meta name="description" content="Edison Jr. Magparoc Gaudicos – IT Graduate Portfolio">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edison Gaudicos | IT Portfolio</title>
+  <meta name="description" content="Edison Jr. Magparoc Gaudicos — IT graduate building practical websites and database-driven systems. Explore my projects and get in touch.">
   <meta name="author" content="Edison Jr. Magparoc Gaudicos">
-
-  <!-- Favicon -->
+  <meta name="theme-color" content="#f5f4f1">
   <link rel="icon" type="image/png" href="!LOGO.png">
-
-  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
-
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="script.js" defer></script>
 </head>
 <body>
-
-  <!-- Header -->
-  <header>
-    <div class="logo">
-      <img src="!LOGO.png" alt="EJG Logo">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="logo" href="#introduction" aria-label="Edison Gaudicos home"><img src="!LOGO.png" width="70" height="70" alt="EJG"><span>EJG<span class="accent">.</span></span></a>
+      <nav aria-label="Main navigation">
+        <a href="#introduction">Introduction</a><a href="#projects">Projects</a><a href="#skills">Skills</a><a href="#contact">Contact Me</a>
+      </nav>
     </div>
-    <nav aria-label="Main navigation">
-      <a href="#introduction">Introduction</a>
-      <a href="#projects">Projects</a>
-      <a href="#skills">Skills</a>
-      <a href="#contact">Contact Me</a>
-    </nav>
   </header>
-
-  <!-- Introduction -->
-  <section id="introduction">
-    <img src="Jk5Wh.jpg" alt="Pixel portrait of Edison Gaudicos" class="animate">
-    <div class="intro-text animate">
-      <h1 class="animate">Hi, I’m Edison Jr. Magparoc Gaudicos!</h1>
-      <p class="animate">
-        Welcome to my corner of the web. I’m an IT graduate with a passion for creating
-        practical, user-friendly solutions through programming and systems development.
-      </p>
-
-      <div class="cv-wrapper animate">
-        <a href="Edison_Gaudicos_Updated_Resume.pdf" download target="_blank" class="cv-button">Download CV</a>
-        <button type="button" class="cv-preview-button" id="previewButton">Preview CV</button>
+  <main id="main">
+    <section id="introduction" class="container hero">
+      <div class="portrait-enter"><div class="portrait-float"><div class="portrait-frame"><img src="Jk5Wh.jpg" width="450" height="450" alt="Pixel portrait of Edison Gaudicos" fetchpriority="high"><span class="portrait-fallback" hidden aria-hidden="true">EJG<span class="accent">.</span></span></div></div></div>
+      <div class="intro-text">
+        <p class="eyebrow">IT GRADUATE · DEVELOPER</p>
+        <h1>Hi, I’m Edison Jr.<br><span class="accent">Magparoc Gaudicos.</span></h1>
+        <p>I build practical, user-friendly solutions through programming and systems development. Welcome to my corner of the web.</p>
+        <div class="button-row">
+          <a href="Edison_Gaudicos_Updated_Resume.pdf" download class="button primary">Download CV</a>
+          <a href="Edison_Gaudicos_Updated_Resume.pdf" target="_blank" rel="noopener noreferrer" class="button" id="previewButton">Preview CV</a>
+        </div>
       </div>
-    </div>
-  </section>
-
-  <!-- CV Modal -->
-  <div id="cvModal" class="cv-modal">
-    <div class="cv-modal-content">
-      <span class="cv-close">&times;</span>
-      <iframe src="Edison_Gaudicos_Updated_Resume.pdf"></iframe>
-    </div>
-  </div>
-
-  <!-- Projects -->
-  <section id="projects">
-    <h2 class="animate">My Projects</h2>
-    <div class="carousel animate">
-      <button class="arrow left" onclick="prevProject()">&#10094;</button>
-      <div class="project-card animate" id="projectCard"></div>
-      <button class="arrow right" onclick="nextProject()">&#10095;</button>
-    </div>
-  </section>
-
-  <!-- Skills -->
-  <section id="skills">
-    <h2 class="animate">My Skills</h2>
-    <div class="skills-container animate">
-      <div class="skill"><span>HTML</span><div class="progress-bar"><div class="progress" data-width="95%"></div></div></div>
-      <div class="skill"><span>CSS</span><div class="progress-bar"><div class="progress" data-width="90%"></div></div></div>
-      <div class="skill"><span>JavaScript</span><div class="progress-bar"><div class="progress" data-width="85%"></div></div></div>
-      <div class="skill"><span>PHP</span><div class="progress-bar"><div class="progress" data-width="70%"></div></div></div>
-      <div class="skill"><span>Python</span><div class="progress-bar"><div class="progress" data-width="80%"></div></div></div>
-      <div class="skill"><span>Java</span><div class="progress-bar"><div class="progress" data-width="65%"></div></div></div>
-      <div class="skill"><span>C#</span><div class="progress-bar"><div class="progress" data-width="60%"></div></div></div>
-      <div class="skill"><span>C++</span><div class="progress-bar"><div class="progress" data-width="55%"></div></div></div>
-    </div>
-  </section>
-
-  <!-- Contact -->
-  <section id="contact">
-    <h2 class="animate">Get in Touch</h2>
-    <p class="animate">I would love to hear from you!</p>
-
-    <form onsubmit="return openGmail();" class="animate">
-      <input type="text" id="name" placeholder="Name" required>
-      <input type="email" id="email" placeholder="Email" required>
-      <textarea id="message" placeholder="Message" required></textarea>
-      <button type="submit">Submit</button>
-    </form>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <div class="social">
-      <a href="https://www.facebook.com/Sakuta.Azusagawa.Senpai.END/"><img src="!facebook.png" alt="Facebook"></a>
-      <a href="https://www.instagram.com/zetsumeidesu/"><img src="!insta.png" alt="Instagram"></a>
-      <a href="https://www.linkedin.com/in/edison-gaudicos-297088356/"><img src="!linke.png" alt="LinkedIn"></a>
-    </div>
-    <p>© <span id="year"></span> Edison Jr Gaudicos</p>
-  </footer>
-
-  <!-- JS -->
-  <script>
-    /* ===== PROJECTS ===== */
-    const projects = [
-      { img: "!Project1.png", title: "Simot Sarap", desc: "This website provides information about Simot Sarap Chicken Wings, including the menu, location, contact details, and ordering options for customers.", link: "https://zetsume-simotsarap.vercel.app/" },
-      { img: "!Project2.png", title: "Project 2", desc: "This is a description for Project 2.", link: "#" },
-      { img: "!Project3.png", title: "Project 3", desc: "This is a description for Project 3.", link: "#" }
-    ];
-
-    let current = 0;
-    function showProject(index) {
-      const card = document.getElementById("projectCard");
-      card.innerHTML = `
-        <a href="${projects[index].link}" target="_blank">
-          <img src="${projects[index].img}" alt="${projects[index].title}">
-        </a>
-        <h3>${projects[index].title}</h3>
-        <p>${projects[index].desc}</p>
-      `;
-      card.classList.remove('show');
-      setTimeout(() => card.classList.add('show'), 50);
-    }
-    function nextProject() { current = (current + 1) % projects.length; showProject(current); }
-    function prevProject() { current = (current - 1 + projects.length) % projects.length; showProject(current); }
-    showProject(current);
-
-    /* ===== SCROLL HEADER ===== */
-    const header = document.querySelector("header");
-    window.addEventListener("scroll", () => {
-      header.classList.toggle("scrolled", window.scrollY > 50);
-    });
-
-    /* ===== SCROLL ANIMATIONS (SAFE) ===== */
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('show');
-      });
-    }, { threshold: 0.2 });
-
-    document.querySelectorAll('.animate, section').forEach(el => observer.observe(el));
-
-    /* ===== SKILLS ===== */
-    const skillsObserver = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) {
-        document.querySelectorAll('.progress').forEach(bar => {
-          bar.style.width = bar.dataset.width;
-        });
-        skillsObserver.disconnect();
-      }
-    }, { threshold: 0.3 });
-
-    skillsObserver.observe(document.getElementById('skills'));
-
-    /* ===== GMAIL FORM (FIXED) ===== */
-    function openGmail() {
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const message = document.getElementById('message').value;
-
-      const link =
-        `https://mail.google.com/mail/?view=cm&to=gaudicosmedisonjr@gmail.com` +
-        `&su=Portfolio Message from ${encodeURIComponent(name)}` +
-        `&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)}`;
-
-      window.open(link, '_blank');
-      return false;
-    }
-
-    /* ===== CV MODAL ===== */
-    const cvModal = document.getElementById('cvModal');
-    document.getElementById('previewButton').onclick = () => cvModal.style.display = 'block';
-    document.querySelector('.cv-close').onclick = () => cvModal.style.display = 'none';
-    window.onclick = e => { if (e.target === cvModal) cvModal.style.display = 'none'; };
-
-    /* ===== YEAR ===== */
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
-
+    </section>
+    <dialog id="cvModal" aria-labelledby="cvTitle">
+      <div class="modal-header"><h2 id="cvTitle">My CV</h2><button type="button" id="closeCV" autofocus aria-label="Close CV preview">×</button></div>
+      <p class="pdf-help">Preview not loading? <a href="Edison_Gaudicos_Updated_Resume.pdf" target="_blank" rel="noopener noreferrer">Open the PDF in a new tab</a>.</p>
+      <iframe title="Edison Gaudicos resume PDF" data-src="Edison_Gaudicos_Updated_Resume.pdf"></iframe>
+    </dialog>
+    <section id="projects" class="section container">
+      <div class="section-heading"><p class="eyebrow">FROM IDEA TO IMPLEMENTATION</p><h2>My projects</h2><p>Web experiences and systems built around practical needs.</p></div>
+      <div class="carousel" role="region" aria-label="Portfolio projects" tabindex="0">
+        <div class="project-list">
+          <article class="project-card" aria-labelledby="project1Title">
+            <div class="project-media"><img src="!Project1.png" width="800" height="500" loading="lazy" alt="Simot Sarap chicken wings website"><p class="image-fallback" hidden>Simot Sarap<span>Restaurant website</span></p></div>
+            <div class="project-details"><p class="eyebrow">01 / WEBSITE</p><h3 id="project1Title">Simot Sarap</h3><p>A website presenting Simot Sarap Chicken Wings, including its menu, location, contact details, and ordering options.</p><p class="project-note">Focus: clear information and easy access to ordering details.</p><a class="text-link" href="https://zetsume-simotsarap.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></div>
+          </article>
+          <article class="project-card" aria-labelledby="project2Title">
+            <div class="project-media illustration" aria-hidden="true"><span class="project-symbol">{ }</span><span>LIBRARY MANAGEMENT</span><small>Capstone 1</small></div>
+            <div class="project-details"><p class="eyebrow">02 / CAPSTONE 1</p><h3 id="project2Title">Library Management System</h3><p>A database-backed library management system developed as my first capstone project at STI College Fairview.</p><ul class="tags" aria-label="Technologies"><li>C#</li><li>Database integration</li></ul><p class="project-note">My work: application development with C# and a database.</p></div>
+          </article>
+          <article class="project-card" aria-labelledby="project3Title">
+            <div class="project-media illustration laundry" aria-hidden="true"><span class="project-symbol">◉</span><span>GANT28</span><small>Online Laundry Management</small></div>
+            <div class="project-details"><p class="eyebrow">03 / CAPSTONE 2</p><h3 id="project3Title">Online Laundry Management System</h3><p>Gant28.com, an online laundry management system developed as my second capstone project at STI College Fairview.</p><ul class="tags" aria-label="Technologies"><li>HTML</li><li>CSS</li><li>JavaScript</li><li>MySQL</li><li>phpMyAdmin</li></ul><p class="project-note">My work: web development and database integration.</p></div>
+          </article>
+        </div>
+        <div class="carousel-controls" hidden><button type="button" id="prevProject" aria-label="Previous project">←</button><p id="projectStatus" role="status" aria-live="polite" aria-atomic="true">1 of 3 — Simot Sarap</p><button type="button" id="nextProject" aria-label="Next project">→</button></div>
+      </div>
+    </section>
+    <section id="skills" class="section container">
+      <div class="section-heading"><p class="eyebrow">MY TOOLKIT</p><h2>Skills with a purpose</h2><p>The languages and tools I use to build and learn.</p></div>
+      <div class="skills-grid">
+        <article class="skill-group"><span class="skill-number" aria-hidden="true">01</span><h3>Frontend</h3><ul class="tags"><li>HTML</li><li>CSS</li><li>JavaScript</li></ul><p>Used in my Online Laundry Management System.</p></article>
+        <article class="skill-group"><span class="skill-number" aria-hidden="true">02</span><h3>Backend & programming</h3><ul class="tags"><li>PHP</li><li>Python</li><li>Java</li><li>C#</li><li>C++</li></ul><p>C# applied in my Library Management System; additional languages from my IT background.</p></article>
+        <article class="skill-group"><span class="skill-number" aria-hidden="true">03</span><h3>Databases</h3><ul class="tags"><li>SQL</li><li>MySQL</li></ul><p>Database integration for capstone applications.</p></article>
+        <article class="skill-group"><span class="skill-number" aria-hidden="true">04</span><h3>Tools</h3><ul class="tags"><li>phpMyAdmin</li></ul><p>Database administration for my online laundry project.</p></article>
+      </div>
+    </section>
+    <section id="contact" class="section container contact-grid">
+      <div><p class="eyebrow">LET’S CONNECT</p><h2>Have something<br>in mind?</h2><p>I’d love to hear about your project or opportunity.</p><a class="email-link" href="mailto:gaudicosmedisonjr@gmail.com">gaudicosmedisonjr@gmail.com</a><p class="contact-note">This form opens a Gmail draft for you to review and send. Prefer another email app? Use the email link above.</p></div>
+      <form action="https://mail.google.com/mail/" method="get" target="_blank" rel="noopener noreferrer" id="contactForm">
+        <input type="hidden" name="view" value="cm"><input type="hidden" name="to" value="gaudicosmedisonjr@gmail.com">
+        <label for="name">Name</label><input type="text" id="name" name="su" autocomplete="name" maxlength="100" required>
+        <label for="email">Email</label><input type="email" id="email" name="replyto" autocomplete="email" maxlength="254" required>
+        <label for="message">Message</label><textarea id="message" name="body" rows="5" maxlength="5000" required></textarea>
+        <button class="button primary" type="submit">Open in Gmail <span aria-hidden="true">↗</span></button>
+        <noscript><p>You can use the email link to include your preferred reply address.</p></noscript>
+      </form>
+    </section>
+  </main>
+  <footer class="container"><a class="footer-name" href="#introduction">Edison Jr. Gaudicos<span class="accent">.</span></a><nav aria-label="Social links"><a href="https://www.facebook.com/Sakuta.Azusagawa.Senpai.END/" target="_blank" rel="noopener noreferrer">Facebook</a><a href="https://www.instagram.com/zetsumeidesu/" target="_blank" rel="noopener noreferrer">Instagram</a><a href="https://www.linkedin.com/in/edison-gaudicos-297088356/" target="_blank" rel="noopener noreferrer">LinkedIn</a></nav><p>© <span id="year">2026</span> Edison Jr. Gaudicos</p></footer>
 </body>
 </html>
-
-
-
-

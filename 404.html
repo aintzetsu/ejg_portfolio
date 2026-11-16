@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page Not Found | Edison Gaudicos</title>
+  <meta name="theme-color" content="#f5f4f1">
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    try {
+      if (localStorage.getItem('ejg-theme') === 'dark') {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    } catch {}
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="logo" href="/" aria-label="Edison Gaudicos home">
+        <img src="logo.png" width="52" height="52" alt="EJG logo">
+        <span>EJG<span class="accent">.</span></span>
+      </a>
+    </div>
+  </header>
+  <main class="hero-band error-page">
+    <section class="container error-card">
+      <p class="eyebrow">ERROR 404 · PAGE NOT FOUND</p>
+      <h1>That route isn’t <span class="accent display-italic">on the map.</span></h1>
+      <p>The page you’re looking for may have moved or been renamed. Head back to my portfolio to explore my projects, experience, and contact details.</p>
+      <div class="button-row">
+        <a href="/" class="button primary">Return to Portfolio</a>
+        <a href="/#projects" class="button">View Projects</a>
+        <a href="https://github.com/aintzetsu" target="_blank" rel="noopener noreferrer" class="button">GitHub ↗</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

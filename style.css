@@ -512,10 +512,9 @@ p {
 
 .project-media img {
   width: 100%;
-  height: 100%;
+  height: auto;
   aspect-ratio: 8 / 5;
-  object-fit: cover;
-  object-position: top center;
+  object-fit: contain;
   transition: transform 0.4s;
 }
 

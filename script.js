@@ -4,6 +4,17 @@
 document.getElementById('year').textContent = new Date().getFullYear();
 const header = document.querySelector('.site-header');
 const scrollProgress = document.getElementById('scrollProgress');
+const backToTopBtn = document.getElementById('backToTop');
+const toastBanner = document.getElementById('toastBanner');
+let toastTimer = null;
+
+function showToast(message) {
+  if (!toastBanner) return;
+  toastBanner.textContent = message;
+  toastBanner.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toastBanner.hidden = true; }, 2400);
+}
 
 // Highlight active navigation link based on visible section
 const navLinks = Array.from(document.querySelectorAll('#mainNav a[href^="#"]'));
@@ -25,6 +36,7 @@ function setActiveNav(id) {
 
 const updateScrollState = () => {
   header.classList.toggle('scrolled', window.scrollY > 50);
+  if (backToTopBtn) backToTopBtn.hidden = window.scrollY < 480;
   if (window.scrollY < 80) setActiveNav('introduction');
   if (scrollProgress) {
     const scrollable = document.documentElement.scrollHeight - window.innerHeight;
@@ -33,6 +45,12 @@ const updateScrollState = () => {
   }
 };
 window.addEventListener('scroll', updateScrollState, { passive: true });
+
+if (backToTopBtn) {
+  backToTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
 
 if ('IntersectionObserver' in window && sections.length > 0) {
   const navObserver = new IntersectionObserver(entries => {
@@ -60,6 +78,7 @@ function toggleTheme() {
   const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
   applyTheme(nextTheme);
   try { localStorage.setItem('ejg-theme', nextTheme); } catch {}
+  showToast(`Switched to ${nextTheme} mode`);
 }
 
 if (themeToggle) {
@@ -69,6 +88,45 @@ if (themeToggle) {
   })();
   applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
   themeToggle.addEventListener('click', toggleTheme);
+}
+
+// Live Quezon City local time badge (Asia/Manila)
+const localTimeEl = document.getElementById('localTime');
+if (localTimeEl && typeof Intl !== 'undefined' && Intl.DateTimeFormat) {
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Manila',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+  const updateClock = () => {
+    localTimeEl.textContent = `${formatter.format(new Date())} PHT`;
+    localTimeEl.hidden = false;
+  };
+  updateClock();
+  setInterval(updateClock, 30000);
+}
+
+// Role-tailored hero bio switcher
+const bioSwitcher = document.getElementById('bioSwitcher');
+const heroBio = document.getElementById('heroBio');
+const bioCopy = {
+  overview: 'I build practical, user-friendly web experiences and systems, backed by hands-on IT support and AI data annotation experience in Quezon City.',
+  dev: 'Frontend-focused IT graduate crafting fast, accessible interfaces in HTML5, CSS3, JavaScript, React, and Tailwind CSS — from restaurant websites to custom hardware storefronts.',
+  support: 'Detail-oriented Data Service Specialist at RWS and former DepEd NCR IT Support Intern experienced in multimodal AI data QA, troubleshooting, hardware diagnostics, and SAP workflows.'
+};
+
+if (bioSwitcher && heroBio) {
+  bioSwitcher.hidden = false;
+  const bioTabs = Array.from(bioSwitcher.querySelectorAll('button[data-bio]'));
+  bioTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const key = tab.dataset.bio;
+      if (!bioCopy[key]) return;
+      heroBio.textContent = bioCopy[key];
+      bioTabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+    });
+  });
 }
 
 // Responsive mobile/tablet navigation toggle
@@ -114,6 +172,17 @@ document.querySelectorAll('img').forEach(image => {
   if (image.complete && image.naturalWidth === 0) handleError();
 });
 
+// Cursor spotlight glow across cards (fine-pointer devices only)
+if (window.matchMedia('(hover: hover) and (pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.querySelectorAll('.spotlight-card').forEach(card => {
+    card.addEventListener('pointermove', event => {
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty('--mouse-x', `${event.clientX - rect.left}px`);
+      card.style.setProperty('--mouse-y', `${event.clientY - rect.top}px`);
+    });
+  });
+}
+
 // Expandable earlier career timeline
 const toggleTimeline = document.getElementById('toggleTimeline');
 const extraRoles = Array.from(document.querySelectorAll('.extra-role'));
@@ -128,16 +197,16 @@ if (toggleTimeline && extraRoles.length > 0) {
   });
 }
 
-// Shared accessible dialog wiring for CV, Lightbox, and Case Study modals
-function wireModal(dialogEl, triggerEl, closeEl, onOpen) {
-  if (!dialogEl || !triggerEl || !closeEl || typeof dialogEl.showModal !== 'function') return;
-  triggerEl.addEventListener('click', event => {
-    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-    event.preventDefault();
-    if (onOpen) onOpen(dialogEl);
-    dialogEl.showModal();
-    document.body.classList.add('modal-open');
-  });
+// Shared accessible dialog wiring helper
+function openDialog(dialogEl, returnFocusEl) {
+  if (!dialogEl || typeof dialogEl.showModal !== 'function') return;
+  dialogEl._returnFocus = returnFocusEl || document.activeElement;
+  dialogEl.showModal();
+  document.body.classList.add('modal-open');
+}
+
+function wireDialogDismiss(dialogEl, closeEl) {
+  if (!dialogEl || !closeEl) return;
   closeEl.addEventListener('click', () => dialogEl.close());
   let pointerStartedOutside = false;
   const outside = event => {
@@ -150,26 +219,156 @@ function wireModal(dialogEl, triggerEl, closeEl, onOpen) {
   });
   dialogEl.addEventListener('close', () => {
     document.body.classList.remove('modal-open');
-    triggerEl.focus();
+    if (dialogEl._returnFocus && typeof dialogEl._returnFocus.focus === 'function') {
+      dialogEl._returnFocus.focus();
+    }
   });
 }
 
+// CV Preview modal
 const cvModal = document.getElementById('cvModal');
 const previewButton = document.getElementById('previewButton');
-wireModal(cvModal, previewButton, document.getElementById('closeCV'), modal => {
-  const frame = modal.querySelector('iframe');
-  if (frame && !frame.getAttribute('src')) frame.src = frame.dataset.src;
+wireDialogDismiss(cvModal, document.getElementById('closeCV'));
+if (cvModal && previewButton) {
+  previewButton.addEventListener('click', event => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    const frame = cvModal.querySelector('iframe');
+    if (frame && !frame.getAttribute('src')) frame.src = frame.dataset.src;
+    openDialog(cvModal, previewButton);
+  });
+}
+
+// Project data powering shared Lightbox & Case Study modals
+const projectCatalog = {
+  simotsarap: {
+    title: 'Simot Sarap — Live Website Preview',
+    img: 'project-simotsarap.webp',
+    alt: 'Full desktop preview of Simot Sarap Chicken Wings website',
+    liveUrl: 'https://zetsume-simotsarap.vercel.app/',
+    liveLabel: 'Visit Live Site ↗',
+    repoUrl: 'https://github.com/aintzetsu/simotsarap',
+    eyebrow: '01 / WEB DEVELOPMENT & DEPLOYMENT',
+    caseTitle: 'Case Study — Simot Sarap Chicken Wings',
+    tags: ['React', 'Tailwind CSS', 'JavaScript', 'Lucide Icons', 'Google Maps Embed', 'Vercel'],
+    blocks: [
+      {
+        heading: 'Challenge',
+        text: 'Present a local Quezon City wing spot clearly online with fast menu browsing, authentic photography, customer reviews, and accurate branch directions on mobile and desktop.'
+      },
+      {
+        heading: 'Architecture & Stack',
+        text: 'Built with React, Tailwind CSS, and reusable UI components featuring instant client-side filtering across 9 food and beverage categories.'
+      },
+      {
+        heading: 'Reliability & Branch Integration',
+        text: 'Replaced expiring external image URLs with 13 locally bundled high-resolution photos (HTTP 200 served from Vercel) and pinned exact Fairview coordinates (14.6878125, 121.0920177) in the embedded map.'
+      }
+    ]
+  },
+  vesper: {
+    title: 'Vesper Audio — Studio Storefront Preview',
+    img: 'project-vesper.webp',
+    alt: 'Full desktop preview of Vesper Audio hardware storefront',
+    liveUrl: '',
+    liveLabel: '',
+    repoUrl: 'https://github.com/aintzetsu/vesper-audio',
+    eyebrow: '02 / INTERACTIVE UI & WEB AUDIO',
+    caseTitle: 'Case Study — Vesper Audio Storefront',
+    tags: ['HTML5', 'CSS3', 'Vanilla JS', 'Canvas API', 'Web Audio API', 'localStorage'],
+    blocks: [
+      {
+        heading: 'Challenge',
+        text: 'Design a responsive product storefront for studio reference audio hardware without frameworks or build tools — staying interactive even offline.'
+      },
+      {
+        heading: 'Hardware Customizer & DSP Canvas',
+        text: 'Engineered a live VA-01 monitor finish customizer (Matte Obsidian, Brushed Silver, Signal Orange, Warm Bone) paired with a HiDPI HTML5 Canvas frequency curve visualizer and Web Audio API BiquadFilterNode synth.'
+      },
+      {
+        heading: 'Persistent Studio Bag & Theming',
+        text: 'Added slide-over cart state saved in localStorage (with promo code support), accessible quick-view specs modals, and dual Light/Dark Swiss grid themes.'
+      }
+    ]
+  }
+};
+
+const imageModal = document.getElementById('imageModal');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxTitle = document.getElementById('lightboxTitle');
+const lightboxLiveLink = document.getElementById('lightboxLiveLink');
+const lightboxRepoLink = document.getElementById('lightboxRepoLink');
+wireDialogDismiss(imageModal, document.getElementById('closeLightbox'));
+
+document.querySelectorAll('[data-preview]').forEach(trigger => {
+  trigger.addEventListener('click', () => {
+    const item = projectCatalog[trigger.dataset.preview];
+    if (!item || !imageModal) return;
+    lightboxTitle.textContent = item.title;
+    lightboxImg.src = item.img;
+    lightboxImg.alt = item.alt;
+    if (item.liveUrl) {
+      lightboxLiveLink.href = item.liveUrl;
+      lightboxLiveLink.textContent = item.liveLabel;
+      lightboxLiveLink.hidden = false;
+    } else {
+      lightboxLiveLink.hidden = true;
+    }
+    lightboxRepoLink.href = item.repoUrl;
+    openDialog(imageModal, trigger);
+  });
 });
 
-wireModal(
-  document.getElementById('imageModal'),
-  document.getElementById('openProjectPreview'),
-  document.getElementById('closeLightbox')
-);
-
 const caseStudyModal = document.getElementById('caseStudyModal');
-const openCaseStudyBtn = document.getElementById('openCaseStudy');
-wireModal(caseStudyModal, openCaseStudyBtn, document.getElementById('closeCaseStudy'));
+const caseStudyTitle = document.getElementById('caseStudyTitle');
+const caseStudyEyebrow = document.getElementById('caseStudyEyebrow');
+const caseStudyBlocks = document.getElementById('caseStudyBlocks');
+const caseStudyTags = document.getElementById('caseStudyTags');
+const caseStudyLiveLink = document.getElementById('caseStudyLiveLink');
+const caseStudyRepoLink = document.getElementById('caseStudyRepoLink');
+wireDialogDismiss(caseStudyModal, document.getElementById('closeCaseStudy'));
+
+function openCaseStudy(key, triggerEl) {
+  const item = projectCatalog[key];
+  if (!item || !caseStudyModal) return;
+  caseStudyTitle.textContent = item.caseTitle;
+  caseStudyEyebrow.textContent = item.eyebrow;
+
+  caseStudyBlocks.replaceChildren(
+    ...item.blocks.map(block => {
+      const div = document.createElement('div');
+      div.className = 'case-block';
+      const h3 = document.createElement('h3');
+      h3.textContent = block.heading;
+      const p = document.createElement('p');
+      p.textContent = block.text;
+      div.append(h3, p);
+      return div;
+    })
+  );
+
+  caseStudyTags.replaceChildren(
+    ...item.tags.map(tag => {
+      const li = document.createElement('li');
+      li.textContent = tag;
+      return li;
+    })
+  );
+
+  if (item.liveUrl) {
+    caseStudyLiveLink.href = item.liveUrl;
+    caseStudyLiveLink.textContent = item.liveLabel;
+    caseStudyLiveLink.hidden = false;
+  } else {
+    caseStudyLiveLink.hidden = true;
+  }
+  caseStudyRepoLink.href = item.repoUrl;
+  openDialog(caseStudyModal, triggerEl);
+}
+
+document.querySelectorAll('[data-casestudy]').forEach(btn => {
+  btn.addEventListener('click', () => openCaseStudy(btn.dataset.casestudy, btn));
+});
 
 // Interactive Skill-to-Proof Linking
 const skillProofMap = {
@@ -179,8 +378,8 @@ const skillProofMap = {
   multimedia: { title: 'Audio, Text & Multimedia Review', text: 'Evaluated audio, text, and visual content for AI model training at RWS and Innodata.', target: '#role-rws', label: 'View experience →' },
   react: { title: 'React', text: 'Built the responsive Simot Sarap restaurant frontend with interactive menu category filters.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
   tailwind: { title: 'Tailwind CSS', text: 'Styled responsive sections, cards, and mobile navigation on Simot Sarap.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
-  javascript: { title: 'JavaScript', text: 'Powers this portfolio (theme toggle, command palette, skill linking) and Simot Sarap.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
-  htmlcss: { title: 'HTML & CSS', text: 'Semantic structure, accessible dialogs, and responsive CSS architecture for this site and DepEd web updates.', target: '#role-deped', label: 'View DepEd NCR role →' },
+  javascript: { title: 'JavaScript', text: 'Powers Vesper Audio (Canvas visualizer, Web Audio synth, cart state), Simot Sarap, and this portfolio.', target: '#project-vesper', label: 'Jump to Vesper Audio →' },
+  htmlcss: { title: 'HTML & CSS', text: 'Modular CSS tokens & responsive grids in Vesper Audio, this portfolio, and DepEd web updates.', target: '#project-vesper', label: 'Jump to Vesper Audio →' },
   php: { title: 'PHP', text: 'Server-side web programming studied and practiced during BSIT coursework at STI College Fairview.', target: '#experience', label: 'View education →' },
   python: { title: 'Python', text: 'Scripting and programming fundamentals developed in IT coursework and automation tasks.', target: '#experience', label: 'View education →' },
   java: { title: 'Java', text: 'Object-oriented programming applied during BSIT studies at STI College Fairview.', target: '#experience', label: 'View education →' },
@@ -193,7 +392,7 @@ const skillProofMap = {
   hardware: { title: 'Hardware Diagnostics', text: 'Assembled PC units and diagnosed hardware issues as Computer System Servicing Trainee at SLDM College.', target: '#role-sldm', label: 'View SLDM training →' },
   networking: { title: 'Networking', text: 'Covered networking fundamentals and maintenance through System Administration certification at STI.', target: '#experience', label: 'View certification →' },
   sysadmin: { title: 'System Administration', text: 'Certified in System Administration at STI College Fairview and practiced at DepEd NCR.', target: '#experience', label: 'View certification →' },
-  git: { title: 'Git & GitHub', text: 'Version control and public source hosting for Simot Sarap and this portfolio.', target: '#githubSnapshot', label: 'View GitHub repositories →' },
+  git: { title: 'Git & GitHub', text: 'Version control and public source hosting for Vesper Audio, Simot Sarap, and this portfolio.', target: '#githubSnapshot', label: 'View GitHub repositories →' },
   vercel: { title: 'Vercel', text: 'Continuous production deployment for Simot Sarap and ejg-portfolio.vercel.app.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
   design: { title: 'Graphic Design', text: 'Digital design production honed as Freelance Embroidery Designer at Wilcom Embroidery Studio.', target: '#role-wilcom', label: 'View design experience →' }
 };
@@ -259,14 +458,18 @@ const copyEmailAddress = async () => {
       copyBtn.textContent = 'Copied!';
       setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
     }
-  } catch {}
+    showToast('Email copied: gaudicosmedisonjr@gmail.com');
+  } catch {
+    showToast('Unable to copy email automatically');
+  }
 };
 
 const paletteActions = [
   { title: 'Jump to Introduction', hint: '#introduction', run: () => { location.hash = '#introduction'; } },
   { title: 'Jump to Experience & Education', hint: '#experience', run: () => { location.hash = '#experience'; } },
-  { title: 'Jump to Featured Project', hint: '#projects', run: () => { location.hash = '#projects'; } },
-  { title: 'Read Simot Sarap Case Study', hint: 'Modal', run: () => { if (openCaseStudyBtn) openCaseStudyBtn.click(); } },
+  { title: 'Jump to Featured Projects', hint: '#projects', run: () => { location.hash = '#projects'; } },
+  { title: 'Read Simot Sarap Case Study', hint: 'Modal', run: () => openCaseStudy('simotsarap', openPaletteBtn) },
+  { title: 'Read Vesper Audio Case Study', hint: 'Modal', run: () => openCaseStudy('vesper', openPaletteBtn) },
   { title: 'Jump to Skills', hint: '#skills', run: () => { location.hash = '#skills'; } },
   { title: 'Jump to Contact', hint: '#contact', run: () => { location.hash = '#contact'; } },
   { title: 'Preview CV (PDF)', hint: 'Dialog', run: () => { if (previewButton) previewButton.click(); } },
@@ -319,19 +522,14 @@ function openCommandPalette() {
   if (!commandModal || typeof commandModal.showModal !== 'function') return;
   renderPalette('');
   if (paletteInput) paletteInput.value = '';
-  commandModal.showModal();
-  document.body.classList.add('modal-open');
+  openDialog(commandModal, openPaletteBtn);
   if (paletteInput) paletteInput.focus();
 }
 
 if (openPaletteBtn && commandModal) {
   openPaletteBtn.hidden = false;
   openPaletteBtn.addEventListener('click', openCommandPalette);
-  if (closePaletteBtn) closePaletteBtn.addEventListener('click', () => commandModal.close());
-  commandModal.addEventListener('click', event => {
-    if (event.target === commandModal) commandModal.close();
-  });
-  commandModal.addEventListener('close', () => document.body.classList.remove('modal-open'));
+  wireDialogDismiss(commandModal, closePaletteBtn);
   if (paletteInput) {
     paletteInput.addEventListener('input', () => renderPalette(paletteInput.value));
     paletteInput.addEventListener('keydown', event => {
@@ -400,15 +598,15 @@ if (githubReposContainer && typeof fetch === 'function') {
     });
 }
 
-// One-click email copy
+// Contact form handling (supports Gmail, mailto app, and one-click draft copy)
 const copyEmailButton = document.getElementById('copyEmail');
 if (copyEmailButton) {
   copyEmailButton.addEventListener('click', copyEmailAddress);
 }
 
-// Contact form handling (supports both Gmail web compose and native mailto client)
 const contactForm = document.getElementById('contactForm');
 const mailtoButton = document.getElementById('mailtoButton');
+const copyDraftButton = document.getElementById('copyDraftButton');
 const formFeedback = document.getElementById('formFeedback');
 
 function getFormMessageData() {
@@ -428,6 +626,7 @@ function showFeedback(text) {
   if (!formFeedback) return;
   formFeedback.textContent = text;
   formFeedback.hidden = false;
+  showToast(text);
 }
 
 if (contactForm) {
@@ -456,6 +655,19 @@ if (mailtoButton && contactForm) {
     const mailtoUrl = `mailto:gaudicosmedisonjr@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoUrl;
     showFeedback('Opened draft in your email app.');
+  });
+}
+
+if (copyDraftButton && contactForm) {
+  copyDraftButton.addEventListener('click', async () => {
+    if (!contactForm.reportValidity()) return;
+    const { subject, body } = getFormMessageData();
+    try {
+      await navigator.clipboard.writeText(`To: gaudicosmedisonjr@gmail.com\nSubject: ${subject}\n\n${body}`);
+      showFeedback('Formatted inquiry copied to clipboard.');
+    } catch {
+      showFeedback('Could not copy automatically.');
+    }
   });
 }
 

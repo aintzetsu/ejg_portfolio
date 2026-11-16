@@ -54,7 +54,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="!LOGO.png">
   <link rel="apple-touch-icon" href="!LOGO.png">
   <link rel="stylesheet" href="style.css">
@@ -82,30 +82,58 @@
         <a href="https://github.com/aintzetsu" target="_blank" rel="noopener noreferrer" class="nav-github">GitHub <span aria-hidden="true">↗</span></a>
       </nav>
     </div>
+    <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
   </header>
   <main id="main">
-    <section id="introduction" class="container hero">
-      <div class="portrait-enter"><div class="portrait-float"><div class="portrait-frame"><img src="Jk5Wh.jpg" width="450" height="450" alt="Portrait of Edison Jr. Magparoc Gaudicos" fetchpriority="high"><span class="portrait-fallback" hidden aria-hidden="true">EJG<span class="accent">.</span></span></div></div></div>
-      <div class="intro-text">
-        <p class="eyebrow">IT GRADUATE · DEVELOPER · DATA SERVICE SPECIALIST</p>
-        <h1>Hi, I’m Edison Jr.<br><span class="accent">Magparoc Gaudicos.</span></h1>
-        <p>I build practical, user-friendly web experiences and database-driven systems, backed by hands-on IT support and AI data annotation experience in Quezon City.</p>
-        <ul class="hero-highlights" aria-label="Quick highlights">
-          <li>Quezon City, PH</li>
-          <li>BSIT · STI College Fairview</li>
-          <li>Code Feast 1st Runner-up</li>
-        </ul>
-        <div class="button-row">
-          <a href="Edison_Gaudicos_Updated_Resume.pdf" download class="button primary">Download CV</a>
-          <a href="Edison_Gaudicos_Updated_Resume.pdf" target="_blank" rel="noopener noreferrer" class="button" id="previewButton">Preview CV</a>
-          <a href="https://github.com/aintzetsu" target="_blank" rel="noopener noreferrer" class="button">GitHub <span aria-hidden="true">↗</span></a>
+    <section id="introduction" class="hero-band">
+      <div class="container hero">
+        <div class="portrait-enter">
+          <div class="portrait-stage">
+            <div class="portrait-float">
+              <div class="portrait-frame">
+                <img src="Jk5Wh.jpg" width="450" height="450" alt="Portrait of Edison Jr. Magparoc Gaudicos" fetchpriority="high">
+                <span class="portrait-fallback" hidden aria-hidden="true">EJG<span class="accent">.</span></span>
+              </div>
+            </div>
+            <span class="status-pill"><span class="status-dot" aria-hidden="true"></span>Open to IT &amp; Dev roles</span>
+          </div>
+        </div>
+        <div class="intro-text">
+          <p class="eyebrow">IT GRADUATE · DEVELOPER · DATA SERVICE SPECIALIST</p>
+          <h1>Hi, I’m Edison Jr.<br><span class="accent display-italic">Magparoc Gaudicos.</span></h1>
+          <p>I build practical, user-friendly web experiences and database-driven systems, backed by hands-on IT support and AI data annotation experience in Quezon City.</p>
+          <ul class="hero-highlights" aria-label="Quick highlights">
+            <li>Quezon City, PH</li>
+            <li>BSIT · STI College Fairview</li>
+            <li>Code Feast 1st Runner-up</li>
+          </ul>
+          <div class="button-row">
+            <a href="Edison_Gaudicos_Updated_Resume.pdf" download class="button primary">Download CV</a>
+            <a href="Edison_Gaudicos_Updated_Resume.pdf" target="_blank" rel="noopener noreferrer" class="button" id="previewButton">Preview CV</a>
+            <a href="https://github.com/aintzetsu" target="_blank" rel="noopener noreferrer" class="button">GitHub <span aria-hidden="true">↗</span></a>
+          </div>
         </div>
       </div>
     </section>
+
     <dialog id="cvModal" aria-labelledby="cvTitle">
       <div class="modal-header"><h2 id="cvTitle">My CV</h2><button type="button" id="closeCV" autofocus aria-label="Close CV preview">×</button></div>
       <p class="pdf-help">Preview not loading? <a href="Edison_Gaudicos_Updated_Resume.pdf" target="_blank" rel="noopener noreferrer">Open the PDF in a new tab</a>.</p>
       <iframe title="Edison Gaudicos resume PDF" data-src="Edison_Gaudicos_Updated_Resume.pdf"></iframe>
+    </dialog>
+
+    <dialog id="imageModal" class="lightbox-dialog" aria-labelledby="lightboxTitle">
+      <div class="modal-header">
+        <h2 id="lightboxTitle">Simot Sarap — Live Website Preview</h2>
+        <button type="button" id="closeLightbox" autofocus aria-label="Close website preview">×</button>
+      </div>
+      <div class="lightbox-body">
+        <img src="project-simotsarap.png" width="1280" height="800" alt="Full desktop preview of Simot Sarap Chicken Wings website">
+      </div>
+      <div class="lightbox-footer">
+        <a class="button primary" href="https://zetsume-simotsarap.vercel.app/" target="_blank" rel="noopener noreferrer">Visit Live Site ↗</a>
+        <a class="button" href="https://github.com/aintzetsu/simotsarap" target="_blank" rel="noopener noreferrer">View Source on GitHub ↗</a>
+      </div>
     </dialog>
 
     <section id="experience" class="section container">
@@ -171,7 +199,13 @@
       <div class="carousel" role="region" aria-label="Portfolio projects" tabindex="0">
         <div class="project-list">
           <article class="project-card" aria-labelledby="project1Title">
-            <div class="project-media"><img src="project-simotsarap.png" width="1280" height="800" loading="lazy" alt="Simot Sarap Chicken Wings restaurant website preview"><p class="image-fallback" hidden>Simot Sarap<span>Restaurant website</span></p></div>
+            <div class="project-media">
+              <button type="button" class="media-preview-trigger" id="openProjectPreview" aria-label="Expand Simot Sarap website preview">
+                <img src="project-simotsarap.png" width="1280" height="800" loading="lazy" alt="Simot Sarap Chicken Wings restaurant website preview">
+                <span class="expand-hint" aria-hidden="true">Expand preview ⤢</span>
+                <p class="image-fallback" hidden>Simot Sarap<span>Restaurant website</span></p>
+              </button>
+            </div>
             <div class="project-details">
               <p class="eyebrow">01 / WEBSITE</p>
               <h3 id="project1Title">Simot Sarap</h3>
@@ -185,18 +219,24 @@
             </div>
           </article>
           <article class="project-card" aria-labelledby="project2Title">
-            <div class="project-media illustration" role="img" aria-label="Library Management System desktop interface preview">
-              <div class="mockup-window">
+            <div class="project-media illustration" role="region" aria-label="Interactive Library Management System desktop interface preview">
+              <div class="mockup-window" data-interactive-mockup="library">
                 <div class="mockup-bar"><span></span><span></span><span></span><small>LibraryOS · C# &amp; SQL</small></div>
                 <div class="mockup-body">
+                  <div class="mockup-filters" role="group" aria-label="Filter library catalog preview">
+                    <button type="button" class="mockup-filter is-selected" data-filter="all">All</button>
+                    <button type="button" class="mockup-filter" data-filter="available">Available</button>
+                    <button type="button" class="mockup-filter" data-filter="borrowed">Borrowed</button>
+                  </div>
                   <div class="mockup-stats">
-                    <div><strong>1,420</strong><span>Books Indexed</span></div>
+                    <div><strong class="mockup-count">4 records</strong><span>Catalog Preview</span></div>
                     <div><strong>Active</strong><span>Borrower Tracking</span></div>
                   </div>
                   <div class="mockup-rows">
-                    <div class="mockup-row"><span>ISBN-978-01</span><span class="badge-ok">Available</span></div>
-                    <div class="mockup-row"><span>ISBN-978-14</span><span class="badge-warn">Borrowed</span></div>
-                    <div class="mockup-row"><span>ISBN-978-29</span><span class="badge-ok">Returned</span></div>
+                    <div class="mockup-row" data-status="available"><span>ISBN-978-01 · Clean Code</span><span class="badge-ok">Available</span></div>
+                    <div class="mockup-row" data-status="borrowed"><span>ISBN-978-14 · DBMS Intro</span><span class="badge-warn">Borrowed</span></div>
+                    <div class="mockup-row" data-status="available"><span>ISBN-978-29 · C# Guide</span><span class="badge-ok">Available</span></div>
+                    <div class="mockup-row" data-status="borrowed"><span>ISBN-978-42 · Networks</span><span class="badge-warn">Borrowed</span></div>
                   </div>
                 </div>
               </div>
@@ -206,22 +246,28 @@
               <h3 id="project2Title">Library Management System</h3>
               <p>A database-backed library management system developed as my first capstone project at STI College Fairview, featuring book cataloging, borrower tracking, and return management.</p>
               <ul class="tags" aria-label="Technologies"><li>C#</li><li>MySQL</li><li>Database integration</li></ul>
-              <p class="project-note">My work: desktop application development with C# and relational database design.</p>
+              <p class="project-note">My work: desktop application development with C# and relational database design. Try the interactive preview filter on the left.</p>
             </div>
           </article>
           <article class="project-card" aria-labelledby="project3Title">
-            <div class="project-media illustration laundry" role="img" aria-label="Gant28 Online Laundry Management System web dashboard preview">
-              <div class="mockup-window">
+            <div class="project-media illustration laundry" role="region" aria-label="Interactive Gant28 Online Laundry Management System web dashboard preview">
+              <div class="mockup-window" data-interactive-mockup="laundry">
                 <div class="mockup-bar"><span></span><span></span><span></span><small>Gant28.com · Laundry Portal</small></div>
                 <div class="mockup-body">
+                  <div class="mockup-filters" role="group" aria-label="Filter laundry orders preview">
+                    <button type="button" class="mockup-filter is-selected" data-filter="all">All</button>
+                    <button type="button" class="mockup-filter" data-filter="synced">Synced</button>
+                    <button type="button" class="mockup-filter" data-filter="progress">In Progress</button>
+                  </div>
                   <div class="mockup-stats">
-                    <div><strong>Order #208</strong><span>Wash &amp; Fold</span></div>
+                    <div><strong class="mockup-count">4 orders</strong><span>Queue Preview</span></div>
                     <div><strong>Ready</strong><span>Pickup Status</span></div>
                   </div>
                   <div class="mockup-rows">
-                    <div class="mockup-row"><span>Customer Queue</span><span class="badge-ok">Synced</span></div>
-                    <div class="mockup-row"><span>Billing &amp; Weight</span><span class="badge-ok">Automated</span></div>
-                    <div class="mockup-row"><span>SMS / Status Log</span><span class="badge-warn">In Progress</span></div>
+                    <div class="mockup-row" data-status="synced"><span>#208 · Wash &amp; Fold</span><span class="badge-ok">Synced</span></div>
+                    <div class="mockup-row" data-status="progress"><span>#209 · Dry Clean</span><span class="badge-warn">In Progress</span></div>
+                    <div class="mockup-row" data-status="synced"><span>#210 · Billing Weight</span><span class="badge-ok">Synced</span></div>
+                    <div class="mockup-row" data-status="progress"><span>#211 · Press &amp; Pack</span><span class="badge-warn">In Progress</span></div>
                   </div>
                 </div>
               </div>
@@ -231,11 +277,31 @@
               <h3 id="project3Title">Online Laundry Management System</h3>
               <p>Gant28.com, an online laundry management system developed as my second capstone project at STI College Fairview for tracking orders, service queues, and customer billing.</p>
               <ul class="tags" aria-label="Technologies"><li>HTML</li><li>CSS</li><li>JavaScript</li><li>PHP</li><li>MySQL</li><li>phpMyAdmin</li></ul>
-              <p class="project-note">My work: full-stack web development and MySQL database integration.</p>
+              <p class="project-note">My work: full-stack web development and MySQL database integration. Click the status filters on the preview to explore.</p>
             </div>
           </article>
         </div>
         <div class="carousel-controls" hidden><button type="button" id="prevProject" aria-label="Previous project">←</button><p id="projectStatus" role="status" aria-live="polite" aria-atomic="true">1 of 3 — Simot Sarap</p><button type="button" id="nextProject" aria-label="Next project">→</button></div>
+      </div>
+
+      <div class="github-strip" id="githubSnapshot">
+        <div class="github-strip-head">
+          <div>
+            <p class="eyebrow">OPEN SOURCE &amp; CODE</p>
+            <h3>Live on GitHub <span class="mono-muted">@aintzetsu</span></h3>
+          </div>
+          <a class="button" href="https://github.com/aintzetsu" target="_blank" rel="noopener noreferrer">View GitHub Profile ↗</a>
+        </div>
+        <div class="github-repos" id="githubRepos">
+          <a class="repo-mini" href="https://github.com/aintzetsu/ejg_portfolio" target="_blank" rel="noopener noreferrer">
+            <strong>ejg_portfolio ↗</strong>
+            <span>Personal IT portfolio · HTML / CSS / JS</span>
+          </a>
+          <a class="repo-mini" href="https://github.com/aintzetsu/simotsarap" target="_blank" rel="noopener noreferrer">
+            <strong>simotsarap ↗</strong>
+            <span>Food restaurant website · JavaScript / React</span>
+          </a>
+        </div>
       </div>
     </section>
 

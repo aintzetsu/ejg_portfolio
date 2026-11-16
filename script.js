@@ -1,9 +1,27 @@
 'use strict';
 
-// Text and projects remain available if scripting is unavailable.
+// Text and core content remain available if scripting is unavailable.
 document.getElementById('year').textContent = new Date().getFullYear();
 const header = document.querySelector('.site-header');
 const scrollProgress = document.getElementById('scrollProgress');
+
+// Highlight active navigation link based on visible section
+const navLinks = Array.from(document.querySelectorAll('#mainNav a[href^="#"]'));
+const sections = navLinks
+  .map(link => document.querySelector(link.getAttribute('href')))
+  .filter(Boolean);
+
+function setActiveNav(id) {
+  navLinks.forEach(link => {
+    const matches = link.getAttribute('href') === `#${id}`;
+    link.classList.toggle('is-active', matches);
+    if (matches) {
+      link.setAttribute('aria-current', 'location');
+    } else {
+      link.removeAttribute('aria-current');
+    }
+  });
+}
 
 const updateScrollState = () => {
   header.classList.toggle('scrolled', window.scrollY > 50);
@@ -15,6 +33,15 @@ const updateScrollState = () => {
   }
 };
 window.addEventListener('scroll', updateScrollState, { passive: true });
+
+if ('IntersectionObserver' in window && sections.length > 0) {
+  const navObserver = new IntersectionObserver(entries => {
+    const visible = entries.filter(e => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+    if (visible.length > 0) setActiveNav(visible[0].target.id);
+  }, { rootMargin: '-25% 0px -55% 0px', threshold: [0.1, 0.4] });
+  sections.forEach(section => navObserver.observe(section));
+}
+updateScrollState();
 
 // Theme toggle (light/dark) persisted in localStorage
 const themeToggle = document.getElementById('themeToggle');
@@ -30,17 +57,19 @@ function applyTheme(theme) {
   }
 }
 
+function toggleTheme() {
+  const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  applyTheme(nextTheme);
+  try { localStorage.setItem('ejg-theme', nextTheme); } catch {}
+}
+
 if (themeToggle) {
   themeToggle.hidden = false;
   const savedTheme = (() => {
     try { return localStorage.getItem('ejg-theme'); } catch { return null; }
   })();
   applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
-  themeToggle.addEventListener('click', () => {
-    const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-    applyTheme(nextTheme);
-    try { localStorage.setItem('ejg-theme', nextTheme); } catch {}
-  });
+  themeToggle.addEventListener('click', toggleTheme);
 }
 
 // Responsive mobile/tablet navigation toggle
@@ -75,33 +104,6 @@ if (menuToggle && mainNav) {
   });
 }
 
-// Highlight active navigation link based on visible section
-const navLinks = Array.from(document.querySelectorAll('#mainNav a[href^="#"]'));
-const sections = navLinks
-  .map(link => document.querySelector(link.getAttribute('href')))
-  .filter(Boolean);
-
-function setActiveNav(id) {
-  navLinks.forEach(link => {
-    const matches = link.getAttribute('href') === `#${id}`;
-    link.classList.toggle('is-active', matches);
-    if (matches) {
-      link.setAttribute('aria-current', 'location');
-    } else {
-      link.removeAttribute('aria-current');
-    }
-  });
-}
-
-if ('IntersectionObserver' in window && sections.length > 0) {
-  const navObserver = new IntersectionObserver(entries => {
-    const visible = entries.filter(e => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-    if (visible.length > 0) setActiveNav(visible[0].target.id);
-  }, { rootMargin: '-25% 0px -55% 0px', threshold: [0.1, 0.4] });
-  sections.forEach(section => navObserver.observe(section));
-}
-updateScrollState();
-
 // Missing optional images get a clean text fallback, rather than a broken icon.
 document.querySelectorAll('img').forEach(image => {
   const handleError = () => {
@@ -113,100 +115,21 @@ document.querySelectorAll('img').forEach(image => {
   if (image.complete && image.naturalWidth === 0) handleError();
 });
 
-// Project carousel with tabs, "View all" toggle, arrows, keyboard, and swipe controls
-const carousel = document.querySelector('.carousel');
-const cards = Array.from(carousel.querySelectorAll('.project-card'));
-const controls = carousel.querySelector('.carousel-controls');
-const toolbar = document.querySelector('.project-toolbar');
-const tabButtons = toolbar ? Array.from(toolbar.querySelectorAll('button[role="tab"]')) : [];
-const toggleAllButton = document.getElementById('toggleAllProjects');
-let current = 0;
-let showAll = false;
-
-function syncProjectView() {
-  cards.forEach((card, i) => {
-    card.hidden = !showAll && i !== current;
-  });
-  tabButtons.forEach((btn, i) => {
-    btn.setAttribute('aria-selected', String(!showAll && i === current));
-  });
-  if (toggleAllButton) {
-    toggleAllButton.setAttribute('aria-pressed', String(showAll));
-    toggleAllButton.textContent = showAll ? 'Carousel view' : `View all (${cards.length})`;
-  }
-  controls.hidden = showAll;
-  const title = cards[current].querySelector('h3').textContent;
-  document.getElementById('projectStatus').textContent = `${current + 1} of ${cards.length} — ${title}`;
-}
-
-function showProject(index) {
-  showAll = false;
-  current = (index + cards.length) % cards.length;
-  syncProjectView();
-}
-
-tabButtons.forEach((btn, idx) => {
-  btn.addEventListener('click', () => showProject(idx));
-});
-
-if (toggleAllButton) {
-  toggleAllButton.addEventListener('click', () => {
-    showAll = !showAll;
-    syncProjectView();
+// Expandable earlier career timeline
+const toggleTimeline = document.getElementById('toggleTimeline');
+const extraRoles = Array.from(document.querySelectorAll('.extra-role'));
+if (toggleTimeline && extraRoles.length > 0) {
+  toggleTimeline.hidden = false;
+  let expanded = false;
+  toggleTimeline.addEventListener('click', () => {
+    expanded = !expanded;
+    extraRoles.forEach(role => { role.hidden = !expanded; });
+    toggleTimeline.setAttribute('aria-expanded', String(expanded));
+    toggleTimeline.textContent = expanded ? 'Hide earlier experience' : `Show earlier experience (${extraRoles.length} more)`;
   });
 }
 
-document.getElementById('prevProject').addEventListener('click', () => showProject(current - 1));
-document.getElementById('nextProject').addEventListener('click', () => showProject(current + 1));
-carousel.addEventListener('keydown', event => {
-  if (showAll) return;
-  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-    event.preventDefault();
-    showProject(current + (event.key === 'ArrowRight' ? 1 : -1));
-  }
-});
-
-let touchStartX = 0;
-carousel.addEventListener('touchstart', event => {
-  if (event.touches.length === 1) touchStartX = event.touches[0].clientX;
-}, { passive: true });
-carousel.addEventListener('touchend', event => {
-  if (showAll || !touchStartX || event.changedTouches.length !== 1) return;
-  const deltaX = event.changedTouches[0].clientX - touchStartX;
-  if (Math.abs(deltaX) > 45) {
-    showProject(current + (deltaX < 0 ? 1 : -1));
-  }
-  touchStartX = 0;
-}, { passive: true });
-
-syncProjectView();
-if (toolbar) toolbar.hidden = false;
-
-// Interactive filters inside capstone UI mockup previews
-document.querySelectorAll('[data-interactive-mockup]').forEach(mockup => {
-  const buttons = Array.from(mockup.querySelectorAll('.mockup-filter'));
-  const rows = Array.from(mockup.querySelectorAll('.mockup-row'));
-  const countEl = mockup.querySelector('.mockup-count');
-  const noun = mockup.dataset.interactiveMockup === 'library' ? 'record' : 'order';
-
-  buttons.forEach(button => {
-    button.addEventListener('click', () => {
-      const filter = button.dataset.filter;
-      buttons.forEach(b => b.classList.toggle('is-selected', b === button));
-      let visibleCount = 0;
-      rows.forEach(row => {
-        const match = filter === 'all' || row.dataset.status === filter;
-        row.hidden = !match;
-        if (match) visibleCount += 1;
-      });
-      if (countEl) {
-        countEl.textContent = `${visibleCount} ${noun}${visibleCount === 1 ? '' : 's'}`;
-      }
-    });
-  });
-});
-
-// Shared accessible dialog setup for CV Preview and Project Lightbox
+// Shared accessible dialog wiring for CV, Lightbox, and Case Study modals
 function wireModal(dialogEl, triggerEl, closeEl, onOpen) {
   if (!dialogEl || !triggerEl || !closeEl || typeof dialogEl.showModal !== 'function') return;
   triggerEl.addEventListener('click', event => {
@@ -232,21 +155,214 @@ function wireModal(dialogEl, triggerEl, closeEl, onOpen) {
   });
 }
 
-wireModal(
-  document.getElementById('cvModal'),
-  document.getElementById('previewButton'),
-  document.getElementById('closeCV'),
-  modal => {
-    const frame = modal.querySelector('iframe');
-    if (frame && !frame.getAttribute('src')) frame.src = frame.dataset.src;
-  }
-);
+const cvModal = document.getElementById('cvModal');
+const previewButton = document.getElementById('previewButton');
+wireModal(cvModal, previewButton, document.getElementById('closeCV'), modal => {
+  const frame = modal.querySelector('iframe');
+  if (frame && !frame.getAttribute('src')) frame.src = frame.dataset.src;
+});
 
 wireModal(
   document.getElementById('imageModal'),
   document.getElementById('openProjectPreview'),
   document.getElementById('closeLightbox')
 );
+
+const caseStudyModal = document.getElementById('caseStudyModal');
+const openCaseStudyBtn = document.getElementById('openCaseStudy');
+wireModal(caseStudyModal, openCaseStudyBtn, document.getElementById('closeCaseStudy'));
+
+// Interactive Skill-to-Proof Linking
+const skillProofMap = {
+  annotation: { title: 'Data Annotation', text: 'Used daily at RWS and Innodata evaluating multimodal AI training datasets.', target: '#role-rws', label: 'View RWS & Innodata roles →' },
+  validation: { title: 'Data Validation', text: 'Performed systematic dataset validation and guideline consistency checks at RWS and Innodata.', target: '#role-innodata', label: 'View Innodata role →' },
+  qa: { title: 'Quality Assurance', text: 'Reviewed and audited annotation outputs to maintain accuracy and quality standards.', target: '#role-rws', label: 'View QA experience →' },
+  multimedia: { title: 'Audio, Text & Multimedia Review', text: 'Evaluated audio, text, and visual content for AI model training at RWS and Innodata.', target: '#role-rws', label: 'View experience →' },
+  react: { title: 'React', text: 'Built the responsive Simot Sarap restaurant frontend with interactive menu category filters.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
+  tailwind: { title: 'Tailwind CSS', text: 'Styled responsive sections, cards, and mobile navigation on Simot Sarap.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
+  javascript: { title: 'JavaScript', text: 'Powers this portfolio (theme toggle, command palette, skill linking) and Simot Sarap.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
+  htmlcss: { title: 'HTML & CSS', text: 'Semantic structure, accessible dialogs, and responsive CSS architecture for this site and DepEd web updates.', target: '#role-deped', label: 'View DepEd NCR role →' },
+  php: { title: 'PHP', text: 'Server-side web programming studied and practiced during BSIT coursework at STI College Fairview.', target: '#experience', label: 'View education →' },
+  python: { title: 'Python', text: 'Scripting and programming fundamentals developed in IT coursework and automation tasks.', target: '#experience', label: 'View education →' },
+  java: { title: 'Java', text: 'Object-oriented programming applied during BSIT studies at STI College Fairview.', target: '#experience', label: 'View education →' },
+  csharp: { title: 'C#', text: 'Application programming language from BSIT coursework at STI College Fairview.', target: '#experience', label: 'View education →' },
+  cpp: { title: 'C++', text: 'Foundational systems and algorithmic programming from BSIT studies.', target: '#experience', label: 'View education →' },
+  sql: { title: 'SQL', text: 'Relational querying and structured data management across IT coursework and reporting.', target: '#experience', label: 'View education →' },
+  mysql: { title: 'MySQL', text: 'Relational database schema design and data management practiced during BSIT studies.', target: '#experience', label: 'View education →' },
+  sap: { title: 'SAP Software', text: 'Practiced inventory, sales, purchasing, finance, and reporting during STI SAP Systems Practicum.', target: '#role-sap', label: 'View SAP practicum →' },
+  support: { title: 'IT Support & Troubleshooting', text: 'Supported users, system maintenance, and office records as IT Support Intern at DepEd NCR HRDD–NEAP.', target: '#role-deped', label: 'View DepEd NCR internship →' },
+  hardware: { title: 'Hardware Diagnostics', text: 'Assembled PC units and diagnosed hardware issues as Computer System Servicing Trainee at SLDM College.', target: '#role-sldm', label: 'View SLDM training →' },
+  networking: { title: 'Networking', text: 'Covered networking fundamentals and maintenance through System Administration certification at STI.', target: '#experience', label: 'View certification →' },
+  sysadmin: { title: 'System Administration', text: 'Certified in System Administration at STI College Fairview and practiced at DepEd NCR.', target: '#experience', label: 'View certification →' },
+  git: { title: 'Git & GitHub', text: 'Version control and public source hosting for Simot Sarap and this portfolio.', target: '#githubSnapshot', label: 'View GitHub repositories →' },
+  vercel: { title: 'Vercel', text: 'Continuous production deployment for Simot Sarap and ejg-portfolio.vercel.app.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
+  design: { title: 'Graphic Design', text: 'Digital design production honed as Freelance Embroidery Designer at Wilcom Embroidery Studio.', target: '#role-wilcom', label: 'View design experience →' }
+};
+
+const skillButtons = Array.from(document.querySelectorAll('.skill-tag'));
+const proofBox = document.getElementById('skillProofBox');
+const proofTitle = document.getElementById('skillProofTitle');
+const proofText = document.getElementById('skillProofText');
+const proofLink = document.getElementById('skillProofLink');
+const clearProofBtn = document.getElementById('clearSkillProof');
+let activeSkillKey = null;
+
+function clearSkillProof() {
+  activeSkillKey = null;
+  skillButtons.forEach(btn => btn.setAttribute('aria-pressed', 'false'));
+  document.querySelectorAll('.is-proof-highlight').forEach(el => el.classList.remove('is-proof-highlight'));
+  if (proofBox) proofBox.hidden = true;
+}
+
+function selectSkillProof(key) {
+  if (activeSkillKey === key) {
+    clearSkillProof();
+    return;
+  }
+  const info = skillProofMap[key];
+  if (!info || !proofBox) return;
+  activeSkillKey = key;
+  skillButtons.forEach(btn => btn.setAttribute('aria-pressed', String(btn.dataset.skill === key)));
+  document.querySelectorAll('.is-proof-highlight').forEach(el => el.classList.remove('is-proof-highlight'));
+
+  proofTitle.textContent = info.title;
+  proofText.textContent = info.text;
+  proofLink.href = info.target;
+  proofLink.textContent = info.label;
+  proofBox.hidden = false;
+
+  const targetEl = document.querySelector(info.target);
+  if (targetEl) {
+    if (targetEl.classList.contains('extra-role') && targetEl.hidden && toggleTimeline) {
+      toggleTimeline.click();
+    }
+    targetEl.classList.add('is-proof-highlight');
+  }
+}
+
+skillButtons.forEach(btn => {
+  btn.addEventListener('click', () => selectSkillProof(btn.dataset.skill));
+});
+if (clearProofBtn) clearProofBtn.addEventListener('click', clearSkillProof);
+
+// Command Palette (Ctrl+K / Cmd+K)
+const commandModal = document.getElementById('commandModal');
+const openPaletteBtn = document.getElementById('openPalette');
+const closePaletteBtn = document.getElementById('closePalette');
+const paletteInput = document.getElementById('paletteInput');
+const paletteList = document.getElementById('paletteList');
+
+const copyEmailAddress = async () => {
+  const copyBtn = document.getElementById('copyEmail');
+  try {
+    await navigator.clipboard.writeText('gaudicosmedisonjr@gmail.com');
+    if (copyBtn) {
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+    }
+  } catch {}
+};
+
+const paletteActions = [
+  { title: 'Jump to Introduction', hint: '#introduction', run: () => { location.hash = '#introduction'; } },
+  { title: 'Jump to Experience & Education', hint: '#experience', run: () => { location.hash = '#experience'; } },
+  { title: 'Jump to Featured Project', hint: '#projects', run: () => { location.hash = '#projects'; } },
+  { title: 'Read Simot Sarap Case Study', hint: 'Modal', run: () => { if (openCaseStudyBtn) openCaseStudyBtn.click(); } },
+  { title: 'Jump to Skills', hint: '#skills', run: () => { location.hash = '#skills'; } },
+  { title: 'Jump to Contact', hint: '#contact', run: () => { location.hash = '#contact'; } },
+  { title: 'Preview CV (PDF)', hint: 'Dialog', run: () => { if (previewButton) previewButton.click(); } },
+  { title: 'Toggle Light / Dark Theme', hint: 'Theme', run: toggleTheme },
+  { title: 'Copy Email Address', hint: 'Clipboard', run: copyEmailAddress },
+  { title: 'Open GitHub Profile (@aintzetsu)', hint: 'External ↗', run: () => window.open('https://github.com/aintzetsu', '_blank', 'noopener,noreferrer') }
+];
+
+let paletteIndex = 0;
+let filteredActions = [...paletteActions];
+
+function renderPalette(query) {
+  if (!paletteList) return;
+  const q = (query || '').trim().toLowerCase();
+  filteredActions = paletteActions.filter(a => a.title.toLowerCase().includes(q) || a.hint.toLowerCase().includes(q));
+  paletteIndex = 0;
+
+  if (filteredActions.length === 0) {
+    const empty = document.createElement('li');
+    empty.className = 'palette-item';
+    empty.textContent = 'No matching commands';
+    paletteList.replaceChildren(empty);
+    return;
+  }
+
+  paletteList.replaceChildren(
+    ...filteredActions.map((action, idx) => {
+      const li = document.createElement('li');
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `palette-item${idx === paletteIndex ? ' is-focused' : ''}`;
+      btn.setAttribute('role', 'option');
+      btn.setAttribute('aria-selected', String(idx === paletteIndex));
+      const span = document.createElement('span');
+      span.textContent = action.title;
+      const small = document.createElement('small');
+      small.textContent = action.hint;
+      btn.append(span, small);
+      btn.addEventListener('click', () => {
+        commandModal.close();
+        action.run();
+      });
+      li.append(btn);
+      return li;
+    })
+  );
+}
+
+function openCommandPalette() {
+  if (!commandModal || typeof commandModal.showModal !== 'function') return;
+  renderPalette('');
+  if (paletteInput) paletteInput.value = '';
+  commandModal.showModal();
+  document.body.classList.add('modal-open');
+  if (paletteInput) paletteInput.focus();
+}
+
+if (openPaletteBtn && commandModal) {
+  openPaletteBtn.hidden = false;
+  openPaletteBtn.addEventListener('click', openCommandPalette);
+  if (closePaletteBtn) closePaletteBtn.addEventListener('click', () => commandModal.close());
+  commandModal.addEventListener('click', event => {
+    if (event.target === commandModal) commandModal.close();
+  });
+  commandModal.addEventListener('close', () => document.body.classList.remove('modal-open'));
+  if (paletteInput) {
+    paletteInput.addEventListener('input', () => renderPalette(paletteInput.value));
+    paletteInput.addEventListener('keydown', event => {
+      if (filteredActions.length === 0) return;
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        paletteIndex = (paletteIndex + (event.key === 'ArrowDown' ? 1 : -1) + filteredActions.length) % filteredActions.length;
+        Array.from(paletteList.querySelectorAll('.palette-item')).forEach((el, idx) => {
+          el.classList.toggle('is-focused', idx === paletteIndex);
+          el.setAttribute('aria-selected', String(idx === paletteIndex));
+        });
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        const chosen = filteredActions[paletteIndex];
+        commandModal.close();
+        if (chosen) chosen.run();
+      }
+    });
+  }
+  document.addEventListener('keydown', event => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      if (commandModal.open) {
+        commandModal.close();
+      } else {
+        openCommandPalette();
+      }
+    }
+  });
+}
 
 // Live GitHub snapshot enhancement (safe public unauthenticated endpoint with static fallback)
 const githubReposContainer = document.getElementById('githubRepos');
@@ -288,16 +404,7 @@ if (githubReposContainer && typeof fetch === 'function') {
 // One-click email copy
 const copyEmailButton = document.getElementById('copyEmail');
 if (copyEmailButton) {
-  copyEmailButton.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText('gaudicosmedisonjr@gmail.com');
-      copyEmailButton.textContent = 'Copied!';
-      setTimeout(() => { copyEmailButton.textContent = 'Copy'; }, 2000);
-    } catch {
-      copyEmailButton.textContent = 'Copy failed';
-      setTimeout(() => { copyEmailButton.textContent = 'Copy'; }, 2000);
-    }
-  });
+  copyEmailButton.addEventListener('click', copyEmailAddress);
 }
 
 // Contact form handling (supports both Gmail web compose and native mailto client)

@@ -53,7 +53,6 @@ function applyTheme(theme) {
   if (themeMeta) themeMeta.content = isDark ? '#161513' : '#f5f4f1';
   if (themeToggle) {
     themeToggle.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
-    themeToggle.querySelector('.theme-icon').textContent = isDark ? '☀' : '◐';
   }
 }
 

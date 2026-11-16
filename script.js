@@ -7,6 +7,33 @@ const updateHeader = () => header.classList.toggle('scrolled', window.scrollY > 
 window.addEventListener('scroll', updateHeader, { passive: true });
 updateHeader();
 
+// Theme toggle (light/dark) persisted in localStorage
+const themeToggle = document.getElementById('themeToggle');
+const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+function applyTheme(theme) {
+  const isDark = theme === 'dark';
+  document.documentElement.dataset.theme = theme;
+  if (themeMeta) themeMeta.content = isDark ? '#161513' : '#f5f4f1';
+  if (themeToggle) {
+    themeToggle.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+    themeToggle.querySelector('.theme-icon').textContent = isDark ? '☀' : '◐';
+  }
+}
+
+if (themeToggle) {
+  themeToggle.hidden = false;
+  const savedTheme = (() => {
+    try { return localStorage.getItem('ejg-theme'); } catch { return null; }
+  })();
+  applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+  themeToggle.addEventListener('click', () => {
+    const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(nextTheme);
+    try { localStorage.setItem('ejg-theme', nextTheme); } catch {}
+  });
+}
+
 // Responsive mobile navigation toggle
 const menuToggle = document.getElementById('menuToggle');
 const mainNav = document.getElementById('mainNav');
@@ -47,7 +74,7 @@ const sections = navLinks
 
 function setActiveNav(id) {
   navLinks.forEach(link => {
-    const matches = link.getAttribute('href') === `#${id}`;
+    const matches = link.getAttribute('href') === '#' + id;
     link.classList.toggle('is-active', matches);
     if (matches) {
       link.setAttribute('aria-current', 'location');
@@ -76,31 +103,53 @@ document.querySelectorAll('img').forEach(image => {
   if (image.complete && image.naturalWidth === 0) handleError();
 });
 
-// Project carousel with tabs, arrows, keyboard, and touch swipe controls
+// Project carousel with tabs, "View all" toggle, arrows, keyboard, and swipe controls
 const carousel = document.querySelector('.carousel');
 const cards = Array.from(carousel.querySelectorAll('.project-card'));
 const controls = carousel.querySelector('.carousel-controls');
-const tablist = document.querySelector('.project-tabs');
-const tabButtons = tablist ? Array.from(tablist.querySelectorAll('button[role="tab"]')) : [];
+const toolbar = document.querySelector('.project-toolbar');
+const tabButtons = toolbar ? Array.from(toolbar.querySelectorAll('button[role="tab"]')) : [];
+const toggleAllButton = document.getElementById('toggleAllProjects');
 let current = 0;
+let showAll = false;
+
+function syncProjectView() {
+  cards.forEach((card, i) => {
+    card.hidden = !showAll && i !== current;
+  });
+  tabButtons.forEach((btn, i) => {
+    btn.setAttribute('aria-selected', String(!showAll && i === current));
+  });
+  if (toggleAllButton) {
+    toggleAllButton.setAttribute('aria-pressed', String(showAll));
+    toggleAllButton.textContent = showAll ? 'Carousel view' : 'View all (' + cards.length + ')';
+  }
+  controls.hidden = showAll;
+  const title = cards[current].querySelector('h3').textContent;
+  document.getElementById('projectStatus').textContent = (current + 1) + ' of ' + cards.length + ' — ' + title;
+}
 
 function showProject(index) {
+  showAll = false;
   current = (index + cards.length) % cards.length;
-  cards.forEach((card, i) => { card.hidden = i !== current; });
-  tabButtons.forEach((btn, i) => {
-    btn.setAttribute('aria-selected', String(i === current));
-  });
-  const title = cards[current].querySelector('h3').textContent;
-  document.getElementById('projectStatus').textContent = `${current + 1} of ${cards.length} — ${title}`;
+  syncProjectView();
 }
 
 tabButtons.forEach((btn, idx) => {
   btn.addEventListener('click', () => showProject(idx));
 });
 
+if (toggleAllButton) {
+  toggleAllButton.addEventListener('click', () => {
+    showAll = !showAll;
+    syncProjectView();
+  });
+}
+
 document.getElementById('prevProject').addEventListener('click', () => showProject(current - 1));
 document.getElementById('nextProject').addEventListener('click', () => showProject(current + 1));
 carousel.addEventListener('keydown', event => {
+  if (showAll) return;
   if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
     event.preventDefault();
     showProject(current + (event.key === 'ArrowRight' ? 1 : -1));
@@ -112,7 +161,7 @@ carousel.addEventListener('touchstart', event => {
   if (event.touches.length === 1) touchStartX = event.touches[0].clientX;
 }, { passive: true });
 carousel.addEventListener('touchend', event => {
-  if (!touchStartX || event.changedTouches.length !== 1) return;
+  if (showAll || !touchStartX || event.changedTouches.length !== 1) return;
   const deltaX = event.changedTouches[0].clientX - touchStartX;
   if (Math.abs(deltaX) > 45) {
     showProject(current + (deltaX < 0 ? 1 : -1));
@@ -120,9 +169,8 @@ carousel.addEventListener('touchend', event => {
   touchStartX = 0;
 }, { passive: true });
 
-showProject(0);
-controls.hidden = false;
-if (tablist) tablist.hidden = false;
+syncProjectView();
+if (toolbar) toolbar.hidden = false;
 
 // Native modal dialog provides focus containment, Escape, and focus restoration.
 const modal = document.getElementById('cvModal');
@@ -179,8 +227,8 @@ function getFormMessageData() {
     name,
     email,
     message,
-    subject: `Portfolio Message from ${name}`,
-    body: `Name: ${name}\nEmail: ${email}\n\n${message}`
+    subject: 'Portfolio Message from ' + name,
+    body: 'Name: ' + name + '\nEmail: ' + email + '\n\n' + message
   };
 }
 
@@ -196,7 +244,7 @@ if (contactForm) {
     ['name', 'email', 'message'].forEach(id => document.getElementById(id).removeAttribute('name'));
     const values = { su: subject, body };
     Object.entries(values).forEach(([key, value]) => {
-      let input = contactForm.querySelector(`input[type="hidden"][name="${key}"]`);
+      let input = contactForm.querySelector('input[type="hidden"][name="' + key + '"]');
       if (!input) {
         input = document.createElement('input');
         input.type = 'hidden';
@@ -213,7 +261,7 @@ if (mailtoButton && contactForm) {
   mailtoButton.addEventListener('click', () => {
     if (!contactForm.reportValidity()) return;
     const { subject, body } = getFormMessageData();
-    const mailtoUrl = `mailto:gaudicosmedisonjr@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const mailtoUrl = 'mailto:gaudicosmedisonjr@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
     window.location.href = mailtoUrl;
     showFeedback('Opened draft in your email app.');
   });
@@ -225,7 +273,7 @@ if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-mot
       if (entry.isIntersecting) {
         entry.target.classList.add('reveal-in');
         observer.unobserve(entry.target);
-      }
+      } 
     });
   }, { threshold: 0.08 });
   document.querySelectorAll('.timeline-item, .credential-card, .skill-group').forEach(element => observer.observe(element));

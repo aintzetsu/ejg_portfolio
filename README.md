@@ -8,15 +8,17 @@ Personal IT portfolio website of **Edison Jr. Magparoc Gaudicos** — IT Graduat
 
 ## Overview
 
-Built with semantic HTML5, responsive CSS custom properties, and zero-dependency vanilla JavaScript:
-- **Experience & Full Timeline**: Highlights roles at RWS, Innodata, DepEd NCR HRDD–NEAP, STI College Fairview SAP Practicum, plus an expandable earlier timeline (Wilcom Embroidery Studio & SLDM College) and BSIT / System Administration credentials.
-- **Featured Project & Case Study**: Showcases **Simot Sarap** with an expandable preview lightbox, architecture case-study modal, live website link, and GitHub repository link.
-- **Interactive Skill-to-Proof Linking**: Clicking any skill tag links directly to the project or role where it was applied.
-- **Command Palette (`Ctrl+K` / `⌘K`) & Theme Switcher**: Keyboard-accessible quick actions, light/dark theme toggle, interactive CV `<dialog>` viewer, and print-friendly layout.
+Built with semantic HTML5, responsive CSS custom properties, optimized WebP imagery, and zero-dependency vanilla JavaScript:
+- **Role-Tailored Bio Switcher & Live PHT Clock**: Switch between *Overview*, *Web Development*, and *IT Support & Data QA* perspectives alongside live Quezon City (`Asia/Manila`) time.
+- **Experience & Full Timeline**: Vertical career timeline highlighting RWS, Innodata, DepEd NCR HRDD–NEAP, STI College Fairview SAP Practicum, plus an expandable earlier timeline (Wilcom Embroidery Studio & SLDM College).
+- **Featured Projects & Case Studies**: Browser-framed showcases for **Simot Sarap** and **Vesper Audio** with expandable lightbox previews and structured case-study modals.
+- **Interactive Skill-to-Proof Linking**: Clicking any skill tag highlights the exact work role or project where it was applied.
+- **Command Palette (`Ctrl+K` / `⌘K`), Cursor Spotlight & Theme Toggle**: Keyboard-driven navigation, pointer spotlight glow, toast notifications, floating `↑ Top` pill, custom `404.html`, and `@media print` support.
 
-## Featured Project
+## Featured Projects
 
-- **Simot Sarap** — Responsive React & Tailwind CSS restaurant website ([Live Demo](https://zetsume-simotsarap.vercel.app/) · [GitHub Repo](https://github.com/aintzetsu/simotsarap))
+1. **Simot Sarap** — Responsive React & Tailwind CSS restaurant website ([Live Demo](https://zetsume-simotsarap.vercel.app/) · [GitHub Repo](https://github.com/aintzetsu/simotsarap))
+2. **Vesper Audio** — Interactive studio hardware storefront with HTML5 Canvas DSP visualizer & Web Audio synth ([GitHub Repo](https://github.com/aintzetsu/vesper-audio))
 
 ## Contact
 

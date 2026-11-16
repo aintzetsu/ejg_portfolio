@@ -6,7 +6,9 @@
   --surface-soft: #ffffffc7;
   --surface-alt: #e8e3d9;
   --showcase-bg: linear-gradient(145deg, #efe8dc, #e1d7c6);
+  --showcase-dark-bg: linear-gradient(145deg, #272522, #171614);
   --hero-glow: radial-gradient(circle at 22% 35%, #b7470014 0%, transparent 50%);
+  --spotlight: rgba(183, 71, 0, 0.08);
   --ink: #222;
   --muted: #5d5b56;
   --accent: #b74700;
@@ -29,7 +31,9 @@ html[data-theme="dark"] {
   --surface-soft: #201e1be0;
   --surface-alt: #2b2824;
   --showcase-bg: linear-gradient(145deg, #27231e, #1d1a16);
+  --showcase-dark-bg: linear-gradient(145deg, #1d1b18, #121110);
   --hero-glow: radial-gradient(circle at 22% 35%, #f07b3818 0%, transparent 52%);
+  --spotlight: rgba(240, 123, 56, 0.12);
   --ink: #f2efe9;
   --muted: #b5b0a6;
   --accent: #f07b38;
@@ -420,20 +424,29 @@ footer a:hover {
 
 .status-pill {
   position: absolute;
-  left: 18px;
+  left: 16px;
   bottom: 0;
   z-index: 2;
   display: inline-flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   padding: 7px 14px;
   border-radius: 999px;
   background: var(--surface);
   border: 1px solid var(--line);
   box-shadow: 0 10px 26px #0000001c;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: var(--ink);
+}
+
+.status-time {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  padding-left: 8px;
+  border-left: 1px solid var(--line);
 }
 
 .status-dot {
@@ -478,6 +491,37 @@ h3 {
 
 p {
   margin: 0 0 18px;
+}
+
+.bio-switcher {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px;
+  margin-bottom: 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-soft);
+}
+
+.bio-switcher button {
+  padding: 5px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  transition: background 0.18s, color 0.18s;
+}
+
+.bio-switcher button:hover {
+  color: var(--ink);
+}
+
+.bio-switcher button[aria-selected="true"] {
+  background: var(--ink);
+  color: var(--paper);
 }
 
 .intro-text > p:not(.eyebrow) {
@@ -554,6 +598,27 @@ p {
   box-shadow: 0 8px 20px #b7470033;
 }
 
+/* Error 404 Page */
+.error-page {
+  min-height: calc(100vh - 90px);
+  display: grid;
+  place-items: center;
+  padding-block: 60px;
+}
+
+.error-card {
+  max-width: 620px;
+  padding: 42px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 18px 46px #00000010;
+}
+
+.error-card p:not(.eyebrow) {
+  color: var(--muted);
+}
+
 /* Sections */
 .section {
   padding-block: 70px;
@@ -568,6 +633,36 @@ p {
 
 .section-heading > p:last-child {
   color: var(--muted);
+}
+
+/* Cursor Spotlight Glow on Cards */
+.spotlight-card {
+  position: relative;
+}
+
+.spotlight-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    360px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    var(--spotlight),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.spotlight-card:hover::after {
+  opacity: 1;
+}
+
+.spotlight-card > * {
+  position: relative;
+  z-index: 2;
 }
 
 /* Experience & Visual Career Timeline Rail */
@@ -749,12 +844,21 @@ p {
   transition: border-color 0.22s ease, box-shadow 0.22s ease;
 }
 
+.project-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 14px 36px #00000012;
+}
+
 .project-media.project-showcase {
   background: var(--showcase-bg);
   padding: 24px;
   display: grid;
   place-items: center;
   overflow: hidden;
+}
+
+.project-media.project-showcase-dark {
+  background: var(--showcase-dark-bg);
 }
 
 .browser-frame {
@@ -1163,7 +1267,7 @@ textarea {
 .form-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
 }
 
@@ -1211,6 +1315,45 @@ footer p {
   margin: 0;
   color: var(--muted);
   font-size: 0.75rem;
+}
+
+/* Floating Back-to-Top Pill & Toast Notifications */
+.back-to-top {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 90;
+  padding: 9px 15px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+  box-shadow: 0 10px 26px #0000001e;
+  transition: transform 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.back-to-top:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.toast-banner {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 2500;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.84rem;
+  font-weight: 700;
+  box-shadow: 0 14px 34px #00000033;
+  animation: toastIn 0.22s ease both;
 }
 
 /* Modal Dialogs (CV, Lightbox, Case Study, Command Palette) */
@@ -1464,6 +1607,17 @@ dialog iframe {
   }
 }
 
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
 /* Responsive Breakpoints */
 @media (max-width: 980px) {
   .hero {
@@ -1608,6 +1762,10 @@ dialog iframe {
   .button {
     padding-inline: 16px;
   }
+  .back-to-top {
+    right: 14px;
+    bottom: 14px;
+  }
   dialog {
     width: 96vw;
     height: 90dvh;
@@ -1645,6 +1803,7 @@ dialog iframe {
     color: #111;
   }
   .site-header,
+  .bio-switcher,
   .button-row,
   .expand-hint,
   .timeline-toggle,
@@ -1652,6 +1811,8 @@ dialog iframe {
   .skill-proof,
   #contact form,
   .copy-button,
+  .back-to-top,
+  .toast-banner,
   footer nav,
   dialog {
     display: none !important;

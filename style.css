@@ -1,8 +1,12 @@
 :root {
   --paper: #f5f4f1;
+  --header-bg: rgba(245, 244, 241, 0.84);
+  --header-bg-scrolled: rgba(255, 255, 255, 0.9);
   --surface: #ffffff;
   --surface-soft: #ffffffc7;
   --surface-alt: #e8e3d9;
+  --showcase-bg: linear-gradient(145deg, #efe8dc, #e1d7c6);
+  --hero-glow: radial-gradient(circle at 22% 35%, #b7470014 0%, transparent 50%);
   --ink: #222;
   --muted: #5d5b56;
   --accent: #b74700;
@@ -19,9 +23,13 @@
 
 html[data-theme="dark"] {
   --paper: #161513;
+  --header-bg: rgba(22, 21, 19, 0.84);
+  --header-bg-scrolled: rgba(32, 30, 27, 0.92);
   --surface: #201e1b;
   --surface-soft: #201e1be0;
   --surface-alt: #2b2824;
+  --showcase-bg: linear-gradient(145deg, #27231e, #1d1a16);
+  --hero-glow: radial-gradient(circle at 22% 35%, #f07b3818 0%, transparent 52%);
   --ink: #f2efe9;
   --muted: #b5b0a6;
   --accent: #f07b38;
@@ -95,6 +103,12 @@ textarea:focus-visible,
   display: none !important;
 }
 
+.ui-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
 .container {
   width: min(1120px, calc(100% - 48px));
   margin-inline: auto;
@@ -142,19 +156,21 @@ textarea:focus-visible,
   transform: none;
 }
 
-/* Header, Navigation & Scroll Progress */
+/* Glassmorphic Header, Navigation & Scroll Progress */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--paper);
+  background: var(--header-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
   transition: box-shadow 0.25s, background 0.25s;
 }
 
 .site-header.scrolled {
-  background: var(--surface);
-  box-shadow: 0 6px 20px #00000014;
+  background: var(--header-bg-scrolled);
+  box-shadow: 0 6px 24px #00000014;
 }
 
 .scroll-progress {
@@ -211,8 +227,9 @@ textarea:focus-visible,
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   padding: 0;
-  transition: border-color 0.2s, background 0.2s;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
 }
 
 .theme-toggle,
@@ -228,6 +245,11 @@ textarea:focus-visible,
   color: var(--muted);
 }
 
+.kbd-button .ui-icon {
+  width: 14px;
+  height: 14px;
+}
+
 .kbd-button:hover,
 .theme-toggle:hover,
 .menu-toggle:hover {
@@ -235,9 +257,16 @@ textarea:focus-visible,
   color: var(--ink);
 }
 
-.theme-icon {
-  font-size: 1.1rem;
-  line-height: 1;
+.icon-sun {
+  display: none;
+}
+
+html[data-theme="dark"] .icon-moon {
+  display: none;
+}
+
+html[data-theme="dark"] .icon-sun {
+  display: block;
 }
 
 .site-header nav {
@@ -329,7 +358,7 @@ footer a:hover {
 /* Hero Section */
 .hero-band {
   background-image:
-    radial-gradient(circle at 22% 35%, #b7470014 0%, transparent 50%),
+    var(--hero-glow),
     radial-gradient(var(--dot) 1px, transparent 1px);
   background-size: 100% 100%, 24px 24px;
 }
@@ -466,13 +495,22 @@ p {
 }
 
 .hero-highlights li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--ink);
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 999px;
-  padding: 4px 12px;
+  padding: 5px 12px;
+}
+
+.hero-highlights .ui-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--accent);
 }
 
 .button-row {
@@ -532,7 +570,7 @@ p {
   color: var(--muted);
 }
 
-/* Experience & Credentials */
+/* Experience & Visual Career Timeline Rail */
 .experience-layout {
   display: grid;
   grid-template-columns: 1.35fr 0.95fr;
@@ -546,8 +584,21 @@ p {
 }
 
 .timeline {
+  position: relative;
   display: grid;
   gap: 16px;
+  padding-left: 28px;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 28px;
+  bottom: 28px;
+  width: 2px;
+  background: var(--line);
+  border-radius: 2px;
 }
 
 .timeline-item,
@@ -570,10 +621,34 @@ p {
 }
 
 .timeline-item {
+  position: relative;
   padding: 24px 26px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -28px;
+  top: 27px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2.5px solid var(--muted);
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.timeline-item.is-current::before {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px #b7470026;
+}
+
+.timeline-item:hover::before {
+  border-color: var(--accent);
 }
 
 .timeline-meta {
@@ -613,6 +688,7 @@ p {
 
 .timeline-toggle {
   justify-self: start;
+  margin-left: 28px;
   padding: 9px 18px;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -656,7 +732,7 @@ p {
   font-size: 0.84rem !important;
 }
 
-/* Projects */
+/* Projects & Browser Mockup Showcase */
 .project-list {
   display: grid;
   gap: 28px;
@@ -664,7 +740,7 @@ p {
 
 .project-card {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.05fr 1fr;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   overflow: hidden;
@@ -673,24 +749,67 @@ p {
   transition: border-color 0.22s ease, box-shadow 0.22s ease;
 }
 
-.project-media {
-  background: var(--surface-alt);
-  min-height: 330px;
+.project-media.project-showcase {
+  background: var(--showcase-bg);
+  padding: 24px;
   display: grid;
   place-items: center;
   overflow: hidden;
-  position: relative;
+}
+
+.browser-frame {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #0000001c;
+  background: var(--surface);
+  box-shadow: 0 16px 36px #0000001e;
+}
+
+.browser-chrome {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 12px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.browser-chrome > span:not(.browser-url) {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.dot-red {
+  background: #ef4444;
+}
+
+.dot-amber {
+  background: #f59e0b;
+}
+
+.dot-green {
+  background: #22c55e;
+}
+
+.browser-url {
+  margin-left: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .media-preview-trigger {
   width: 100%;
-  height: 100%;
   border: 0;
   padding: 0;
   background: transparent;
   position: relative;
-  display: grid;
-  place-items: center;
+  display: block;
 }
 
 .project-media img {
@@ -707,8 +826,8 @@ p {
 
 .expand-hint {
   position: absolute;
-  right: 14px;
-  bottom: 14px;
+  right: 12px;
+  bottom: 12px;
   padding: 6px 12px;
   border-radius: 999px;
   background: #161513d9;
@@ -894,9 +1013,26 @@ p {
   background: var(--surface-soft);
 }
 
+.skill-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.skill-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--badge-bg);
+  color: var(--badge-ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .skill-group h3 {
   font-size: 1.25rem;
-  margin-block: 12px 18px;
+  margin-block: 14px 18px;
 }
 
 .skill-group p {
@@ -907,6 +1043,7 @@ p {
 
 .skill-number {
   font-family: var(--font-mono);
+  font-size: 0.85rem;
   color: var(--accent);
   font-weight: 700;
 }
@@ -1054,8 +1191,20 @@ footer {
 footer nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  align-items: center;
+  gap: 18px;
   font-size: 0.85rem;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.social-link .ui-icon {
+  width: 15px;
+  height: 15px;
 }
 
 footer p {
@@ -1329,8 +1478,8 @@ dialog iframe {
   .project-details {
     padding: 24px;
   }
-  .project-media {
-    min-height: 280px;
+  .project-media.project-showcase {
+    padding: 18px;
   }
   .site-header nav {
     gap: 16px;
@@ -1380,9 +1529,6 @@ dialog iframe {
   .project-card {
     grid-template-columns: 1fr;
   }
-  .project-media {
-    min-height: 220px;
-  }
 }
 
 @media (max-width: 640px) {
@@ -1418,9 +1564,29 @@ dialog iframe {
   .section {
     padding-block: 45px;
   }
+  .timeline {
+    padding-left: 22px;
+  }
+  .timeline::before {
+    left: 4px;
+  }
+  .timeline-item {
+    padding: 20px;
+  }
+  .timeline-item::before {
+    left: -23px;
+    width: 12px;
+    height: 12px;
+  }
+  .timeline-toggle {
+    margin-left: 22px;
+  }
   .skills-grid,
   .contact-grid {
     grid-template-columns: 1fr;
+  }
+  .project-media.project-showcase {
+    padding: 14px;
   }
   .project-media img {
     max-height: 300px;

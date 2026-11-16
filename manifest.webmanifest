@@ -1,0 +1,16 @@
+{
+  "name": "Edison Gaudicos | IT Portfolio",
+  "short_name": "EJG.",
+  "description": "IT Graduate, Developer & Data Service Specialist building practical web experiences and systems.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f4f1",
+  "theme_color": "#b74700",
+  "icons": [
+    {
+      "src": "!LOGO.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

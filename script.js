@@ -3,9 +3,18 @@
 // Text and projects remain available if scripting is unavailable.
 document.getElementById('year').textContent = new Date().getFullYear();
 const header = document.querySelector('.site-header');
-const updateHeader = () => header.classList.toggle('scrolled', window.scrollY > 50);
-window.addEventListener('scroll', updateHeader, { passive: true });
-updateHeader();
+const scrollProgress = document.getElementById('scrollProgress');
+
+const updateScrollState = () => {
+  header.classList.toggle('scrolled', window.scrollY > 50);
+  if (window.scrollY < 80) setActiveNav('introduction');
+  if (scrollProgress) {
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = scrollable > 0 ? Math.min(100, Math.max(0, (window.scrollY / scrollable) * 100)) : 0;
+    scrollProgress.style.width = `${pct.toFixed(1)}%`;
+  }
+};
+window.addEventListener('scroll', updateScrollState, { passive: true });
 
 // Theme toggle (light/dark) persisted in localStorage
 const themeToggle = document.getElementById('themeToggle');
@@ -74,7 +83,7 @@ const sections = navLinks
 
 function setActiveNav(id) {
   navLinks.forEach(link => {
-    const matches = link.getAttribute('href') === '#' + id;
+    const matches = link.getAttribute('href') === `#${id}`;
     link.classList.toggle('is-active', matches);
     if (matches) {
       link.setAttribute('aria-current', 'location');
@@ -91,6 +100,7 @@ if ('IntersectionObserver' in window && sections.length > 0) {
   }, { rootMargin: '-25% 0px -55% 0px', threshold: [0.1, 0.4] });
   sections.forEach(section => navObserver.observe(section));
 }
+updateScrollState();
 
 // Missing optional images get a clean text fallback, rather than a broken icon.
 document.querySelectorAll('img').forEach(image => {
@@ -122,11 +132,11 @@ function syncProjectView() {
   });
   if (toggleAllButton) {
     toggleAllButton.setAttribute('aria-pressed', String(showAll));
-    toggleAllButton.textContent = showAll ? 'Carousel view' : 'View all (' + cards.length + ')';
+    toggleAllButton.textContent = showAll ? 'Carousel view' : `View all (${cards.length})`;
   }
   controls.hidden = showAll;
   const title = cards[current].querySelector('h3').textContent;
-  document.getElementById('projectStatus').textContent = (current + 1) + ' of ' + cards.length + ' — ' + title;
+  document.getElementById('projectStatus').textContent = `${current + 1} of ${cards.length} — ${title}`;
 }
 
 function showProject(index) {
@@ -172,31 +182,107 @@ carousel.addEventListener('touchend', event => {
 syncProjectView();
 if (toolbar) toolbar.hidden = false;
 
-// Native modal dialog provides focus containment, Escape, and focus restoration.
-const modal = document.getElementById('cvModal');
-const previewButton = document.getElementById('previewButton');
-if (modal && previewButton && typeof modal.showModal === 'function') {
-  previewButton.addEventListener('click', event => {
-    // Keep modified-click behavior for people opening the PDF in another tab.
+// Interactive filters inside capstone UI mockup previews
+document.querySelectorAll('[data-interactive-mockup]').forEach(mockup => {
+  const buttons = Array.from(mockup.querySelectorAll('.mockup-filter'));
+  const rows = Array.from(mockup.querySelectorAll('.mockup-row'));
+  const countEl = mockup.querySelector('.mockup-count');
+  const noun = mockup.dataset.interactiveMockup === 'library' ? 'record' : 'order';
+
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      const filter = button.dataset.filter;
+      buttons.forEach(b => b.classList.toggle('is-selected', b === button));
+      let visibleCount = 0;
+      rows.forEach(row => {
+        const match = filter === 'all' || row.dataset.status === filter;
+        row.hidden = !match;
+        if (match) visibleCount += 1;
+      });
+      if (countEl) {
+        countEl.textContent = `${visibleCount} ${noun}${visibleCount === 1 ? '' : 's'}`;
+      }
+    });
+  });
+});
+
+// Shared accessible dialog setup for CV Preview and Project Lightbox
+function wireModal(dialogEl, triggerEl, closeEl, onOpen) {
+  if (!dialogEl || !triggerEl || !closeEl || typeof dialogEl.showModal !== 'function') return;
+  triggerEl.addEventListener('click', event => {
     if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
-    const frame = modal.querySelector('iframe');
-    if (!frame.getAttribute('src')) frame.src = frame.dataset.src;
-    modal.showModal();
+    if (onOpen) onOpen(dialogEl);
+    dialogEl.showModal();
     document.body.classList.add('modal-open');
   });
-  document.getElementById('closeCV').addEventListener('click', () => modal.close());
+  closeEl.addEventListener('click', () => dialogEl.close());
   let pointerStartedOutside = false;
   const outside = event => {
-    const rect = modal.getBoundingClientRect();
+    const rect = dialogEl.getBoundingClientRect();
     return event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom;
   };
-  modal.addEventListener('pointerdown', event => { pointerStartedOutside = outside(event); });
-  modal.addEventListener('click', event => { if (event.target === modal && pointerStartedOutside && outside(event)) modal.close(); });
-  modal.addEventListener('close', () => {
-    document.body.classList.remove('modal-open');
-    previewButton.focus();
+  dialogEl.addEventListener('pointerdown', event => { pointerStartedOutside = outside(event); });
+  dialogEl.addEventListener('click', event => {
+    if (event.target === dialogEl && pointerStartedOutside && outside(event)) dialogEl.close();
   });
+  dialogEl.addEventListener('close', () => {
+    document.body.classList.remove('modal-open');
+    triggerEl.focus();
+  });
+}
+
+wireModal(
+  document.getElementById('cvModal'),
+  document.getElementById('previewButton'),
+  document.getElementById('closeCV'),
+  modal => {
+    const frame = modal.querySelector('iframe');
+    if (frame && !frame.getAttribute('src')) frame.src = frame.dataset.src;
+  }
+);
+
+wireModal(
+  document.getElementById('imageModal'),
+  document.getElementById('openProjectPreview'),
+  document.getElementById('closeLightbox')
+);
+
+// Live GitHub snapshot enhancement (safe public unauthenticated endpoint with static fallback)
+const githubReposContainer = document.getElementById('githubRepos');
+if (githubReposContainer && typeof fetch === 'function') {
+  fetch('https://api.github.com/users/aintzetsu/repos?sort=updated&per_page=3', {
+    headers: { Accept: 'application/vnd.github+json' }
+  })
+    .then(res => (res.ok ? res.json() : null))
+    .then(repos => {
+      if (!Array.isArray(repos) || repos.length === 0) return;
+      const publicRepos = repos.filter(repo => !repo.private).slice(0, 3);
+      if (publicRepos.length === 0) return;
+      githubReposContainer.replaceChildren(
+        ...publicRepos.map(repo => {
+          const link = document.createElement('a');
+          link.className = 'repo-mini';
+          link.href = repo.html_url;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+
+          const title = document.createElement('strong');
+          title.textContent = `${repo.name} ↗`;
+
+          const meta = document.createElement('span');
+          const lang = repo.language || 'Code';
+          const desc = repo.description ? `${repo.description} · ` : '';
+          meta.textContent = `${desc}${lang}`;
+
+          link.append(title, meta);
+          return link;
+        })
+      );
+    })
+    .catch(() => {
+      // Static fallback repositories remain intact.
+    });
 }
 
 // One-click email copy
@@ -227,8 +313,8 @@ function getFormMessageData() {
     name,
     email,
     message,
-    subject: 'Portfolio Message from ' + name,
-    body: 'Name: ' + name + '\nEmail: ' + email + '\n\n' + message
+    subject: `Portfolio Message from ${name}`,
+    body: `Name: ${name}\nEmail: ${email}\n\n${message}`
   };
 }
 
@@ -244,7 +330,7 @@ if (contactForm) {
     ['name', 'email', 'message'].forEach(id => document.getElementById(id).removeAttribute('name'));
     const values = { su: subject, body };
     Object.entries(values).forEach(([key, value]) => {
-      let input = contactForm.querySelector('input[type="hidden"][name="' + key + '"]');
+      let input = contactForm.querySelector(`input[type="hidden"][name="${key}"]`);
       if (!input) {
         input = document.createElement('input');
         input.type = 'hidden';
@@ -261,7 +347,7 @@ if (mailtoButton && contactForm) {
   mailtoButton.addEventListener('click', () => {
     if (!contactForm.reportValidity()) return;
     const { subject, body } = getFormMessageData();
-    const mailtoUrl = 'mailto:gaudicosmedisonjr@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    const mailtoUrl = `mailto:gaudicosmedisonjr@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoUrl;
     showFeedback('Opened draft in your email app.');
   });
@@ -273,7 +359,7 @@ if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-mot
       if (entry.isIntersecting) {
         entry.target.classList.add('reveal-in');
         observer.unobserve(entry.target);
-      } 
+      }
     });
   }, { threshold: 0.08 });
   document.querySelectorAll('.timeline-item, .credential-card, .skill-group').forEach(element => observer.observe(element));

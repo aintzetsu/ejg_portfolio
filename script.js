@@ -43,10 +43,10 @@ if (themeToggle) {
   });
 }
 
-// Responsive mobile navigation toggle
+// Responsive mobile/tablet navigation toggle
 const menuToggle = document.getElementById('menuToggle');
 const mainNav = document.getElementById('mainNav');
-const mobileQuery = window.matchMedia('(max-width: 640px)');
+const mobileQuery = window.matchMedia('(max-width: 840px)');
 
 function syncMenuVisibility() {
   if (!menuToggle || !mainNav) return;

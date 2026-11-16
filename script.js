@@ -39,6 +39,32 @@ if (menuToggle && mainNav) {
   });
 }
 
+// Highlight active navigation link based on visible section
+const navLinks = Array.from(document.querySelectorAll('#mainNav a[href^="#"]'));
+const sections = navLinks
+  .map(link => document.querySelector(link.getAttribute('href')))
+  .filter(Boolean);
+
+function setActiveNav(id) {
+  navLinks.forEach(link => {
+    const matches = link.getAttribute('href') === `#${id}`;
+    link.classList.toggle('is-active', matches);
+    if (matches) {
+      link.setAttribute('aria-current', 'location');
+    } else {
+      link.removeAttribute('aria-current');
+    }
+  });
+}
+
+if ('IntersectionObserver' in window && sections.length > 0) {
+  const navObserver = new IntersectionObserver(entries => {
+    const visible = entries.filter(e => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+    if (visible.length > 0) setActiveNav(visible[0].target.id);
+  }, { rootMargin: '-25% 0px -55% 0px', threshold: [0.1, 0.4] });
+  sections.forEach(section => navObserver.observe(section));
+}
+
 // Missing optional images get a clean text fallback, rather than a broken icon.
 document.querySelectorAll('img').forEach(image => {
   const handleError = () => {
@@ -50,18 +76,27 @@ document.querySelectorAll('img').forEach(image => {
   if (image.complete && image.naturalWidth === 0) handleError();
 });
 
-// Project carousel with button, keyboard, and touch swipe controls
+// Project carousel with tabs, arrows, keyboard, and touch swipe controls
 const carousel = document.querySelector('.carousel');
 const cards = Array.from(carousel.querySelectorAll('.project-card'));
 const controls = carousel.querySelector('.carousel-controls');
+const tablist = document.querySelector('.project-tabs');
+const tabButtons = tablist ? Array.from(tablist.querySelectorAll('button[role="tab"]')) : [];
 let current = 0;
 
 function showProject(index) {
   current = (index + cards.length) % cards.length;
   cards.forEach((card, i) => { card.hidden = i !== current; });
+  tabButtons.forEach((btn, i) => {
+    btn.setAttribute('aria-selected', String(i === current));
+  });
   const title = cards[current].querySelector('h3').textContent;
   document.getElementById('projectStatus').textContent = `${current + 1} of ${cards.length} — ${title}`;
 }
+
+tabButtons.forEach((btn, idx) => {
+  btn.addEventListener('click', () => showProject(idx));
+});
 
 document.getElementById('prevProject').addEventListener('click', () => showProject(current - 1));
 document.getElementById('nextProject').addEventListener('click', () => showProject(current + 1));
@@ -87,6 +122,7 @@ carousel.addEventListener('touchend', event => {
 
 showProject(0);
 controls.hidden = false;
+if (tablist) tablist.hidden = false;
 
 // Native modal dialog provides focus containment, Escape, and focus restoration.
 const modal = document.getElementById('cvModal');
@@ -112,6 +148,21 @@ if (modal && previewButton && typeof modal.showModal === 'function') {
   modal.addEventListener('close', () => {
     document.body.classList.remove('modal-open');
     previewButton.focus();
+  });
+}
+
+// One-click email copy
+const copyEmailButton = document.getElementById('copyEmail');
+if (copyEmailButton) {
+  copyEmailButton.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText('gaudicosmedisonjr@gmail.com');
+      copyEmailButton.textContent = 'Copied!';
+      setTimeout(() => { copyEmailButton.textContent = 'Copy'; }, 2000);
+    } catch {
+      copyEmailButton.textContent = 'Copy failed';
+      setTimeout(() => { copyEmailButton.textContent = 'Copy'; }, 2000);
+    }
   });
 }
 
@@ -176,6 +227,6 @@ if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-mot
         observer.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.section-heading, .skill-group').forEach(element => observer.observe(element));
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.timeline-item, .credential-card, .skill-group').forEach(element => observer.observe(element));
 }

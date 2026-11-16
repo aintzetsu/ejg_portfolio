@@ -8,17 +8,15 @@ Personal IT portfolio website of **Edison Jr. Magparoc Gaudicos** — IT Graduat
 
 ## Overview
 
-Built with semantic HTML5, modern responsive CSS, and vanilla JavaScript with progressive enhancement:
-- **Experience & Credentials**: Highlights roles at RWS, Innodata, DepEd NCR HRDD–NEAP, STI College Fairview BSIT degree, System Administration certificate, and 1st Runner-up Code Feast award.
-- **Interactive CV Modal**: Native `<dialog>` PDF previewer with direct PDF download fallback.
-- **Projects Switcher & Carousel**: Quick-select tabs, prev/next buttons, keyboard arrows (`ArrowLeft` / `ArrowRight`), and touch-swipe navigation.
-- **Flexible Contact Options**: One-click email copy, pre-filled Gmail compose, or native `mailto:` client.
+Built with semantic HTML5, responsive CSS custom properties, and zero-dependency vanilla JavaScript:
+- **Experience & Full Timeline**: Highlights roles at RWS, Innodata, DepEd NCR HRDD–NEAP, STI College Fairview SAP Practicum, plus an expandable earlier timeline (Wilcom Embroidery Studio & SLDM College) and BSIT / System Administration credentials.
+- **Featured Project & Case Study**: Showcases **Simot Sarap** with an expandable preview lightbox, architecture case-study modal, live website link, and GitHub repository link.
+- **Interactive Skill-to-Proof Linking**: Clicking any skill tag links directly to the project or role where it was applied.
+- **Command Palette (`Ctrl+K` / `⌘K`) & Theme Switcher**: Keyboard-accessible quick actions, light/dark theme toggle, interactive CV `<dialog>` viewer, and print-friendly layout.
 
-## Featured Projects
+## Featured Project
 
-1. **Simot Sarap** — Responsive React & Tailwind CSS restaurant website ([Live Demo](https://zetsume-simotsarap.vercel.app/) · [GitHub Repo](https://github.com/aintzetsu/simotsarap))
-2. **Library Management System** — C# & MySQL desktop application (Capstone 1 at STI College Fairview)
-3. **Online Laundry Management System (`Gant28.com`)** — HTML, CSS, JS, PHP, and MySQL web system (Capstone 2 at STI College Fairview)
+- **Simot Sarap** — Responsive React & Tailwind CSS restaurant website ([Live Demo](https://zetsume-simotsarap.vercel.app/) · [GitHub Repo](https://github.com/aintzetsu/simotsarap))
 
 ## Contact
 

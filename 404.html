@@ -12,9 +12,10 @@
   <link rel="stylesheet" href="/style.css">
   <script>
     try {
-      if (localStorage.getItem('ejg-theme') === 'dark') {
-        document.documentElement.dataset.theme = 'dark';
-      }
+      var savedTheme = localStorage.getItem('ejg-theme');
+      var savedAccent = localStorage.getItem('ejg-accent');
+      if (savedTheme === 'dark') document.documentElement.dataset.theme = 'dark';
+      if (savedAccent) document.documentElement.dataset.accent = savedAccent;
     } catch {}
   </script>
 </head>

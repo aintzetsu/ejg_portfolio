@@ -16,8 +16,9 @@ function showToast(message) {
   toastTimer = setTimeout(() => { toastBanner.hidden = true; }, 2400);
 }
 
-// Highlight active navigation link based on visible section
+// Highlight active navigation link and desktop rail based on visible section
 const navLinks = Array.from(document.querySelectorAll('#mainNav a[href^="#"]'));
+const railLinks = Array.from(document.querySelectorAll('#sectionRail a[data-rail]'));
 const sections = navLinks
   .map(link => document.querySelector(link.getAttribute('href')))
   .filter(Boolean);
@@ -31,6 +32,9 @@ function setActiveNav(id) {
     } else {
       link.removeAttribute('aria-current');
     }
+  });
+  railLinks.forEach(link => {
+    link.classList.toggle('is-active', link.dataset.rail === id);
   });
 }
 
@@ -61,24 +65,48 @@ if ('IntersectionObserver' in window && sections.length > 0) {
 }
 updateScrollState();
 
-// Theme toggle (light/dark) persisted in localStorage
+// Theme & Accent customization persisted in localStorage
 const themeToggle = document.getElementById('themeToggle');
 const themeMeta = document.querySelector('meta[name="theme-color"]');
+const accentSwitcher = document.getElementById('accentSwitcher');
+const accentButtons = accentSwitcher ? Array.from(accentSwitcher.querySelectorAll('button[data-accent]')) : [];
+const ACCENTS = ['rust', 'cobalt', 'teal', 'plum'];
+let refreshCanvasPalette = () => {};
 
-function applyTheme(theme) {
+function applyTheme(theme, announce = false) {
   const isDark = theme === 'dark';
   document.documentElement.dataset.theme = theme;
   if (themeMeta) themeMeta.content = isDark ? '#161513' : '#f5f4f1';
   if (themeToggle) {
     themeToggle.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
   }
+  if (announce) {
+    try { localStorage.setItem('ejg-theme', theme); } catch {}
+    showToast(`Switched to ${theme} mode`);
+  }
+  refreshCanvasPalette();
 }
 
 function toggleTheme() {
   const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-  applyTheme(nextTheme);
-  try { localStorage.setItem('ejg-theme', nextTheme); } catch {}
-  showToast(`Switched to ${nextTheme} mode`);
+  applyTheme(nextTheme, true);
+}
+
+function applyAccent(accent, announce = false) {
+  const normalized = ACCENTS.includes(accent) ? accent : 'rust';
+  if (normalized === 'rust') {
+    delete document.documentElement.dataset.accent;
+  } else {
+    document.documentElement.dataset.accent = normalized;
+  }
+  accentButtons.forEach(btn => {
+    btn.setAttribute('aria-pressed', String(btn.dataset.accent === normalized));
+  });
+  if (announce) {
+    try { localStorage.setItem('ejg-accent', normalized); } catch {}
+    showToast(`Accent updated: ${normalized.charAt(0).toUpperCase() + normalized.slice(1)}`);
+  }
+  refreshCanvasPalette();
 }
 
 if (themeToggle) {
@@ -88,6 +116,17 @@ if (themeToggle) {
   })();
   applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
   themeToggle.addEventListener('click', toggleTheme);
+}
+
+if (accentSwitcher && accentButtons.length > 0) {
+  accentSwitcher.hidden = false;
+  const savedAccent = (() => {
+    try { return localStorage.getItem('ejg-accent'); } catch { return null; }
+  })();
+  applyAccent(savedAccent || 'rust', false);
+  accentButtons.forEach(btn => {
+    btn.addEventListener('click', () => applyAccent(btn.dataset.accent, true));
+  });
 }
 
 // Live Quezon City local time badge (Asia/Manila)
@@ -119,12 +158,18 @@ const bioCopy = {
 if (bioSwitcher && heroBio) {
   bioSwitcher.hidden = false;
   const bioTabs = Array.from(bioSwitcher.querySelectorAll('button[data-bio]'));
+  let bioSwapTimer = null;
   bioTabs.forEach(tab => {
     tab.addEventListener('click', () => {
       const key = tab.dataset.bio;
-      if (!bioCopy[key]) return;
-      heroBio.textContent = bioCopy[key];
+      if (!bioCopy[key] || tab.getAttribute('aria-selected') === 'true') return;
       bioTabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+      heroBio.classList.add('is-switching');
+      clearTimeout(bioSwapTimer);
+      bioSwapTimer = setTimeout(() => {
+        heroBio.textContent = bioCopy[key];
+        heroBio.classList.remove('is-switching');
+      }, 130);
     });
   });
 }
@@ -172,8 +217,180 @@ document.querySelectorAll('img').forEach(image => {
   if (image.complete && image.naturalWidth === 0) handleError();
 });
 
+const finePointerQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
+const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+// Reactive Hero Dot-Matrix Canvas (pointer proximity glow, constellation links & click ripples)
+function initHeroCanvas() {
+  const heroBand = document.querySelector('.hero-band');
+  const canvas = document.getElementById('heroCanvas');
+  if (!heroBand || !canvas || typeof canvas.getContext !== 'function' || reducedMotionQuery.matches) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  heroBand.classList.add('has-canvas');
+  let width = 0;
+  let height = 0;
+  let dpr = 1;
+  let dotColor = '#d6d0c5';
+  let accentColor = '#b74700';
+  let isVisible = true;
+  let rafId = null;
+  const pointer = { x: -9999, y: -9999, active: false };
+  const ripples = [];
+
+  refreshCanvasPalette = () => {
+    const styles = getComputedStyle(document.documentElement);
+    dotColor = styles.getPropertyValue('--dot').trim() || '#d6d0c5';
+    accentColor = styles.getPropertyValue('--accent').trim() || '#b74700';
+    drawFrame();
+  };
+
+  function resize() {
+    const rect = heroBand.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    width = Math.max(1, Math.floor(rect.width));
+    height = Math.max(1, Math.floor(rect.height));
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    drawFrame();
+  }
+
+  function drawFrame() {
+    ctx.clearRect(0, 0, width, height);
+    const now = performance.now();
+    for (let i = ripples.length - 1; i >= 0; i--) {
+      if (now - ripples[i].t > 950) ripples.splice(i, 1);
+    }
+
+    const gap = 24;
+    const cols = Math.ceil(width / gap) + 1;
+    const rows = Math.ceil(height / gap) + 1;
+    const hotDots = [];
+
+    for (let r = 0; r < rows; r++) {
+      const y = r * gap + 12;
+      for (let c = 0; c < cols; c++) {
+        const x = c * gap + 12;
+        let energy = 0;
+        if (pointer.active) {
+          const dist = Math.hypot(x - pointer.x, y - pointer.y);
+          if (dist < 135) energy = Math.max(energy, 1 - dist / 135);
+        }
+        for (const rip of ripples) {
+          const age = (now - rip.t) / 950;
+          const radius = age * 280;
+          const band = Math.abs(Math.hypot(x - rip.x, y - rip.y) - radius);
+          if (band < 34) energy = Math.max(energy, (1 - band / 34) * (1 - age));
+        }
+
+        if (energy > 0.05) {
+          ctx.globalAlpha = 0.25 + energy * 0.7;
+          ctx.fillStyle = accentColor;
+          ctx.beginPath();
+          ctx.arc(x, y, 1.2 + energy * 2.2, 0, Math.PI * 2);
+          ctx.fill();
+          if (energy > 0.55) hotDots.push({ x, y, energy });
+        } else {
+          ctx.globalAlpha = 0.9;
+          ctx.fillStyle = dotColor;
+          ctx.beginPath();
+          ctx.arc(x, y, 1.05, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+
+    if (hotDots.length > 1) {
+      ctx.strokeStyle = accentColor;
+      ctx.lineWidth = 0.8;
+      for (let i = 0; i < hotDots.length; i++) {
+        for (let j = i + 1; j < hotDots.length && j < i + 5; j++) {
+          const d = Math.hypot(hotDots[i].x - hotDots[j].x, hotDots[i].y - hotDots[j].y);
+          if (d < 42) {
+            ctx.globalAlpha = Math.min(hotDots[i].energy, hotDots[j].energy) * 0.26;
+            ctx.beginPath();
+            ctx.moveTo(hotDots[i].x, hotDots[i].y);
+            ctx.lineTo(hotDots[j].x, hotDots[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+    ctx.globalAlpha = 1;
+
+    if ((pointer.active || ripples.length > 0) && isVisible) {
+      rafId = requestAnimationFrame(drawFrame);
+    } else {
+      rafId = null;
+    }
+  }
+
+  function schedule() {
+    if (!rafId && isVisible) rafId = requestAnimationFrame(drawFrame);
+  }
+
+  heroBand.addEventListener('pointermove', event => {
+    const rect = heroBand.getBoundingClientRect();
+    pointer.x = event.clientX - rect.left;
+    pointer.y = event.clientY - rect.top;
+    pointer.active = true;
+    schedule();
+  });
+
+  heroBand.addEventListener('pointerleave', () => {
+    pointer.active = false;
+    schedule();
+  });
+
+  heroBand.addEventListener('pointerdown', event => {
+    const rect = heroBand.getBoundingClientRect();
+    ripples.push({ x: event.clientX - rect.left, y: event.clientY - rect.top, t: performance.now() });
+    schedule();
+  });
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(entries => {
+      isVisible = entries[0]?.isIntersecting ?? true;
+      if (isVisible) schedule();
+    }, { threshold: 0.01 }).observe(heroBand);
+  }
+
+  window.addEventListener('resize', resize);
+  refreshCanvasPalette();
+  resize();
+}
+
+// Subtle 3D perspective tilt & specular sheen on portrait and browser frames
+function initTiltTargets() {
+  if (!finePointerQuery.matches || reducedMotionQuery.matches) return;
+  document.querySelectorAll('.tilt-target').forEach(el => {
+    el.addEventListener('pointermove', event => {
+      if (event.target.closest('.browser-chrome') || el.classList.contains('is-blueprint')) {
+        el.style.transform = '';
+        return;
+      }
+      const rect = el.getBoundingClientRect();
+      const px = (event.clientX - rect.left) / rect.width;
+      const py = (event.clientY - rect.top) / rect.height;
+      const rx = (0.5 - py) * 6;
+      const ry = (px - 0.5) * 6;
+      el.style.setProperty('--tilt-x', `${(px * 100).toFixed(1)}%`);
+      el.style.setProperty('--tilt-y', `${(py * 100).toFixed(1)}%`);
+      el.style.transform = `perspective(950px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
+    });
+    el.addEventListener('pointerleave', () => {
+      el.style.transform = '';
+    });
+  });
+}
+
+initHeroCanvas();
+initTiltTargets();
+
 // Cursor spotlight glow across cards (fine-pointer devices only)
-if (window.matchMedia('(hover: hover) and (pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+if (finePointerQuery.matches && !reducedMotionQuery.matches) {
   document.querySelectorAll('.spotlight-card').forEach(card => {
     card.addEventListener('pointermove', event => {
       const rect = card.getBoundingClientRect();
@@ -183,17 +400,47 @@ if (window.matchMedia('(hover: hover) and (pointer: fine)').matches && !window.m
   });
 }
 
-// Expandable earlier career timeline
+// Expandable & filterable career timeline
 const toggleTimeline = document.getElementById('toggleTimeline');
+const expFilters = document.getElementById('expFilters');
+const timelineItems = Array.from(document.querySelectorAll('.timeline-item'));
 const extraRoles = Array.from(document.querySelectorAll('.extra-role'));
+let timelineExpanded = false;
+let activeExpTrack = 'all';
+
+function applyExperienceFilter(track) {
+  activeExpTrack = track || 'all';
+  if (expFilters) {
+    expFilters.querySelectorAll('[data-track]').forEach(btn => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.track === activeExpTrack));
+    });
+  }
+  timelineItems.forEach(item => {
+    if (activeExpTrack === 'all') {
+      item.hidden = item.classList.contains('extra-role') && !timelineExpanded;
+    } else {
+      item.hidden = item.dataset.track !== activeExpTrack;
+    }
+  });
+  if (toggleTimeline) {
+    toggleTimeline.hidden = activeExpTrack !== 'all';
+  }
+}
+
 if (toggleTimeline && extraRoles.length > 0) {
   toggleTimeline.hidden = false;
-  let expanded = false;
   toggleTimeline.addEventListener('click', () => {
-    expanded = !expanded;
-    extraRoles.forEach(role => { role.hidden = !expanded; });
-    toggleTimeline.setAttribute('aria-expanded', String(expanded));
-    toggleTimeline.textContent = expanded ? 'Hide earlier experience' : `Show earlier experience (${extraRoles.length} more)`;
+    timelineExpanded = !timelineExpanded;
+    applyExperienceFilter('all');
+    toggleTimeline.setAttribute('aria-expanded', String(timelineExpanded));
+    toggleTimeline.textContent = timelineExpanded ? 'Hide earlier experience' : `Show earlier experience (${extraRoles.length} more)`;
+  });
+}
+
+if (expFilters) {
+  expFilters.hidden = false;
+  expFilters.querySelectorAll('[data-track]').forEach(btn => {
+    btn.addEventListener('click', () => applyExperienceFilter(btn.dataset.track));
   });
 }
 
@@ -370,6 +617,75 @@ document.querySelectorAll('[data-casestudy]').forEach(btn => {
   btn.addEventListener('click', () => openCaseStudy(btn.dataset.casestudy, btn));
 });
 
+// Interactive Preview vs Blueprint switcher inside project browser mockups
+document.querySelectorAll('.browser-frame').forEach(frame => {
+  const modeBar = frame.querySelector('.browser-mode-switch');
+  const previewBtn = frame.querySelector('.media-preview-trigger');
+  const blueprintEl = frame.querySelector('.browser-blueprint');
+  if (!modeBar || !previewBtn || !blueprintEl) return;
+
+  modeBar.hidden = false;
+  const tabs = Array.from(modeBar.querySelectorAll('button[data-frame-mode]'));
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const showBlueprint = tab.dataset.frameMode === 'blueprint';
+      tabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+      previewBtn.hidden = showBlueprint;
+      blueprintEl.hidden = !showBlueprint;
+      frame.classList.toggle('is-blueprint', showBlueprint);
+      if (showBlueprint) frame.style.transform = '';
+    });
+  });
+});
+
+// Live Web Audio API reference tone demo inspired by Vesper Audio
+const vesperAudioTest = document.getElementById('vesperAudioTest');
+let activeAudioCtx = null;
+if (vesperAudioTest) {
+  vesperAudioTest.addEventListener('click', () => {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) {
+      showToast('Web Audio API unavailable in this browser');
+      return;
+    }
+    try {
+      if (!activeAudioCtx) activeAudioCtx = new AudioCtx();
+      if (activeAudioCtx.state === 'suspended') activeAudioCtx.resume();
+      const now = activeAudioCtx.currentTime;
+      const gain = activeAudioCtx.createGain();
+      const filter = activeAudioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1600, now);
+      filter.frequency.exponentialRampToValueAtTime(520, now + 0.7);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.11, now + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.72);
+
+      [440, 659.25].forEach(freq => {
+        const osc = activeAudioCtx.createOscillator();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now);
+        osc.connect(filter);
+        osc.start(now);
+        osc.stop(now + 0.75);
+      });
+
+      filter.connect(gain);
+      gain.connect(activeAudioCtx.destination);
+      vesperAudioTest.textContent = 'Playing 440Hz + Fifth...';
+      vesperAudioTest.disabled = true;
+      showToast('Vesper Audio Web Audio synth reference (440Hz)');
+      setTimeout(() => {
+        vesperAudioTest.textContent = 'Play Studio Reference Tone';
+        vesperAudioTest.disabled = false;
+      }, 760);
+    } catch {
+      showToast('Unable to play reference tone');
+    }
+  });
+}
+
 // Interactive Skill-to-Proof Linking
 const skillProofMap = {
   annotation: { title: 'Data Annotation', text: 'Used daily at RWS and Innodata evaluating multimodal AI training datasets.', target: '#role-rws', label: 'View RWS & Innodata roles →' },
@@ -431,6 +747,9 @@ function selectSkillProof(key) {
 
   const targetEl = document.querySelector(info.target);
   if (targetEl) {
+    if (targetEl.classList.contains('timeline-item') && activeExpTrack !== 'all') {
+      applyExperienceFilter('all');
+    }
     if (targetEl.classList.contains('extra-role') && targetEl.hidden && toggleTimeline) {
       toggleTimeline.click();
     }
@@ -443,9 +762,53 @@ skillButtons.forEach(btn => {
 });
 if (clearProofBtn) clearProofBtn.addEventListener('click', clearSkillProof);
 
+// Interactive skill category filter and keyword search
+const skillsControls = document.getElementById('skillsControls');
+const skillFilterInput = document.getElementById('skillFilterInput');
+const skillGroups = Array.from(document.querySelectorAll('.skill-group[data-cat]'));
+let activeSkillCat = 'all';
+
+function updateSkillsFilter() {
+  const query = (skillFilterInput ? skillFilterInput.value : '').trim().toLowerCase();
+  const catBtns = skillsControls ? Array.from(skillsControls.querySelectorAll('[data-skill-cat]')) : [];
+  catBtns.forEach(btn => btn.setAttribute('aria-pressed', String(btn.dataset.skillCat === activeSkillCat)));
+
+  skillGroups.forEach(group => {
+    const matchesCat = activeSkillCat === 'all' || group.dataset.cat === activeSkillCat;
+    const chips = Array.from(group.querySelectorAll('.skill-tag'));
+    let hasQueryMatch = false;
+
+    chips.forEach(chip => {
+      const label = chip.textContent.toLowerCase();
+      const key = (chip.dataset.skill || '').toLowerCase();
+      const hit = !query || label.includes(query) || key.includes(query);
+      if (hit) hasQueryMatch = true;
+      chip.classList.toggle('is-match', Boolean(query) && hit && matchesCat);
+      chip.classList.toggle('is-dimmed', Boolean(query) && !hit);
+    });
+
+    const visibleGroup = matchesCat && (!query || hasQueryMatch);
+    group.classList.toggle('is-dimmed', !visibleGroup);
+  });
+}
+
+if (skillsControls) {
+  skillsControls.hidden = false;
+  skillsControls.querySelectorAll('[data-skill-cat]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeSkillCat = btn.dataset.skillCat;
+      updateSkillsFilter();
+    });
+  });
+  if (skillFilterInput) {
+    skillFilterInput.addEventListener('input', updateSkillsFilter);
+  }
+}
+
 // Command Palette (Ctrl+K / Cmd+K)
 const commandModal = document.getElementById('commandModal');
 const openPaletteBtn = document.getElementById('openPalette');
+const openTerminalBtn = document.getElementById('openTerminal');
 const closePaletteBtn = document.getElementById('closePalette');
 const paletteInput = document.getElementById('paletteInput');
 const paletteList = document.getElementById('paletteList');
@@ -465,6 +828,7 @@ const copyEmailAddress = async () => {
 };
 
 const paletteActions = [
+  { title: 'Open Interactive Terminal (> _)', hint: 'Shortcut `', run: () => { if (openTerminalBtn) openTerminalBtn.click(); } },
   { title: 'Jump to Introduction', hint: '#introduction', run: () => { location.hash = '#introduction'; } },
   { title: 'Jump to Experience & Education', hint: '#experience', run: () => { location.hash = '#experience'; } },
   { title: 'Jump to Featured Projects', hint: '#projects', run: () => { location.hash = '#projects'; } },
@@ -474,6 +838,10 @@ const paletteActions = [
   { title: 'Jump to Contact', hint: '#contact', run: () => { location.hash = '#contact'; } },
   { title: 'Preview CV (PDF)', hint: 'Dialog', run: () => { if (previewButton) previewButton.click(); } },
   { title: 'Toggle Light / Dark Theme', hint: 'Theme', run: toggleTheme },
+  { title: 'Switch Accent: Cobalt Blue', hint: 'Accent', run: () => applyAccent('cobalt', true) },
+  { title: 'Switch Accent: Emerald Teal', hint: 'Accent', run: () => applyAccent('teal', true) },
+  { title: 'Switch Accent: Studio Plum', hint: 'Accent', run: () => applyAccent('plum', true) },
+  { title: 'Switch Accent: Rust Orange', hint: 'Accent', run: () => applyAccent('rust', true) },
   { title: 'Copy Email Address', hint: 'Clipboard', run: copyEmailAddress },
   { title: 'Open GitHub Profile (@aintzetsu)', hint: 'External ↗', run: () => window.open('https://github.com/aintzetsu', '_blank', 'noopener,noreferrer') }
 ];
@@ -557,6 +925,198 @@ if (openPaletteBtn && commandModal) {
       } else {
         openCommandPalette();
       }
+    }
+  });
+}
+
+// Interactive Portfolio Terminal (>_ button or backtick shortcut)
+const terminalModal = document.getElementById('terminalModal');
+const closeTerminalBtn = document.getElementById('closeTerminal');
+const terminalOutput = document.getElementById('terminalOutput');
+const terminalForm = document.getElementById('terminalForm');
+const terminalInput = document.getElementById('terminalInput');
+
+function appendTermLine(text, className = '') {
+  if (!terminalOutput) return;
+  const line = document.createElement('p');
+  line.className = `term-line${className ? ` ${className}` : ''}`;
+  line.textContent = text;
+  terminalOutput.append(line);
+  terminalOutput.scrollTop = terminalOutput.scrollHeight;
+}
+
+function appendTermAction(label, onClick) {
+  if (!terminalOutput) return;
+  const line = document.createElement('p');
+  line.className = 'term-line';
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'term-action';
+  btn.textContent = `→ ${label}`;
+  btn.addEventListener('click', onClick);
+  line.append(btn);
+  terminalOutput.append(line);
+  terminalOutput.scrollTop = terminalOutput.scrollHeight;
+}
+
+function printTerminalWelcome() {
+  if (!terminalOutput || terminalOutput.childElementCount > 0) return;
+  appendTermLine('Edison Gaudicos Interactive Portfolio Shell v2.0', 'is-muted');
+  appendTermLine('Type "help" or click any suggestion chip above to inspect experience, projects, skills, or theme live.', 'is-muted');
+}
+
+function runTerminalCommand(rawInput) {
+  const cleaned = rawInput.trim();
+  if (!cleaned) return;
+  appendTermLine(`ejg@qc:~$ ${cleaned}`, 'is-cmd');
+
+  const [cmdRaw, ...rest] = cleaned.split(/\s+/);
+  const cmd = cmdRaw.toLowerCase();
+  const arg = rest.join(' ').trim().toLowerCase();
+
+  if (cmd === 'clear') {
+    terminalOutput.replaceChildren();
+    return;
+  }
+  if (cmd === 'exit' || cmd === 'close') {
+    terminalModal.close();
+    return;
+  }
+  if (cmd === 'help') {
+    appendTermLine('Commands: whoami | experience [qa|systems|all] | projects | skills <keyword> | theme [light|dark|toggle] | accent [rust|cobalt|teal|plum] | status | cv | contact | clear | exit');
+    return;
+  }
+  if (cmd === 'whoami') {
+    appendTermLine('Edison Jr. Magparoc Gaudicos — Quezon City, PH');
+    appendTermLine('Current: Data Service Specialist @ RWS (June 2026 – Present)');
+    appendTermLine('Degree: BS Information Technology, STI College Fairview (2021–2025) · System Administration Certificate');
+    return;
+  }
+  if (cmd === 'status') {
+    const themeNow = document.documentElement.dataset.theme || 'light';
+    const accentNow = document.documentElement.dataset.accent || 'rust';
+    const phtNow = localTimeEl && localTimeEl.textContent ? localTimeEl.textContent : 'Asia/Manila';
+    appendTermLine(`Time: ${phtNow} | Theme: ${themeNow} | Accent: ${accentNow} | Viewport: ${window.innerWidth}x${window.innerHeight}`);
+    return;
+  }
+  if (cmd === 'experience' || cmd === 'exp') {
+    const roles = [
+      { track: 'qa', text: '2026–Present · Data Service Specialist @ RWS' },
+      { track: 'qa', text: '2025–2026 · Data Annotator @ Innodata' },
+      { track: 'systems', text: 'Jan–Jun 2025 · IT Support Intern @ DepEd NCR HRDD-NEAP' },
+      { track: 'systems', text: 'Jan–Jun 2024 · SAP Systems Practicum @ STI College Fairview' },
+      { track: 'design', text: '2021–2023 · Freelance Embroidery Designer @ Wilcom' },
+      { track: 'systems', text: 'Mar–Jul 2020 · Computer System Servicing Trainee @ SLDM College' }
+    ].filter(r => !arg || arg === 'all' || r.track === arg);
+
+    if (roles.length === 0) {
+      appendTermLine(`No track named "${arg}". Try: experience qa, experience systems, or experience all.`, 'is-muted');
+      return;
+    }
+    roles.forEach(r => appendTermLine(`• ${r.text}`));
+    appendTermAction('Jump to & filter Experience section', () => {
+      terminalModal.close();
+      applyExperienceFilter(['qa', 'systems', 'design'].includes(arg) ? arg : 'all');
+      location.hash = '#experience';
+    });
+    return;
+  }
+  if (cmd === 'projects') {
+    appendTermLine('1) Simot Sarap — Restaurant website (React, Tailwind CSS, Vercel) -> zetsume-simotsarap.vercel.app');
+    appendTermLine('2) Vesper Audio — Studio hardware storefront (HTML5, CSS3, Canvas & Web Audio API) -> github.com/aintzetsu/vesper-audio');
+    appendTermAction('Inspect Featured Projects', () => {
+      terminalModal.close();
+      location.hash = '#projects';
+    });
+    return;
+  }
+  if (cmd === 'skills' || cmd === 'skill') {
+    const entries = Object.entries(skillProofMap).filter(([k, v]) => (
+      !arg || k.includes(arg) || v.title.toLowerCase().includes(arg) || v.text.toLowerCase().includes(arg)
+    ));
+    if (entries.length === 0) {
+      appendTermLine(`No matching skill found for "${arg}". Try: skills react, skills sap, or skills sql.`, 'is-muted');
+      return;
+    }
+    entries.slice(0, 6).forEach(([, info]) => appendTermLine(`• ${info.title}: ${info.text}`));
+    const [firstKey, firstInfo] = entries[0];
+    appendTermAction(`Highlight "${firstInfo.title}" on page`, () => {
+      terminalModal.close();
+      selectSkillProof(firstKey);
+      document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth' });
+    });
+    return;
+  }
+  if (cmd === 'theme') {
+    if (arg === 'light' || arg === 'dark') {
+      applyTheme(arg, true);
+    } else {
+      toggleTheme();
+    }
+    appendTermLine(`Theme is now "${document.documentElement.dataset.theme || 'light'}".`);
+    return;
+  }
+  if (cmd === 'accent') {
+    if (!ACCENTS.includes(arg)) {
+      appendTermLine(`Available accents: ${ACCENTS.join(', ')}`, 'is-muted');
+      return;
+    }
+    applyAccent(arg, true);
+    appendTermLine(`Accent palette switched to "${arg}".`);
+    return;
+  }
+  if (cmd === 'cv') {
+    appendTermAction('Open CV Preview Modal', () => {
+      terminalModal.close();
+      previewButton?.click();
+    });
+    return;
+  }
+  if (cmd === 'contact') {
+    appendTermLine('Email: gaudicosmedisonjr@gmail.com | GitHub: @aintzetsu');
+    appendTermAction('Jump to Contact Form', () => {
+      terminalModal.close();
+      location.hash = '#contact';
+    });
+    return;
+  }
+  appendTermLine(`Unknown command "${cmd}". Type "help" for supported commands.`, 'is-muted');
+}
+
+function openTerminal() {
+  if (!terminalModal || typeof terminalModal.showModal !== 'function') return;
+  printTerminalWelcome();
+  openDialog(terminalModal, openTerminalBtn);
+  terminalInput?.focus();
+}
+
+if (openTerminalBtn && terminalModal) {
+  openTerminalBtn.hidden = false;
+  openTerminalBtn.addEventListener('click', openTerminal);
+  wireDialogDismiss(terminalModal, closeTerminalBtn);
+  if (terminalForm && terminalInput) {
+    terminalForm.addEventListener('submit', event => {
+      event.preventDefault();
+      runTerminalCommand(terminalInput.value);
+      terminalInput.value = '';
+    });
+  }
+  terminalModal.querySelectorAll('.term-chip[data-cmd]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      runTerminalCommand(chip.dataset.cmd);
+      terminalInput?.focus();
+    });
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key !== '`' || event.ctrlKey || event.metaKey || event.altKey) return;
+    const tag = document.activeElement?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if (document.querySelector('dialog[open]') && !terminalModal.open) return;
+    event.preventDefault();
+    if (terminalModal.open) {
+      terminalModal.close();
+    } else {
+      openTerminal();
     }
   });
 }

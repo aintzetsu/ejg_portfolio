@@ -59,6 +59,14 @@
   <link rel="icon" type="image/png" href="logo.png">
   <link rel="apple-touch-icon" href="logo.png">
   <link rel="stylesheet" href="style.css">
+  <script>
+    try {
+      var savedTheme = localStorage.getItem('ejg-theme');
+      var savedAccent = localStorage.getItem('ejg-accent');
+      if (savedTheme === 'dark') document.documentElement.dataset.theme = 'dark';
+      if (savedAccent) document.documentElement.dataset.accent = savedAccent;
+    } catch {}
+  </script>
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -67,6 +75,9 @@
     <div class="header-inner">
       <a class="logo" href="#introduction" aria-label="Edison Gaudicos home"><img src="logo.png" width="70" height="70" alt="EJG logo"><span>EJG<span class="accent">.</span></span></a>
       <div class="header-actions">
+        <button type="button" class="kbd-button" id="openTerminal" aria-label="Open interactive portfolio terminal" title="Interactive Terminal (`)" hidden>
+          <span>&gt;_</span>
+        </button>
         <button type="button" class="kbd-button" id="openPalette" aria-label="Open quick command menu" title="Quick commands (Ctrl+K)" hidden>
           <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
           <span>⌘K</span>
@@ -92,13 +103,15 @@
   </header>
   <main id="main">
     <section id="introduction" class="hero-band">
+      <canvas id="heroCanvas" class="hero-canvas" aria-hidden="true"></canvas>
       <div class="container hero">
         <div class="portrait-enter">
-          <div class="portrait-stage">
+          <div class="portrait-stage tilt-target">
             <div class="portrait-float">
               <div class="portrait-frame">
                 <img src="portrait.webp" width="450" height="450" alt="Portrait of Edison Jr. Magparoc Gaudicos" fetchpriority="high">
                 <span class="portrait-fallback" hidden aria-hidden="true">EJG<span class="accent">.</span></span>
+                <span class="tilt-sheen" aria-hidden="true"></span>
               </div>
             </div>
             <span class="status-pill">
@@ -111,10 +124,19 @@
         <div class="intro-text">
           <p class="eyebrow">IT GRADUATE · DEVELOPER · DATA SERVICE SPECIALIST</p>
           <h1>Hi, I’m Edison Jr.<br><span class="accent display-italic">Magparoc Gaudicos.</span></h1>
-          <div class="bio-switcher" id="bioSwitcher" role="tablist" aria-label="Choose bio focus" hidden>
-            <button type="button" role="tab" aria-selected="true" data-bio="overview">Overview</button>
-            <button type="button" role="tab" aria-selected="false" data-bio="dev">Web Development</button>
-            <button type="button" role="tab" aria-selected="false" data-bio="support">IT Support &amp; Data QA</button>
+          <div class="hero-controls" id="heroControls">
+            <div class="bio-switcher" id="bioSwitcher" role="tablist" aria-label="Choose bio focus" hidden>
+              <button type="button" role="tab" aria-selected="true" data-bio="overview">Overview</button>
+              <button type="button" role="tab" aria-selected="false" data-bio="dev">Web Development</button>
+              <button type="button" role="tab" aria-selected="false" data-bio="support">IT Support &amp; Data QA</button>
+            </div>
+            <div class="accent-switcher" id="accentSwitcher" role="group" aria-label="Accent color theme" hidden>
+              <span class="accent-label">Accent</span>
+              <button type="button" class="accent-swatch" data-accent="rust" aria-label="Rust Orange accent" aria-pressed="true" title="Rust Orange"></button>
+              <button type="button" class="accent-swatch" data-accent="cobalt" aria-label="Signal Cobalt accent" aria-pressed="false" title="Signal Cobalt"></button>
+              <button type="button" class="accent-swatch" data-accent="teal" aria-label="Emerald Teal accent" aria-pressed="false" title="Emerald Teal"></button>
+              <button type="button" class="accent-swatch" data-accent="plum" aria-label="Studio Plum accent" aria-pressed="false" title="Studio Plum"></button>
+            </div>
           </div>
           <p id="heroBio">I build practical, user-friendly web experiences and systems, backed by hands-on IT support and AI data annotation experience in Quezon City.</p>
           <ul class="hero-highlights" aria-label="Quick highlights">
@@ -185,41 +207,69 @@
       <ul class="palette-list" id="paletteList" role="listbox" aria-label="Quick actions"></ul>
     </dialog>
 
+    <dialog id="terminalModal" class="terminal-dialog" aria-labelledby="terminalTitle">
+      <div class="terminal-topbar">
+        <div class="terminal-dots" aria-hidden="true"><span class="dot-red"></span><span class="dot-amber"></span><span class="dot-green"></span></div>
+        <h2 id="terminalTitle">edison@quezoncity — interactive-shell</h2>
+        <button type="button" id="closeTerminal" class="palette-esc" aria-label="Close terminal">Esc</button>
+      </div>
+      <div class="terminal-chips" aria-label="Suggested terminal commands">
+        <button type="button" class="term-chip" data-cmd="whoami">whoami</button>
+        <button type="button" class="term-chip" data-cmd="projects">projects</button>
+        <button type="button" class="term-chip" data-cmd="experience">experience</button>
+        <button type="button" class="term-chip" data-cmd="skills react">skills react</button>
+        <button type="button" class="term-chip" data-cmd="accent cobalt">accent cobalt</button>
+        <button type="button" class="term-chip" data-cmd="theme toggle">theme</button>
+        <button type="button" class="term-chip" data-cmd="help">help</button>
+      </div>
+      <div class="terminal-output" id="terminalOutput" role="log" aria-live="polite"></div>
+      <form class="terminal-form" id="terminalForm" autocomplete="off">
+        <label for="terminalInput" class="terminal-prompt">ejg@qc:~$ <span class="sr-only">Enter command</span></label>
+        <input type="text" id="terminalInput" placeholder="Type a command (try: help, whoami, skills sap, accent teal)..." spellcheck="false">
+      </form>
+    </dialog>
+
     <section id="experience" class="section container">
       <div class="section-heading">
         <p class="eyebrow">01 / BACKGROUND &amp; CREDENTIALS</p>
         <h2>Experience &amp; education</h2>
         <p>Hands-on work across AI data quality, IT support, and systems training.</p>
       </div>
+      <div class="filter-bar" id="expFilters" role="group" aria-label="Filter experience by focus" hidden>
+        <button type="button" class="filter-pill" data-track="all" aria-pressed="true">All Roles (6)</button>
+        <button type="button" class="filter-pill" data-track="qa" aria-pressed="false">AI &amp; Data QA (2)</button>
+        <button type="button" class="filter-pill" data-track="systems" aria-pressed="false">IT &amp; Systems (3)</button>
+        <button type="button" class="filter-pill" data-track="design" aria-pressed="false">Design (1)</button>
+      </div>
       <div class="experience-layout">
         <div class="timeline-wrap">
           <div class="timeline" aria-label="Work experience">
-            <article class="timeline-item spotlight-card is-current" id="role-rws">
+            <article class="timeline-item spotlight-card is-current" id="role-rws" data-track="qa">
               <div class="timeline-meta"><span class="timeline-date">June 2026 – Present</span><span class="timeline-badge">Current</span></div>
               <h3>Data Service Specialist · <span class="accent">RWS</span></h3>
               <p>Annotate and validate audio, text, and multimedia datasets to improve AI model accuracy while meeting strict quality guidelines and delivery timelines.</p>
             </article>
-            <article class="timeline-item spotlight-card" id="role-innodata">
+            <article class="timeline-item spotlight-card" id="role-innodata" data-track="qa">
               <div class="timeline-meta"><span class="timeline-date">July 2025 – June 2026</span></div>
               <h3>Data Annotator · <span class="accent">Innodata</span></h3>
               <p>Evaluated and annotated multimodal content for AI model training, performing systematic data validation and consistency checks across parallel tasks.</p>
             </article>
-            <article class="timeline-item spotlight-card" id="role-deped">
+            <article class="timeline-item spotlight-card" id="role-deped" data-track="systems">
               <div class="timeline-meta"><span class="timeline-date">January 2025 – June 2025</span></div>
               <h3>IT Support Intern · <span class="accent">DepEd NCR HRDD–NEAP</span></h3>
               <p>Supported system maintenance, user troubleshooting, digital office records organization, and website content updates.</p>
             </article>
-            <article class="timeline-item spotlight-card" id="role-sap">
+            <article class="timeline-item spotlight-card" id="role-sap" data-track="systems">
               <div class="timeline-meta"><span class="timeline-date">January 2024 – June 2024</span></div>
               <h3>SAP Systems Practicum · <span class="accent">STI College Fairview</span></h3>
               <p>Practiced core SAP business workflows across inventory, sales, purchasing, finance, and business report generation.</p>
             </article>
-            <article class="timeline-item spotlight-card extra-role" id="role-wilcom" hidden>
+            <article class="timeline-item spotlight-card extra-role" id="role-wilcom" data-track="design" hidden>
               <div class="timeline-meta"><span class="timeline-date">January 2021 – December 2023</span></div>
               <h3>Freelance Embroidery Designer · <span class="accent">Wilcom Embroidery Studio</span></h3>
               <p>Created digital embroidery designs using Wilcom software, preparing production-ready files and adjusting stitch settings across fabrics.</p>
             </article>
-            <article class="timeline-item spotlight-card extra-role" id="role-sldm" hidden>
+            <article class="timeline-item spotlight-card extra-role" id="role-sldm" data-track="systems" hidden>
               <div class="timeline-meta"><span class="timeline-date">March 2020 – July 2020</span></div>
               <h3>Computer System Servicing Trainee · <span class="accent">SLDM College</span></h3>
               <p>Assembled PC units, diagnosed hardware issues, and performed routine system maintenance and troubleshooting.</p>
@@ -252,16 +302,34 @@
       <div class="project-list">
         <article class="project-card spotlight-card" id="project-simotsarap" aria-labelledby="project1Title">
           <div class="project-media project-showcase">
-            <div class="browser-frame">
-              <div class="browser-chrome" aria-hidden="true">
-                <span class="dot-red"></span><span class="dot-amber"></span><span class="dot-green"></span>
+            <div class="browser-frame tilt-target">
+              <div class="browser-chrome">
+                <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
                 <span class="browser-url">zetsume-simotsarap.vercel.app</span>
+                <div class="browser-mode-switch" role="tablist" aria-label="Simot Sarap preview view" hidden>
+                  <button type="button" role="tab" aria-selected="true" data-frame-mode="visual">Preview</button>
+                  <button type="button" role="tab" aria-selected="false" data-frame-mode="blueprint">Blueprint</button>
+                </div>
               </div>
-              <button type="button" class="media-preview-trigger" data-preview="simotsarap" aria-label="Expand Simot Sarap website preview">
-                <img src="project-simotsarap.webp" width="1280" height="800" loading="lazy" alt="Simot Sarap Chicken Wings restaurant website preview">
-                <span class="expand-hint" aria-hidden="true">Expand preview ⤢</span>
-                <p class="image-fallback" hidden>Simot Sarap<span>Restaurant website</span></p>
-              </button>
+              <div class="browser-stage">
+                <button type="button" class="media-preview-trigger" data-preview="simotsarap" aria-label="Expand Simot Sarap website preview">
+                  <img src="project-simotsarap.webp" width="1280" height="800" loading="lazy" alt="Simot Sarap Chicken Wings restaurant website preview">
+                  <span class="expand-hint" aria-hidden="true">Expand preview ⤢</span>
+                  <p class="image-fallback" hidden>Simot Sarap<span>Restaurant website</span></p>
+                </button>
+                <div class="browser-blueprint" hidden>
+                  <p class="eyebrow">ARCHITECTURE BLUEPRINT</p>
+                  <ul class="blueprint-list">
+                    <li><strong>Frontend</strong><span>React components + Tailwind CSS utility layout</span></li>
+                    <li><strong>Menu Filtering</strong><span>Client-side search across 9 menu categories</span></li>
+                    <li><strong>Media Delivery</strong><span>13 locally bundled high-res store photos (Vercel CDN)</span></li>
+                    <li><strong>Branch Discovery</strong><span>Google Maps embed pinned at 14.6878, 121.0920</span></li>
+                  </ul>
+                  <div class="blueprint-actions">
+                    <button type="button" class="copy-button" data-casestudy="simotsarap">Open Case Study</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="project-details">
@@ -280,16 +348,35 @@
 
         <article class="project-card spotlight-card" id="project-vesper" aria-labelledby="project2Title">
           <div class="project-media project-showcase project-showcase-dark">
-            <div class="browser-frame">
-              <div class="browser-chrome" aria-hidden="true">
-                <span class="dot-red"></span><span class="dot-amber"></span><span class="dot-green"></span>
+            <div class="browser-frame tilt-target">
+              <div class="browser-chrome">
+                <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
                 <span class="browser-url">github.com/aintzetsu/vesper-audio</span>
+                <div class="browser-mode-switch" role="tablist" aria-label="Vesper Audio preview view" hidden>
+                  <button type="button" role="tab" aria-selected="true" data-frame-mode="visual">Preview</button>
+                  <button type="button" role="tab" aria-selected="false" data-frame-mode="blueprint">Blueprint</button>
+                </div>
               </div>
-              <button type="button" class="media-preview-trigger" data-preview="vesper" aria-label="Expand Vesper Audio storefront preview">
-                <img src="project-vesper.webp" width="1280" height="800" loading="lazy" alt="Vesper Audio interactive studio hardware storefront preview">
-                <span class="expand-hint" aria-hidden="true">Expand preview ⤢</span>
-                <p class="image-fallback" hidden>Vesper Audio<span>Hardware storefront</span></p>
-              </button>
+              <div class="browser-stage">
+                <button type="button" class="media-preview-trigger" data-preview="vesper" aria-label="Expand Vesper Audio storefront preview">
+                  <img src="project-vesper.webp" width="1280" height="800" loading="lazy" alt="Vesper Audio interactive studio hardware storefront preview">
+                  <span class="expand-hint" aria-hidden="true">Expand preview ⤢</span>
+                  <p class="image-fallback" hidden>Vesper Audio<span>Hardware storefront</span></p>
+                </button>
+                <div class="browser-blueprint" hidden>
+                  <p class="eyebrow">ARCHITECTURE BLUEPRINT</p>
+                  <ul class="blueprint-list">
+                    <li><strong>Zero Dependencies</strong><span>Modular HTML5, CSS design tokens &amp; Vanilla ES modules</span></li>
+                    <li><strong>DSP Visualizer</strong><span>HiDPI Canvas frequency curve &amp; Web Audio BiquadFilterNode</span></li>
+                    <li><strong>Configurator</strong><span>4-finish studio monitor switcher + quick-view spec dialog</span></li>
+                    <li><strong>Persistent Cart</strong><span>Slide-over bag persisted in localStorage with promo codes</span></li>
+                  </ul>
+                  <div class="blueprint-actions">
+                    <button type="button" class="copy-button" id="vesperAudioTest">Play Studio Reference Tone</button>
+                    <button type="button" class="copy-button" data-casestudy="vesper">Open Case Study</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="project-details">
@@ -332,7 +419,18 @@
     </section>
 
     <section id="skills" class="section container">
-      <div class="section-heading"><p class="eyebrow">03 / MY TOOLKIT</p><h2>Skills with a purpose</h2><p>Click any skill below to see where I applied it across work and projects.</p></div>
+      <div class="section-heading"><p class="eyebrow">03 / MY TOOLKIT</p><h2>Skills with a purpose</h2><p>Search or filter skills, then click any chip to inspect real-world proof across work and projects.</p></div>
+      <div class="skills-controls" id="skillsControls" hidden>
+        <div class="filter-bar" role="group" aria-label="Filter skill groups by category">
+          <button type="button" class="filter-pill" data-skill-cat="all" aria-pressed="true">All Categories</button>
+          <button type="button" class="filter-pill" data-skill-cat="qa" aria-pressed="false">Data &amp; AI QA</button>
+          <button type="button" class="filter-pill" data-skill-cat="web" aria-pressed="false">Web &amp; Code</button>
+          <button type="button" class="filter-pill" data-skill-cat="db" aria-pressed="false">Databases &amp; ERP</button>
+          <button type="button" class="filter-pill" data-skill-cat="it" aria-pressed="false">IT &amp; Workflow</button>
+        </div>
+        <label for="skillFilterInput" class="sr-only">Search skills</label>
+        <input type="search" id="skillFilterInput" class="skill-search" placeholder="Filter skills (e.g. react, sap, sql, git)..." autocomplete="off">
+      </div>
       <div class="skill-proof" id="skillProofBox" role="status" aria-live="polite" hidden>
         <div>
           <strong id="skillProofTitle"></strong>
@@ -344,7 +442,7 @@
         </div>
       </div>
       <div class="skills-grid">
-        <article class="skill-group spotlight-card">
+        <article class="skill-group spotlight-card" data-cat="qa">
           <div class="skill-head">
             <span class="skill-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="M12 12l8-4.5"/><path d="M12 12v9"/><path d="M12 12 4 7.5"/></svg></span>
             <span class="skill-number" aria-hidden="true">01</span>
@@ -358,7 +456,7 @@
           </div>
           <p>Applied daily in AI training data evaluation at RWS and Innodata.</p>
         </article>
-        <article class="skill-group spotlight-card">
+        <article class="skill-group spotlight-card" data-cat="web">
           <div class="skill-head">
             <span class="skill-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
             <span class="skill-number" aria-hidden="true">02</span>
@@ -377,7 +475,7 @@
           </div>
           <p>Used across Vesper Audio, Simot Sarap, this portfolio, website updates, and my BSIT foundations.</p>
         </article>
-        <article class="skill-group spotlight-card">
+        <article class="skill-group spotlight-card" data-cat="db">
           <div class="skill-head">
             <span class="skill-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg></span>
             <span class="skill-number" aria-hidden="true">03</span>
@@ -390,7 +488,7 @@
           </div>
           <p>Relational database management and SAP business workflows from my IT training.</p>
         </article>
-        <article class="skill-group spotlight-card">
+        <article class="skill-group spotlight-card" data-cat="it">
           <div class="skill-head">
             <span class="skill-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76Z"/></svg></span>
             <span class="skill-number" aria-hidden="true">04</span>
@@ -459,6 +557,13 @@
     </nav>
     <p>© <span id="year">2026</span> Edison Jr. Gaudicos</p>
   </footer>
+  <nav class="section-rail" id="sectionRail" aria-label="Quick section index">
+    <a href="#introduction" data-rail="introduction" aria-label="Introduction section"><span>Intro</span></a>
+    <a href="#experience" data-rail="experience" aria-label="Experience section"><span>01 Exp</span></a>
+    <a href="#projects" data-rail="projects" aria-label="Projects section"><span>02 Work</span></a>
+    <a href="#skills" data-rail="skills" aria-label="Skills section"><span>03 Skills</span></a>
+    <a href="#contact" data-rail="contact" aria-label="Contact section"><span>04 Contact</span></a>
+  </nav>
   <button type="button" class="back-to-top" id="backToTop" aria-label="Scroll back to top" hidden>↑ Top</button>
   <div class="toast-banner" id="toastBanner" role="status" aria-live="polite" hidden></div>
 </body>

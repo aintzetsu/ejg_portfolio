@@ -7,6 +7,38 @@ const updateHeader = () => header.classList.toggle('scrolled', window.scrollY > 
 window.addEventListener('scroll', updateHeader, { passive: true });
 updateHeader();
 
+// Responsive mobile navigation toggle
+const menuToggle = document.getElementById('menuToggle');
+const mainNav = document.getElementById('mainNav');
+const mobileQuery = window.matchMedia('(max-width: 640px)');
+
+function syncMenuVisibility() {
+  if (!menuToggle || !mainNav) return;
+  if (mobileQuery.matches) {
+    header.classList.add('js-nav-ready');
+    menuToggle.hidden = false;
+  } else {
+    header.classList.remove('js-nav-ready', 'menu-open');
+    menuToggle.hidden = true;
+    menuToggle.setAttribute('aria-expanded', 'false');
+  }
+}
+
+if (menuToggle && mainNav) {
+  syncMenuVisibility();
+  mobileQuery.addEventListener('change', syncMenuVisibility);
+  menuToggle.addEventListener('click', () => {
+    const isOpen = header.classList.toggle('menu-open');
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+  mainNav.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      header.classList.remove('menu-open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+}
+
 // Missing optional images get a clean text fallback, rather than a broken icon.
 document.querySelectorAll('img').forEach(image => {
   const handleError = () => {
@@ -18,16 +50,19 @@ document.querySelectorAll('img').forEach(image => {
   if (image.complete && image.naturalWidth === 0) handleError();
 });
 
+// Project carousel with button, keyboard, and touch swipe controls
 const carousel = document.querySelector('.carousel');
 const cards = Array.from(carousel.querySelectorAll('.project-card'));
 const controls = carousel.querySelector('.carousel-controls');
 let current = 0;
+
 function showProject(index) {
   current = (index + cards.length) % cards.length;
   cards.forEach((card, i) => { card.hidden = i !== current; });
   const title = cards[current].querySelector('h3').textContent;
   document.getElementById('projectStatus').textContent = `${current + 1} of ${cards.length} — ${title}`;
 }
+
 document.getElementById('prevProject').addEventListener('click', () => showProject(current - 1));
 document.getElementById('nextProject').addEventListener('click', () => showProject(current + 1));
 carousel.addEventListener('keydown', event => {
@@ -36,13 +71,27 @@ carousel.addEventListener('keydown', event => {
     showProject(current + (event.key === 'ArrowRight' ? 1 : -1));
   }
 });
+
+let touchStartX = 0;
+carousel.addEventListener('touchstart', event => {
+  if (event.touches.length === 1) touchStartX = event.touches[0].clientX;
+}, { passive: true });
+carousel.addEventListener('touchend', event => {
+  if (!touchStartX || event.changedTouches.length !== 1) return;
+  const deltaX = event.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(deltaX) > 45) {
+    showProject(current + (deltaX < 0 ? 1 : -1));
+  }
+  touchStartX = 0;
+}, { passive: true });
+
 showProject(0);
 controls.hidden = false;
 
 // Native modal dialog provides focus containment, Escape, and focus restoration.
 const modal = document.getElementById('cvModal');
 const previewButton = document.getElementById('previewButton');
-if (typeof modal.showModal === 'function') {
+if (modal && previewButton && typeof modal.showModal === 'function') {
   previewButton.addEventListener('click', event => {
     // Keep modified-click behavior for people opening the PDF in another tab.
     if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
@@ -66,24 +115,58 @@ if (typeof modal.showModal === 'function') {
   });
 }
 
-// Submit a real GET form into a new tab to avoid window.open popup blockers.
+// Contact form handling (supports both Gmail web compose and native mailto client)
 const contactForm = document.getElementById('contactForm');
-contactForm.addEventListener('submit', () => {
+const mailtoButton = document.getElementById('mailtoButton');
+const formFeedback = document.getElementById('formFeedback');
+
+function getFormMessageData() {
   const name = document.getElementById('name').value.trim();
   const email = document.getElementById('email').value.trim();
   const message = document.getElementById('message').value.trim();
-  // Disable raw field names; only the correctly composed subject/body are sent.
-  ['name', 'email', 'message'].forEach(id => document.getElementById(id).removeAttribute('name'));
-  const values = { su: `Portfolio Message from ${name}`, body: `Name: ${name}\nEmail: ${email}\n\n${message}` };
-  Object.entries(values).forEach(([key, value]) => {
-    let input = contactForm.querySelector(`input[type="hidden"][name="${key}"]`);
-    if (!input) {
-      input = document.createElement('input');
-      input.type = 'hidden'; input.name = key; contactForm.append(input);
-    }
-    input.value = value;
+  return {
+    name,
+    email,
+    message,
+    subject: `Portfolio Message from ${name}`,
+    body: `Name: ${name}\nEmail: ${email}\n\n${message}`
+  };
+}
+
+function showFeedback(text) {
+  if (!formFeedback) return;
+  formFeedback.textContent = text;
+  formFeedback.hidden = false;
+}
+
+if (contactForm) {
+  contactForm.addEventListener('submit', () => {
+    const { subject, body } = getFormMessageData();
+    ['name', 'email', 'message'].forEach(id => document.getElementById(id).removeAttribute('name'));
+    const values = { su: subject, body };
+    Object.entries(values).forEach(([key, value]) => {
+      let input = contactForm.querySelector(`input[type="hidden"][name="${key}"]`);
+      if (!input) {
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        contactForm.append(input);
+      }
+      input.value = value;
+    });
+    showFeedback('Opened pre-filled draft in Gmail.');
   });
-});
+}
+
+if (mailtoButton && contactForm) {
+  mailtoButton.addEventListener('click', () => {
+    if (!contactForm.reportValidity()) return;
+    const { subject, body } = getFormMessageData();
+    const mailtoUrl = `mailto:gaudicosmedisonjr@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoUrl;
+    showFeedback('Opened draft in your email app.');
+  });
+}
 
 if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const observer = new IntersectionObserver(entries => {

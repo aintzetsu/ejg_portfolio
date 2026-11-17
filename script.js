@@ -729,8 +729,8 @@ const projectCatalog = {
     title: 'Vesper Audio — Studio Storefront Preview',
     img: 'project-vesper.webp',
     alt: 'Full desktop preview of Vesper Audio hardware storefront',
-    liveUrl: '',
-    liveLabel: '',
+    liveUrl: 'https://vesper-audio.vercel.app/',
+    liveLabel: 'Visit Live Site ↗',
     repoUrl: 'https://github.com/aintzetsu/vesper-audio',
     eyebrow: '02 / INTERACTIVE UI & WEB AUDIO',
     caseTitle: 'Case Study — Vesper Audio Storefront',
@@ -749,8 +749,280 @@ const projectCatalog = {
         text: 'Added slide-over cart state saved in localStorage (with promo code support), accessible quick-view specs modals, and dual Light/Dark Swiss grid themes.'
       }
     ]
+  },
+  labelgrid: {
+    title: 'LabelGrid — Multimodal AI Annotation Workbench',
+    img: 'project-labelgrid.webp',
+    alt: 'LabelGrid multimodal AI data annotation workbench',
+    liveUrl: 'https://labelgrid.vercel.app/',
+    liveLabel: 'Visit Live Site ↗',
+    repoUrl: '',
+    eyebrow: 'AI & DATA QUALITY TOOLING',
+    caseTitle: 'App Overview — LabelGrid',
+    tags: ['HTML5 Canvas', 'Pointer Events', 'NER Tagging', 'COCO / YOLO / JSONL', 'Vercel'],
+    blocks: [
+      {
+        heading: 'Purpose',
+        text: 'A zero-dependency browser annotation studio bridging computer vision bounding boxes, NER text span tagging, and consensus QA workflows.'
+      },
+      {
+        heading: 'Interactive Capabilities',
+        text: 'Switch across Street Traffic, Warehouse Robotics, and PCB Inspection frames to draw/move bounding boxes, tag UTF-16 entity offsets, adjust confidence thresholds, and export COCO JSON, YOLO .txt, or JSONL payloads.'
+      }
+    ]
+  },
+  foliovault: {
+    title: 'FolioVault — Document Scanner & Archival Vault',
+    img: 'project-foliovault.webp',
+    alt: 'FolioVault physical document scanner and IndexedDB vault',
+    liveUrl: 'https://foliovault-gamma.vercel.app/',
+    liveLabel: 'Visit Live Site ↗',
+    repoUrl: '',
+    eyebrow: 'DOCUMENT CAPTURE & INDEXEDDB',
+    caseTitle: 'App Overview — FolioVault',
+    tags: ['IndexedDB', 'HTML5 Canvas', 'OCR Metadata', 'Vanilla JS', 'Vercel'],
+    blocks: [
+      {
+        heading: 'Purpose',
+        text: 'Client-side physical document scanner and local-first filing cabinet designed for digitizing receipts, contracts, and forms right in the browser.'
+      },
+      {
+        heading: 'Interactive Capabilities',
+        text: 'Includes real-time Canvas whitening/B&W ink filters, -15° to +15° deskewing, 90° rotation, sample crooked-photo testing, folder filtering, OCR keyword search, and IndexedDB storage.'
+      }
+    ]
+  },
+  cutoutStudio: {
+    title: 'Cutout Studio — Client-Side Background Remover',
+    img: 'project-cutout-studio.webp',
+    alt: 'Cutout Studio image background removal workspace',
+    liveUrl: 'https://cutout-studio-navy.vercel.app/',
+    liveLabel: 'Visit Live Site ↗',
+    repoUrl: '',
+    eyebrow: 'PIXEL-LEVEL CANVAS EDITING',
+    caseTitle: 'App Overview — Cutout Studio',
+    tags: ['HTML5 Canvas', 'ImageData', 'Flood Fill', 'Magic Wand', 'PNG Export'],
+    blocks: [
+      {
+        heading: 'Purpose',
+        text: 'Zero-dependency browser background remover allowing fast edge-sampling matte extraction without server uploads.'
+      },
+      {
+        heading: 'Interactive Capabilities',
+        text: 'Combines automatic perimeter flood-fill with feather/tolerance sliders, Magic Wand color keying, erase/restore brushes with 20-step Undo, before/after split divider, and composited PNG export.'
+      }
+    ]
+  },
+  restbench: {
+    title: 'RestBench — In-Browser REST API Playground',
+    img: 'project-restbench.webp',
+    alt: 'RestBench REST API client and inspector',
+    liveUrl: 'https://restbench.vercel.app/',
+    liveLabel: 'Visit Live Site ↗',
+    repoUrl: '',
+    eyebrow: 'DEVELOPER API CLIENT',
+    caseTitle: 'App Overview — RestBench',
+    tags: ['Fetch API', 'Stateful Mock CRUD', 'JSON Inspector', 'cURL / Python Codegen', 'Vercel'],
+    blocks: [
+      {
+        heading: 'Purpose',
+        text: 'Fast in-browser API testbed for inspecting HTTP requests, status codes, headers, and response payloads immediately.'
+      },
+      {
+        heading: 'Interactive Capabilities',
+        text: 'Ships with stateful mock CRUD endpoints alongside live CORS fetch() execution, JSON syntax highlighting, header/body editors, and one-click cURL, fetch(), and Python requests snippets.'
+      }
+    ]
+  },
+  pathcraft: {
+    title: 'PathCraft — A* & Graph Algorithm Visualizer',
+    img: 'project-pathcraft.webp',
+    alt: 'PathCraft pathfinding algorithm grid visualizer',
+    liveUrl: 'https://pathcraft-inky.vercel.app/',
+    liveLabel: 'Visit Live Site ↗',
+    repoUrl: '',
+    eyebrow: 'ALGORITHMS & DATA STRUCTURES',
+    caseTitle: 'App Overview — PathCraft',
+    tags: ['A* Search', 'Dijkstra / BFS / DFS', 'HTML5 Canvas', 'Benchmark Metrics', 'Vercel'],
+    blocks: [
+      {
+        heading: 'Purpose',
+        text: 'Interactive computer-science visualizer comparing shortest-path heuristics and traversal tradeoffs in real time.'
+      },
+      {
+        heading: 'Interactive Capabilities',
+        text: 'Supports A* (Manhattan & Euclidean), Dijkstra, BFS, Greedy Best-First, and DFS over drawable walls and 5x weighted swamp terrain with maze presets, step-by-step scrubbing, and compute-time logs.'
+      }
+    ]
+  },
+  chromalab: {
+    title: 'ChromaLab — WCAG Contrast & Token Foundry',
+    img: 'project-chromalab.webp',
+    alt: 'ChromaLab WCAG contrast scale and design token foundry',
+    liveUrl: 'https://chromalab-three.vercel.app/',
+    liveLabel: 'Visit Live Site ↗',
+    repoUrl: '',
+    eyebrow: 'ACCESSIBILITY & DESIGN SYSTEMS',
+    caseTitle: 'App Overview — ChromaLab',
+    tags: ['WCAG 2.1', 'CSS Custom Properties', 'Tailwind @theme', 'SVG Color Filters', 'Vercel'],
+    blocks: [
+      {
+        heading: 'Purpose',
+        text: 'Design-token generator focused on accessible contrast compliance across 50–950 UI color ramps.'
+      },
+      {
+        heading: 'Interactive Capabilities',
+        text: 'Computes real-time AA/AAA luminance ratios, offers one-click Auto-Fix to AA, simulates four types of color-vision deficiency via SVG matrices, and exports CSS, Tailwind, and W3C JSON tokens.'
+      }
+    ]
+  },
+  folioNotes: {
+    title: 'Folio Notes — Markdown Notebook & Knowledge Graph',
+    img: 'project-folio-notes.webp',
+    alt: 'Folio Notes Markdown workspace and interactive force graph',
+    liveUrl: 'https://folio-notes-puce.vercel.app/',
+    liveLabel: 'Visit Live Site ↗',
+    repoUrl: '',
+    eyebrow: 'LOCAL-FIRST NOTEBOOK',
+    caseTitle: 'App Overview — Folio Notes',
+    tags: ['IndexedDB', 'Canvas Force Graph', 'Markdown Parser', 'Wiki Links', 'Vercel'],
+    blocks: [
+      {
+        heading: 'Purpose',
+        text: 'Bi-directional Markdown note-taking workspace storing documents and graph links privately inside IndexedDB.'
+      },
+      {
+        heading: 'Interactive Capabilities',
+        text: 'Features XSS-safe split Markdown rendering with task checkboxes, [[Wiki Link]] auto-creation, an interactive draggable force-directed node graph, .md export, and JSON vault backups.'
+      }
+    ]
+  },
+  ledgerflow: {
+    title: 'LedgerFlow — SaaS Revenue & Cashflow Analytics',
+    img: 'project-ledgerflow.webp',
+    alt: 'LedgerFlow B2B SaaS financial dashboard',
+    liveUrl: 'https://ledgerflow-sooty.vercel.app/',
+    liveLabel: 'Visit Live Site ↗',
+    repoUrl: '',
+    eyebrow: 'FINTECH DASHBOARD',
+    caseTitle: 'App Overview — LedgerFlow',
+    tags: ['HiDPI Canvas Charts', 'Invoice Ledger', 'CSV Export', 'Ctrl+K Palette', 'Vercel'],
+    blocks: [
+      {
+        heading: 'Purpose',
+        text: 'Interactive B2B SaaS financial overview tracking recurring revenue, expenses, plan segments, and invoice settlement status.'
+      },
+      {
+        heading: 'Interactive Capabilities',
+        text: 'Provides 3M/6M/12M horizon and plan-tier filters, interactive crosshair tooltips on Canvas charts, sortable localStorage invoice tables, manual invoice creation, and CSV export.'
+      }
+    ]
+  },
+  sprintdeck: {
+    title: 'SprintDeck — Kanban Sprint & Issue Workspace',
+    img: 'project-sprintdeck.webp',
+    alt: 'SprintDeck drag-and-drop Kanban sprint board',
+    liveUrl: 'https://sprintdeck-delta.vercel.app/',
+    liveLabel: 'Visit Live Site ↗',
+    repoUrl: '',
+    eyebrow: 'AGILE PRODUCTIVITY',
+    caseTitle: 'App Overview — SprintDeck',
+    tags: ['HTML5 Drag & Drop', 'Kanban / List Views', 'Story Points', 'localStorage', 'Vercel'],
+    blocks: [
+      {
+        heading: 'Purpose',
+        text: 'Fast, keyboard-friendly sprint board for managing engineering backlogs and tracking sprint velocity.'
+      },
+      {
+        heading: 'Interactive Capabilities',
+        text: 'Supports native drag-and-drop across 4 workflow columns, board/list view switching, multi-criteria priority/tag filters, full issue editing drawers, and localStorage state persistence.'
+      }
+    ]
+  },
+  meridianSync: {
+    title: 'Meridian Sync — Remote Team Time-Zone Planner',
+    img: 'project-meridian-sync.webp',
+    alt: 'Meridian Sync DST-accurate timezone overlap grid',
+    liveUrl: 'https://meridian-sync.vercel.app/',
+    liveLabel: 'Visit Live Site ↗',
+    repoUrl: '',
+    eyebrow: 'DISTRIBUTED SCHEDULING',
+    caseTitle: 'App Overview — Meridian Sync',
+    tags: ['Intl.DateTimeFormat', 'DST-Aware', '24h Overlap Grid', 'localStorage', 'Vercel'],
+    blocks: [
+      {
+        heading: 'Purpose',
+        text: 'Coordination planner built on native browser Intl time-zone tables so distributed teammates can spot ideal meeting windows quickly.'
+      },
+      {
+        heading: 'Interactive Capabilities',
+        text: 'Renders synchronized 24h core/flex/sleep timelines across global cities, evaluates 48 half-hour overlap slots automatically, toggles 12h/24h formats, and copies formatted multi-zone invites.'
+      }
+    ]
+  },
+  pulsegrid: {
+    title: 'PulseGrid — 16-Step Drum Sequencer & Synth',
+    img: 'project-pulsegrid.webp',
+    alt: 'PulseGrid Web Audio 16-step drum sequencer',
+    liveUrl: 'https://pulsegrid-gilt.vercel.app/',
+    liveLabel: 'Visit Live Site ↗',
+    repoUrl: '',
+    eyebrow: 'WEB AUDIO INSTRUMENT',
+    caseTitle: 'App Overview — PulseGrid',
+    tags: ['Web Audio API', '5-Voice Synth', 'Oscilloscope Canvas', 'JSON Export', 'Vercel'],
+    blocks: [
+      {
+        heading: 'Purpose',
+        text: 'Zero-asset browser rhythm machine synthesizing Kick, Snare, Hi-Hat, Bass Synth, and Chord Stabs entirely with Web Audio oscillators and filters.'
+      },
+      {
+        heading: 'Interactive Capabilities',
+        text: 'Features lookahead step scheduling, Shift-click accents, track Mute/Solo, Tempo/Swing/Cutoff/Drive controls, a live waveform oscilloscope Canvas, preset grooves, and JSON pattern export.'
+      }
+    ]
+  },
+  kotoCabin: {
+    title: 'Koto Cabin — Architectural Retreat Showcase',
+    img: 'project-koto-cabin.webp',
+    alt: 'Koto Cabin architectural stay collection and reservation showcase',
+    liveUrl: 'https://koto-cabin.vercel.app/',
+    liveLabel: 'Visit Live Site ↗',
+    repoUrl: '',
+    eyebrow: 'EDITORIAL HOSPITALITY UI',
+    caseTitle: 'App Overview — Koto Cabin',
+    tags: ['HTML5 / CSS3', 'Custom SVG', 'Stay Calculator', 'localStorage', 'Vercel'],
+    blocks: [
+      {
+        heading: 'Purpose',
+        text: 'Architectural cabin booking showcase pairing custom SVG elevations with transparent stay pricing.'
+      },
+      {
+        heading: 'Interactive Capabilities',
+        text: 'Includes landscape filters (Forest, Alpine, Lakeside, Private Sauna), nightly rate and add-on calculation, and instant localStorage itinerary reservations.'
+      }
+    ]
   }
 };
+
+function syncModalActionLinks(liveEl, repoEl, item) {
+  if (liveEl) {
+    if (item.liveUrl) {
+      liveEl.href = item.liveUrl;
+      liveEl.textContent = item.liveLabel || 'Visit Live Site ↗';
+      liveEl.hidden = false;
+    } else {
+      liveEl.hidden = true;
+    }
+  }
+  if (repoEl) {
+    if (item.repoUrl) {
+      repoEl.href = item.repoUrl;
+      repoEl.hidden = false;
+    } else {
+      repoEl.hidden = true;
+    }
+  }
+}
 
 const imageModal = document.getElementById('imageModal');
 const lightboxImg = document.getElementById('lightboxImg');
@@ -764,16 +1036,10 @@ document.querySelectorAll('[data-preview]').forEach(trigger => {
     const item = projectCatalog[trigger.dataset.preview];
     if (!item || !imageModal) return;
     lightboxTitle.textContent = item.title;
+    lightboxImg.hidden = false;
     lightboxImg.src = item.img;
     lightboxImg.alt = item.alt;
-    if (item.liveUrl) {
-      lightboxLiveLink.href = item.liveUrl;
-      lightboxLiveLink.textContent = item.liveLabel;
-      lightboxLiveLink.hidden = false;
-    } else {
-      lightboxLiveLink.hidden = true;
-    }
-    lightboxRepoLink.href = item.repoUrl;
+    syncModalActionLinks(lightboxLiveLink, lightboxRepoLink, item);
     openDialog(imageModal, trigger);
   });
 });
@@ -814,15 +1080,47 @@ function openCaseStudy(key, triggerEl) {
     })
   );
 
-  if (item.liveUrl) {
-    caseStudyLiveLink.href = item.liveUrl;
-    caseStudyLiveLink.textContent = item.liveLabel;
-    caseStudyLiveLink.hidden = false;
-  } else {
-    caseStudyLiveLink.hidden = true;
-  }
-  caseStudyRepoLink.href = item.repoUrl;
+  syncModalActionLinks(caseStudyLiveLink, caseStudyRepoLink, item);
   openDialog(caseStudyModal, triggerEl);
+}
+
+// Interactive filter & keyword search across the 12 additional Vercel apps
+const vercelControls = document.getElementById('vercelControls');
+const vercelSearch = document.getElementById('vercelSearch');
+const vercelCards = Array.from(document.querySelectorAll('#vercelAppsGrid .app-card'));
+const vercelEmpty = document.getElementById('vercelEmpty');
+let activeAppCat = 'all';
+
+function updateVercelDirectory() {
+  const query = (vercelSearch ? vercelSearch.value : '').trim().toLowerCase();
+  if (vercelControls) {
+    vercelControls.querySelectorAll('[data-app-cat]').forEach(btn => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.appCat === activeAppCat));
+    });
+}
+  let shownCount = 0;
+  vercelCards.forEach(card => {
+    const matchesCat = activeAppCat === 'all' || card.dataset.appCat === activeAppCat;
+    const searchable = `${card.dataset.appKeywords || ''} ${card.textContent.toLowerCase()}`;
+    const matchesQuery = !query || searchable.includes(query);
+    const show = matchesCat && matchesQuery;
+    card.hidden = !show;
+    if (show) shownCount++;
+  });
+  if (vercelEmpty) vercelEmpty.hidden = shownCount > 0;
+}
+
+if (vercelControls && vercelCards.length > 0) {
+  vercelControls.hidden = false;
+  vercelControls.querySelectorAll('[data-app-cat]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeAppCat = btn.dataset.appCat;
+      updateVercelDirectory();
+    });
+  });
+  if (vercelSearch) {
+    vercelSearch.addEventListener('input', updateVercelDirectory);
+  }
 }
 
 document.querySelectorAll('[data-casestudy]').forEach(btn => {
@@ -1082,8 +1380,8 @@ const skillProofMap = {
   multimedia: { title: 'Audio, Text & Multimedia Review', text: 'Evaluated audio, text, and visual content for AI model training at RWS and Innodata.', target: '#role-rws', label: 'View experience →' },
   react: { title: 'React', text: 'Built the responsive Simot Sarap restaurant frontend with interactive menu category filters.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
   tailwind: { title: 'Tailwind CSS', text: 'Styled responsive sections, cards, and mobile navigation on Simot Sarap.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
-  javascript: { title: 'JavaScript', text: 'Powers Vesper Audio (Canvas visualizer, Web Audio synth, cart state), Simot Sarap, and this portfolio.', target: '#project-vesper', label: 'Jump to Vesper Audio →' },
-  htmlcss: { title: 'HTML & CSS', text: 'Modular CSS tokens & responsive grids in Vesper Audio, this portfolio, and DepEd web updates.', target: '#project-vesper', label: 'Jump to Vesper Audio →' },
+  javascript: { title: 'JavaScript', text: 'Powers Vesper Audio, Simot Sarap, this portfolio, and 12 deployed interactive Vercel tools (LabelGrid, RestBench, PulseGrid, PathCraft, and more).', target: '#vercelDirectory', label: 'Explore live Vercel web apps →' },
+  htmlcss: { title: 'HTML & CSS', text: 'Modular CSS tokens & responsive grids across Vesper Audio, ChromaLab, Koto Cabin, this portfolio, and DepEd web updates.', target: '#project-vesper', label: 'Jump to Vesper Audio →' },
   php: { title: 'PHP', text: 'Server-side web programming studied and practiced during BSIT coursework at STI College Fairview.', target: '#experience', label: 'View education →' },
   python: { title: 'Python', text: 'Scripting and programming fundamentals developed in IT coursework and automation tasks.', target: '#experience', label: 'View education →' },
   java: { title: 'Java', text: 'Object-oriented programming applied during BSIT studies at STI College Fairview.', target: '#experience', label: 'View education →' },
@@ -1097,7 +1395,7 @@ const skillProofMap = {
   networking: { title: 'Networking', text: 'Covered networking fundamentals and maintenance through System Administration certification at STI.', target: '#experience', label: 'View certification →' },
   sysadmin: { title: 'System Administration', text: 'Certified in System Administration at STI College Fairview and practiced at DepEd NCR.', target: '#experience', label: 'View certification →' },
   git: { title: 'Git & GitHub', text: 'Version control and public source hosting for Vesper Audio, Simot Sarap, and this portfolio.', target: '#githubSnapshot', label: 'View GitHub repositories →' },
-  vercel: { title: 'Vercel', text: 'Continuous production deployment for Simot Sarap and ejg-portfolio.vercel.app.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
+  vercel: { title: 'Vercel', text: 'Production deployment across 15 Vercel projects including Simot Sarap, Vesper Audio, LabelGrid, FolioVault, RestBench, and this portfolio.', target: '#vercelDirectory', label: 'Browse Vercel web apps →' },
   design: { title: 'Graphic Design', text: 'Digital design production honed as Freelance Embroidery Designer at Wilcom Embroidery Studio.', target: '#role-wilcom', label: 'View design experience →' }
 };
 
@@ -1222,6 +1520,8 @@ const paletteActions = [
   { title: 'Jump to Introduction', hint: '#introduction', run: () => { location.hash = '#introduction'; } },
   { title: 'Jump to Experience & Education', hint: '#experience', run: () => { location.hash = '#experience'; } },
   { title: 'Jump to Featured Projects', hint: '#projects', run: () => { location.hash = '#projects'; } },
+  { title: 'Browse 12 Deployed Vercel Web Apps', hint: '#vercelDirectory', run: () => { location.hash = '#vercelDirectory'; } },
+  { title: 'Inspect LabelGrid (AI Annotation App)', hint: 'Vercel App', run: () => openCaseStudy('labelgrid', openPaletteBtn) },
   { title: 'Read Simot Sarap Case Study', hint: 'Modal', run: () => openCaseStudy('simotsarap', openPaletteBtn) },
   { title: 'Read Vesper Audio Case Study', hint: 'Modal', run: () => openCaseStudy('vesper', openPaletteBtn) },
   { title: 'Jump to Skills', hint: '#skills', run: () => { location.hash = '#skills'; } },
@@ -1373,7 +1673,16 @@ function runTerminalCommand(rawInput) {
     return;
   }
   if (cmd === 'help') {
-    appendTermLine('Commands: whoami | lab | experience [qa|systems|all] | projects | skills <keyword> | theme [light|dark|toggle] | accent [rust|cobalt|teal|plum] | confetti | status | cv | contact | clear | exit');
+    appendTermLine('Commands: whoami | apps | lab | experience [qa|systems|all] | projects | skills <keyword> | theme [light|dark|toggle] | accent [rust|cobalt|teal|plum] | confetti | status | cv | contact | clear | exit');
+    return;
+  }
+  if (cmd === 'apps' || cmd === 'vercel') {
+    appendTermLine('14 deployed web apps alongside ejg-portfolio:');
+    appendTermLine('• Simot Sarap, Vesper Audio, LabelGrid, FolioVault, Cutout Studio, RestBench, PathCraft, ChromaLab, Folio Notes, LedgerFlow, SprintDeck, Meridian Sync, PulseGrid, Koto Cabin');
+    appendTermAction('Jump to Live Vercel Apps Grid (12)', () => {
+      terminalModal.close();
+      location.hash = '#vercelDirectory';
+    });
     return;
   }
   if (cmd === 'lab') {
@@ -1425,8 +1734,9 @@ function runTerminalCommand(rawInput) {
     return;
   }
   if (cmd === 'projects') {
-    appendTermLine('1) Simot Sarap — Restaurant website (React, Tailwind CSS, Vercel) -> zetsume-simotsarap.vercel.app');
-    appendTermLine('2) Vesper Audio — Studio hardware storefront (HTML5, CSS3, Canvas & Web Audio API) -> github.com/aintzetsu/vesper-audio');
+    appendTermLine('1) Simot Sarap — zetsume-simotsarap.vercel.app');
+    appendTermLine('2) Vesper Audio — vesper-audio.vercel.app (GitHub: aintzetsu/vesper-audio)');
+    appendTermLine('+ 12 more live Vercel web apps (run "apps" to list all).');
     appendTermAction('Inspect Featured Projects', () => {
       terminalModal.close();
       location.hash = '#projects';

@@ -219,6 +219,7 @@
       </div>
       <div class="terminal-chips" aria-label="Suggested terminal commands">
         <button type="button" class="term-chip" data-cmd="whoami">whoami</button>
+        <button type="button" class="term-chip" data-cmd="apps">apps</button>
         <button type="button" class="term-chip" data-cmd="lab">lab</button>
         <button type="button" class="term-chip" data-cmd="projects">projects</button>
         <button type="button" class="term-chip" data-cmd="experience">experience</button>
@@ -384,7 +385,7 @@
             <div class="browser-frame tilt-target">
               <div class="browser-chrome">
                 <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
-                <span class="browser-url">github.com/aintzetsu/vesper-audio</span>
+                <span class="browser-url">vesper-audio.vercel.app</span>
                 <div class="browser-mode-switch" role="tablist" aria-label="Vesper Audio preview view" hidden>
                   <button type="button" role="tab" aria-selected="true" data-frame-mode="visual">Preview</button>
                   <button type="button" role="tab" aria-selected="false" data-frame-mode="blueprint">Blueprint</button>
@@ -451,11 +452,299 @@
             <ul class="tags" aria-label="Technologies"><li>HTML5</li><li>CSS3</li><li>Vanilla JS</li><li>Canvas &amp; Web Audio</li></ul>
             <p class="project-note">Focus: modular architecture, dual-theme Swiss grid UI, and custom interactive hardware controls.</p>
             <div class="project-links">
-              <a class="text-link" href="https://github.com/aintzetsu/vesper-audio" target="_blank" rel="noopener noreferrer">View source on GitHub <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+              <a class="text-link" href="https://vesper-audio.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+              <a class="text-link secondary-link" href="https://github.com/aintzetsu/vesper-audio" target="_blank" rel="noopener noreferrer">View source on GitHub <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
               <button type="button" class="text-link button-link" data-casestudy="vesper">Read case study</button>
             </div>
           </div>
         </article>
+      </div>
+
+      <div class="vercel-directory" id="vercelDirectory">
+        <div class="vercel-head">
+          <div>
+            <p class="eyebrow">DEPLOYED ON VERCEL · 12 MORE WEBSITES</p>
+            <h3>Live web apps &amp; interactive tools</h3>
+            <p class="vercel-sub">Explore the rest of my production Vercel deployments across AI data tooling, developer utilities, productivity workspaces, audio synthesis, and hospitality.</p>
+          </div>
+        </div>
+        <div class="skills-controls vercel-controls" id="vercelControls" hidden>
+          <div class="filter-bar" role="group" aria-label="Filter Vercel websites by category">
+            <button type="button" class="filter-pill" data-app-cat="all" aria-pressed="true">All (12)</button>
+            <button type="button" class="filter-pill" data-app-cat="ai" aria-pressed="false">AI &amp; Data (3)</button>
+            <button type="button" class="filter-pill" data-app-cat="dev" aria-pressed="false">Dev &amp; Algorithms (3)</button>
+            <button type="button" class="filter-pill" data-app-cat="work" aria-pressed="false">Productivity (4)</button>
+            <button type="button" class="filter-pill" data-app-cat="creative" aria-pressed="false">Audio &amp; Stays (2)</button>
+          </div>
+          <label for="vercelSearch" class="sr-only">Search deployed Vercel websites</label>
+          <input type="search" id="vercelSearch" class="skill-search" placeholder="Search apps (e.g. canvas, api, ocr, synth)..." autocomplete="off">
+        </div>
+        <div class="apps-grid" id="vercelAppsGrid">
+          <article class="app-card spotlight-card" data-app-cat="ai" data-app-keywords="labelgrid annotation bounding box ner yolo coco jsonl canvas qa">
+            <div class="browser-chrome">
+              <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
+              <span class="browser-url">labelgrid.vercel.app</span>
+            </div>
+            <button type="button" class="app-thumb" data-preview="labelgrid" aria-label="Preview LabelGrid web application">
+              <img src="project-labelgrid.webp" width="960" height="600" loading="lazy" alt="LabelGrid multimodal AI data annotation workbench preview">
+              <span class="expand-hint" aria-hidden="true">Preview ⤢</span>
+              <p class="image-fallback" hidden>LabelGrid<span>AI Annotation Workbench</span></p>
+            </button>
+            <div class="app-card-body">
+              <p class="eyebrow">AI &amp; DATA QA</p>
+              <h4>LabelGrid</h4>
+              <p>Multi-modal AI data annotation workbench supporting vision bounding boxes, NER spans, consensus QA sliders, and COCO/YOLO/JSONL exports.</p>
+              <ul class="tags"><li>HTML5 Canvas</li><li>Pointer Events</li><li>JSONL / COCO</li></ul>
+              <div class="project-links">
+                <a class="text-link" href="https://labelgrid.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                <button type="button" class="text-link button-link" data-casestudy="labelgrid">Inspect</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="app-card spotlight-card" data-app-cat="ai" data-app-keywords="foliovault scanner document indexeddb ocr canvas deskew filter pdf archive">
+            <div class="browser-chrome">
+              <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
+              <span class="browser-url">foliovault-gamma.vercel.app</span>
+            </div>
+            <button type="button" class="app-thumb" data-preview="foliovault" aria-label="Preview FolioVault web application">
+              <img src="project-foliovault.webp" width="960" height="600" loading="lazy" alt="FolioVault physical document scanner and archival vault preview">
+              <span class="expand-hint" aria-hidden="true">Preview ⤢</span>
+              <p class="image-fallback" hidden>FolioVault<span>Document Scanner &amp; Vault</span></p>
+            </button>
+            <div class="app-card-body">
+              <p class="eyebrow">AI &amp; DATA STORAGE</p>
+              <h4>FolioVault</h4>
+              <p>Browser document scanner and archival vault with real-time Canvas whitening/deskewing, OCR metadata search, and local IndexedDB persistence.</p>
+              <ul class="tags"><li>IndexedDB</li><li>Canvas Filters</li><li>OCR Search</li></ul>
+              <div class="project-links">
+                <a class="text-link" href="https://foliovault-gamma.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                <button type="button" class="text-link button-link" data-casestudy="foliovault">Inspect</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="app-card spotlight-card" data-app-cat="ai" data-app-keywords="cutout studio background remover png matte flood fill magic wand canvas image">
+            <div class="browser-chrome">
+              <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
+              <span class="browser-url">cutout-studio-navy.vercel.app</span>
+            </div>
+            <button type="button" class="app-thumb" data-preview="cutoutStudio" aria-label="Preview Cutout Studio web application">
+              <img src="project-cutout-studio.webp" width="960" height="600" loading="lazy" alt="Cutout Studio client-side background remover preview">
+              <span class="expand-hint" aria-hidden="true">Preview ⤢</span>
+              <p class="image-fallback" hidden>Cutout Studio<span>Background Remover</span></p>
+            </button>
+            <div class="app-card-body">
+              <p class="eyebrow">VISION &amp; IMAGE LAB</p>
+              <h4>Cutout Studio</h4>
+              <p>Client-side background remover featuring flood-fill matte segmentation, Magic Wand color keying, restore brushes, and split-view PNG export.</p>
+              <ul class="tags"><li>Pixel Buffer</li><li>Canvas 2D</li><li>Undo History</li></ul>
+              <div class="project-links">
+                <a class="text-link" href="https://cutout-studio-navy.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                <button type="button" class="text-link button-link" data-casestudy="cutoutStudio">Inspect</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="app-card spotlight-card" data-app-cat="dev" data-app-keywords="restbench api rest http playground fetch json curl python mock crud inspector">
+            <div class="browser-chrome">
+              <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
+              <span class="browser-url">restbench.vercel.app</span>
+            </div>
+            <button type="button" class="app-thumb" data-preview="restbench" aria-label="Preview RestBench web application">
+              <img src="project-restbench.webp" width="960" height="600" loading="lazy" alt="RestBench browser REST API playground and inspector preview">
+              <span class="expand-hint" aria-hidden="true">Preview ⤢</span>
+              <p class="image-fallback" hidden>RestBench<span>API Playground</span></p>
+            </button>
+            <div class="app-card-body">
+              <p class="eyebrow">DEVELOPER TOOL</p>
+              <h4>RestBench</h4>
+              <p>In-browser REST API client with stateful mock CRUD endpoints, live fetch() inspection, JSON syntax highlighting, and cURL/Python code generation.</p>
+              <ul class="tags"><li>REST Client</li><li>Mock CRUD</li><li>Codegen</li></ul>
+              <div class="project-links">
+                <a class="text-link" href="https://restbench.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                <button type="button" class="text-link button-link" data-casestudy="restbench">Inspect</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="app-card spotlight-card" data-app-cat="dev" data-app-keywords="pathcraft a* dijkstra bfs dfs greedy algorithm visualizer maze graph canvas">
+            <div class="browser-chrome">
+              <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
+              <span class="browser-url">pathcraft-inky.vercel.app</span>
+            </div>
+            <button type="button" class="app-thumb" data-preview="pathcraft" aria-label="Preview PathCraft web application">
+              <img src="project-pathcraft.webp" width="960" height="600" loading="lazy" alt="PathCraft A* and graph algorithm visualizer preview">
+              <span class="expand-hint" aria-hidden="true">Preview ⤢</span>
+              <p class="image-fallback" hidden>PathCraft<span>Algorithm Visualizer</span></p>
+            </button>
+            <div class="app-card-body">
+              <p class="eyebrow">ALGORITHMS &amp; CANVAS</p>
+              <h4>PathCraft</h4>
+              <p>Interactive pathfinding workbench comparing A*, Dijkstra, BFS, Greedy Best-First, and DFS across weighted terrain, mazes, and step scrubbing.</p>
+              <ul class="tags"><li>A* &amp; Dijkstra</li><li>Grid Canvas</li><li>Benchmark Log</li></ul>
+              <div class="project-links">
+                <a class="text-link" href="https://pathcraft-inky.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                <button type="button" class="text-link button-link" data-casestudy="pathcraft">Inspect</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="app-card spotlight-card" data-app-cat="dev" data-app-keywords="chromalab wcag contrast color token css tailwind palette accessibility svg">
+            <div class="browser-chrome">
+              <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
+              <span class="browser-url">chromalab-three.vercel.app</span>
+            </div>
+            <button type="button" class="app-thumb" data-preview="chromalab" aria-label="Preview ChromaLab web application">
+              <img src="project-chromalab.webp" width="960" height="600" loading="lazy" alt="ChromaLab WCAG contrast and design token generator preview">
+              <span class="expand-hint" aria-hidden="true">Preview ⤢</span>
+              <p class="image-fallback" hidden>ChromaLab<span>Token Foundry</span></p>
+            </button>
+            <div class="app-card-body">
+              <p class="eyebrow">DESIGN SYSTEMS</p>
+              <h4>ChromaLab</h4>
+              <p>WCAG 2.1 contrast scale generator producing 50–950 color ramps, color-vision deficiency filters, AA auto-fix, and CSS/Tailwind token exports.</p>
+              <ul class="tags"><li>WCAG 2.1</li><li>Design Tokens</li><li>SVG Filters</li></ul>
+              <div class="project-links">
+                <a class="text-link" href="https://chromalab-three.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                <button type="button" class="text-link button-link" data-casestudy="chromalab">Inspect</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="app-card spotlight-card" data-app-cat="work" data-app-keywords="folio notes markdown knowledge graph wiki links indexeddb notebook backlinks">
+            <div class="browser-chrome">
+              <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
+              <span class="browser-url">folio-notes-puce.vercel.app</span>
+            </div>
+            <button type="button" class="app-thumb" data-preview="folioNotes" aria-label="Preview Folio Notes web application">
+              <img src="project-folio-notes.webp" width="960" height="600" loading="lazy" alt="Folio Notes linked markdown notebook and knowledge graph preview">
+              <span class="expand-hint" aria-hidden="true">Preview ⤢</span>
+              <p class="image-fallback" hidden>Folio Notes<span>Knowledge Graph</span></p>
+            </button>
+            <div class="app-card-body">
+              <p class="eyebrow">KNOWLEDGE WORKSPACE</p>
+              <h4>Folio Notes</h4>
+              <p>Local-first Markdown workspace with [[Wiki Links]], bi-directional backlinks, interactive Canvas force-graph navigation, and IndexedDB storage.</p>
+              <ul class="tags"><li>Markdown Engine</li><li>Force Graph</li><li>IndexedDB</li></ul>
+              <div class="project-links">
+                <a class="text-link" href="https://folio-notes-puce.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                <button type="button" class="text-link button-link" data-casestudy="folioNotes">Inspect</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="app-card spotlight-card" data-app-cat="work" data-app-keywords="ledgerflow saas revenue analytics charts csv invoice fintech dashboard kpi">
+            <div class="browser-chrome">
+              <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
+              <span class="browser-url">ledgerflow-sooty.vercel.app</span>
+            </div>
+            <button type="button" class="app-thumb" data-preview="ledgerflow" aria-label="Preview LedgerFlow web application">
+              <img src="project-ledgerflow.webp" width="960" height="600" loading="lazy" alt="LedgerFlow SaaS revenue and cashflow analytics dashboard preview">
+              <span class="expand-hint" aria-hidden="true">Preview ⤢</span>
+              <p class="image-fallback" hidden>LedgerFlow<span>SaaS Analytics</span></p>
+            </button>
+            <div class="app-card-body">
+              <p class="eyebrow">FINTECH ANALYTICS</p>
+              <h4>LedgerFlow</h4>
+              <p>B2B SaaS cashflow dashboard with HiDPI Canvas revenue charts, plan-tier segment filters, sortable invoice ledgers, and one-click CSV export.</p>
+              <ul class="tags"><li>Canvas Charts</li><li>Invoice Ledger</li><li>CSV Export</li></ul>
+              <div class="project-links">
+                <a class="text-link" href="https://ledgerflow-sooty.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                <button type="button" class="text-link button-link" data-casestudy="ledgerflow">Inspect</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="app-card spotlight-card" data-app-cat="work" data-app-keywords="sprintdeck kanban drag drop agile issue tracker backlog story points localstorage">
+            <div class="browser-chrome">
+              <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
+              <span class="browser-url">sprintdeck-delta.vercel.app</span>
+            </div>
+            <button type="button" class="app-thumb" data-preview="sprintdeck" aria-label="Preview SprintDeck web application">
+              <img src="project-sprintdeck.webp" width="960" height="600" loading="lazy" alt="SprintDeck drag-and-drop Kanban and issue workspace preview">
+              <span class="expand-hint" aria-hidden="true">Preview ⤢</span>
+              <p class="image-fallback" hidden>SprintDeck<span>Kanban Workspace</span></p>
+            </button>
+            <div class="app-card-body">
+              <p class="eyebrow">AGILE WORKSPACE</p>
+              <h4>SprintDeck</h4>
+              <p>Drag-and-drop Kanban sprint planner with Board/List switching, story-point velocity tracking, priority filters, and localStorage persistence.</p>
+              <ul class="tags"><li>HTML5 DnD</li><li>Kanban Board</li><li>localStorage</li></ul>
+              <div class="project-links">
+                <a class="text-link" href="https://sprintdeck-delta.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                <button type="button" class="text-link button-link" data-casestudy="sprintdeck">Inspect</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="app-card spotlight-card" data-app-cat="work" data-app-keywords="meridian sync timezone overlap remote team intl planner dst schedule">
+            <div class="browser-chrome">
+              <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
+              <span class="browser-url">meridian-sync.vercel.app</span>
+            </div>
+            <button type="button" class="app-thumb" data-preview="meridianSync" aria-label="Preview Meridian Sync web application">
+              <img src="project-meridian-sync.webp" width="960" height="600" loading="lazy" alt="Meridian Sync remote team time-zone and overlap planner preview">
+              <span class="expand-hint" aria-hidden="true">Preview ⤢</span>
+              <p class="image-fallback" hidden>Meridian Sync<span>Time-Zone Planner</span></p>
+            </button>
+            <div class="app-card-body">
+              <p class="eyebrow">TEAM SCHEDULING</p>
+              <h4>Meridian Sync</h4>
+              <p>DST-accurate global team planner built on Intl.DateTimeFormat with a 24h overlap heatmap, best meeting window finder, and invite exporter.</p>
+              <ul class="tags"><li>Intl API</li><li>Overlap Optimizer</li><li>Timezone Grid</li></ul>
+              <div class="project-links">
+                <a class="text-link" href="https://meridian-sync.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                <button type="button" class="text-link button-link" data-casestudy="meridianSync">Inspect</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="app-card spotlight-card" data-app-cat="creative" data-app-keywords="pulsegrid drum sequencer web audio synth oscilloscope bpm swing canvas music">
+            <div class="browser-chrome">
+              <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
+              <span class="browser-url">pulsegrid-gilt.vercel.app</span>
+            </div>
+            <button type="button" class="app-thumb" data-preview="pulsegrid" aria-label="Preview PulseGrid web application">
+              <img src="project-pulsegrid.webp" width="960" height="600" loading="lazy" alt="PulseGrid 16-step drum sequencer and Web Audio synth preview">
+              <span class="expand-hint" aria-hidden="true">Preview ⤢</span>
+              <p class="image-fallback" hidden>PulseGrid<span>Web Audio Sequencer</span></p>
+            </button>
+            <div class="app-card-body">
+              <p class="eyebrow">WEB AUDIO SYNTH</p>
+              <h4>PulseGrid</h4>
+              <p>16-step hardware-style drum sequencer and 5-voice polyphonic Web Audio synthesizer featuring live oscilloscope Canvas, Swing, and Warm Drive.</p>
+              <ul class="tags"><li>Web Audio API</li><li>Oscilloscope</li><li>JSON Export</li></ul>
+              <div class="project-links">
+                <a class="text-link" href="https://pulsegrid-gilt.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                <button type="button" class="text-link button-link" data-casestudy="pulsegrid">Inspect</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="app-card spotlight-card" data-app-cat="creative" data-app-keywords="koto cabin architectural retreat booking svg itinerary forest coastal stays">
+            <div class="browser-chrome">
+              <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
+              <span class="browser-url">koto-cabin.vercel.app</span>
+            </div>
+            <button type="button" class="app-thumb" data-preview="kotoCabin" aria-label="Preview Koto Cabin web application">
+              <img src="project-koto-cabin.webp" width="960" height="600" loading="lazy" alt="Koto Cabin architectural forest and coastal retreats preview">
+              <span class="expand-hint" aria-hidden="true">Preview ⤢</span>
+              <p class="image-fallback" hidden>Koto Cabin<span>Architectural Retreats</span></p>
+            </button>
+            <div class="app-card-body">
+              <p class="eyebrow">ARCHITECTURAL SHOWCASE</p>
+              <h4>Koto Cabin</h4>
+              <p>Editorial cabin collection pairing custom vector cabin elevations with landscape filtering, dynamic nightly add-on pricing, and trip reservations.</p>
+              <ul class="tags"><li>Editorial UI</li><li>Custom SVG</li><li>Reservation Cart</li></ul>
+              <div class="project-links">
+                <a class="text-link" href="https://koto-cabin.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+                <button type="button" class="text-link button-link" data-casestudy="kotoCabin">Inspect</button>
+              </div>
+            </div>
+          </article>
+        </div>
+        <p class="vercel-empty" id="vercelEmpty" hidden>No matching Vercel web apps found. Try clearing the search or picking another category.</p>
       </div>
 
       <div class="github-strip" id="githubSnapshot">

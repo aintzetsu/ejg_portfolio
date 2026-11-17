@@ -38,14 +38,25 @@ function setActiveNav(id) {
   });
 }
 
+const careerTimeline = document.getElementById('careerTimeline');
+const timelineProgress = document.getElementById('timelineProgress');
+
 const updateScrollState = () => {
   header.classList.toggle('scrolled', window.scrollY > 50);
   if (backToTopBtn) backToTopBtn.hidden = window.scrollY < 480;
   if (window.scrollY < 80) setActiveNav('introduction');
-  if (scrollProgress) {
-    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-    const pct = scrollable > 0 ? Math.min(100, Math.max(0, (window.scrollY / scrollable) * 100)) : 0;
-    scrollProgress.style.width = `${pct.toFixed(1)}%`;
+
+  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = scrollable > 0 ? Math.min(100, Math.max(0, (window.scrollY / scrollable) * 100)) : 0;
+  if (scrollProgress) scrollProgress.style.width = `${pct.toFixed(1)}%`;
+  if (backToTopBtn) backToTopBtn.style.setProperty('--scroll-pct', `${pct.toFixed(1)}%`);
+
+  if (careerTimeline && timelineProgress) {
+    const rect = careerTimeline.getBoundingClientRect();
+    const totalTrack = Math.max(1, rect.height - 56);
+    const passed = window.innerHeight * 0.62 - (rect.top + 28);
+    const fillPx = Math.max(0, Math.min(totalTrack, passed));
+    timelineProgress.style.height = `${fillPx.toFixed(0)}px`;
   }
 };
 window.addEventListener('scroll', updateScrollState, { passive: true });
@@ -72,6 +83,7 @@ const accentSwitcher = document.getElementById('accentSwitcher');
 const accentButtons = accentSwitcher ? Array.from(accentSwitcher.querySelectorAll('button[data-accent]')) : [];
 const ACCENTS = ['rust', 'cobalt', 'teal', 'plum'];
 let refreshCanvasPalette = () => {};
+let refreshVesperCurve = () => {};
 
 function applyTheme(theme, announce = false) {
   const isDark = theme === 'dark';
@@ -85,6 +97,7 @@ function applyTheme(theme, announce = false) {
     showToast(`Switched to ${theme} mode`);
   }
   refreshCanvasPalette();
+  refreshVesperCurve();
 }
 
 function toggleTheme() {
@@ -107,6 +120,7 @@ function applyAccent(accent, announce = false) {
     showToast(`Accent updated: ${normalized.charAt(0).toUpperCase() + normalized.slice(1)}`);
   }
   refreshCanvasPalette();
+  refreshVesperCurve();
 }
 
 if (themeToggle) {
@@ -389,6 +403,191 @@ function initTiltTargets() {
 initHeroCanvas();
 initTiltTargets();
 
+// Hero interactive role typewriter cycler (click to cycle focus & sync bio)
+const roleCycler = document.getElementById('roleCycler');
+const roleTyped = document.getElementById('roleTyped');
+if (roleCycler && roleTyped) {
+  roleCycler.hidden = false;
+  const roles = [
+    { label: 'Frontend Web Development', bio: 'dev' },
+    { label: 'AI Data QA & Annotation', bio: 'support' },
+    { label: 'IT Support & Troubleshooting', bio: 'support' },
+    { label: 'Full-Stack Portfolio Craft', bio: 'overview' }
+  ];
+  let roleIdx = 0;
+  let charIdx = roles[0].label.length;
+  let deleting = false;
+  let paused = false;
+
+  const syncBioToRole = targetBio => {
+    const btn = bioSwitcher?.querySelector(`button[data-bio="${targetBio}"]`);
+    btn?.click();
+  };
+
+  if (!reducedMotionQuery.matches) {
+    const stepTyping = () => {
+      if (paused) {
+        setTimeout(stepTyping, 300);
+        return;
+      }
+      const targetText = roles[roleIdx].label;
+      if (!deleting) {
+        if (charIdx < targetText.length) {
+          charIdx++;
+          roleTyped.textContent = targetText.slice(0, charIdx);
+          setTimeout(stepTyping, 55);
+        } else {
+          deleting = true;
+          setTimeout(stepTyping, 2200);
+        }
+      } else if (charIdx > 0) {
+        charIdx--;
+        roleTyped.textContent = targetText.slice(0, charIdx);
+        setTimeout(stepTyping, 28);
+      } else {
+        deleting = false;
+        roleIdx = (roleIdx + 1) % roles.length;
+        setTimeout(stepTyping, 240);
+      }
+    };
+    setTimeout(() => {
+      deleting = true;
+      stepTyping();
+    }, 2400);
+  }
+
+  roleCycler.addEventListener('pointerenter', () => { paused = true; });
+  roleCycler.addEventListener('pointerleave', () => { paused = false; });
+  roleCycler.addEventListener('click', () => {
+    roleIdx = (roleIdx + 1) % roles.length;
+    deleting = false;
+    charIdx = roles[roleIdx].label.length;
+    roleTyped.textContent = roles[roleIdx].label;
+    syncBioToRole(roles[roleIdx].bio);
+  });
+}
+
+// Interactive cursor ring, magnetic buttons & click ripple (desktop fine pointer)
+const cursorRing = document.getElementById('cursorRing');
+if (cursorRing && finePointerQuery.matches && !reducedMotionQuery.matches) {
+  let targetX = -100;
+  let targetY = -100;
+  let ringX = -100;
+  let ringY = -100;
+  let ringRaf = null;
+
+  const tickRing = () => {
+    ringX += (targetX - ringX) * 0.22;
+    ringY += (targetY - ringY) * 0.22;
+    cursorRing.style.left = `${ringX.toFixed(1)}px`;
+    cursorRing.style.top = `${ringY.toFixed(1)}px`;
+    if (Math.abs(targetX - ringX) > 0.25 || Math.abs(targetY - ringY) > 0.25) {
+      ringRaf = requestAnimationFrame(tickRing);
+    } else {
+      ringRaf = null;
+    }
+  };
+
+  document.addEventListener('pointermove', event => {
+    targetX = event.clientX;
+    targetY = event.clientY;
+    cursorRing.classList.add('is-visible');
+    const interactive = Boolean(event.target.closest('a, button, input, textarea, [role="tab"]'));
+    cursorRing.classList.toggle('is-hover', interactive);
+    if (!ringRaf) ringRaf = requestAnimationFrame(tickRing);
+  });
+  document.addEventListener('pointerleave', () => cursorRing.classList.remove('is-visible'));
+  document.addEventListener('pointerdown', () => cursorRing.classList.add('is-down'));
+  document.addEventListener('pointerup', () => cursorRing.classList.remove('is-down'));
+}
+
+// Button click ripple & subtle magnetic pull on .button CTAs
+document.querySelectorAll('.button').forEach(btn => {
+  btn.addEventListener('click', event => {
+    if (reducedMotionQuery.matches) return;
+    const rect = btn.getBoundingClientRect();
+    const x = event.clientX ? event.clientX - rect.left : rect.width / 2;
+    const y = event.clientY ? event.clientY - rect.top : rect.height / 2;
+    const ripple = document.createElement('span');
+    ripple.className = 'btn-ripple';
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    btn.append(ripple);
+    setTimeout(() => ripple.remove(), 580);
+  });
+
+  if (finePointerQuery.matches && !reducedMotionQuery.matches) {
+    btn.addEventListener('pointermove', event => {
+      const rect = btn.getBoundingClientRect();
+      const dx = (event.clientX - rect.left - rect.width / 2) * 0.14;
+      const dy = (event.clientY - rect.top - rect.height / 2) * 0.14;
+      btn.style.transform = `translate(${dx.toFixed(1)}px, ${(dy - 2).toFixed(1)}px)`;
+    });
+    btn.addEventListener('pointerleave', () => {
+      btn.style.transform = '';
+    });
+  }
+});
+
+// Accent confetti burst overlay helper
+function launchConfetti(sourceEl) {
+  const canvas = document.getElementById('confettiCanvas');
+  if (!canvas || typeof canvas.getContext !== 'function' || reducedMotionQuery.matches) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const rect = sourceEl ? sourceEl.getBoundingClientRect() : null;
+  const ox = rect ? rect.left + rect.width / 2 : w / 2;
+  const oy = rect ? rect.top + rect.height / 2 : h * 0.35;
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#b74700';
+  const palette = [accent, '#16a34a', '#2563eb', '#f59e0b', '#f2efe9'];
+
+  const pieces = Array.from({ length: 34 }, (_, i) => {
+    const angle = (Math.PI * 2 * i) / 34 + (Math.random() - 0.5) * 0.3;
+    const speed = 3 + Math.random() * 5.5;
+    return {
+      x: ox,
+      y: oy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 2.5,
+      size: 4 + Math.random() * 4,
+      color: palette[i % palette.length],
+      life: 1
+    };
+  });
+
+  const step = () => {
+    ctx.clearRect(0, 0, w, h);
+    let alive = false;
+    for (const p of pieces) {
+      if (p.life <= 0.02) continue;
+      alive = true;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.22;
+      p.vx *= 0.985;
+      p.life -= 0.018;
+      ctx.globalAlpha = Math.max(0, p.life);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(p.x, p.y, p.size, p.size * 0.7);
+    }
+    ctx.globalAlpha = 1;
+    if (alive) {
+      requestAnimationFrame(step);
+    } else {
+      ctx.clearRect(0, 0, w, h);
+    }
+  };
+  requestAnimationFrame(step);
+}
+
 // Cursor spotlight glow across cards (fine-pointer devices only)
 if (finePointerQuery.matches && !reducedMotionQuery.matches) {
   document.querySelectorAll('.spotlight-card').forEach(card => {
@@ -399,7 +598,6 @@ if (finePointerQuery.matches && !reducedMotionQuery.matches) {
     });
   });
 }
-
 // Expandable & filterable career timeline
 const toggleTimeline = document.getElementById('toggleTimeline');
 const expFilters = document.getElementById('expFilters');
@@ -443,6 +641,20 @@ if (expFilters) {
     btn.addEventListener('click', () => applyExperienceFilter(btn.dataset.track));
   });
 }
+
+// Clickable role focus chip expanders inside career cards
+document.querySelectorAll('.timeline-item').forEach(card => {
+  const btn = card.querySelector('.role-detail-btn');
+  const chips = card.querySelector('.role-chips');
+  if (!btn || !chips) return;
+  btn.hidden = false;
+  btn.addEventListener('click', () => {
+    const nextOpen = chips.hidden;
+    chips.hidden = !nextOpen;
+    btn.setAttribute('aria-expanded', String(nextOpen));
+    btn.textContent = nextOpen ? '− Hide Focus' : '+ Key Focus';
+  });
+});
 
 // Shared accessible dialog wiring helper
 function openDialog(dialogEl, returnFocusEl) {
@@ -617,72 +829,248 @@ document.querySelectorAll('[data-casestudy]').forEach(btn => {
   btn.addEventListener('click', () => openCaseStudy(btn.dataset.casestudy, btn));
 });
 
-// Interactive Preview vs Blueprint switcher inside project browser mockups
+// Interactive Preview vs Blueprint vs Live Lab switcher inside project browser mockups
+let openVesperLab = () => {};
 document.querySelectorAll('.browser-frame').forEach(frame => {
   const modeBar = frame.querySelector('.browser-mode-switch');
   const previewBtn = frame.querySelector('.media-preview-trigger');
   const blueprintEl = frame.querySelector('.browser-blueprint');
+  const labEl = frame.querySelector('.browser-lab');
   if (!modeBar || !previewBtn || !blueprintEl) return;
 
   modeBar.hidden = false;
   const tabs = Array.from(modeBar.querySelectorAll('button[data-frame-mode]'));
+  const setMode = mode => {
+    tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.frameMode === mode)));
+    previewBtn.hidden = mode !== 'visual';
+    blueprintEl.hidden = mode !== 'blueprint';
+    if (labEl) labEl.hidden = mode !== 'lab';
+    const isInteractivePanel = mode !== 'visual';
+    frame.classList.toggle('is-blueprint', isInteractivePanel);
+    if (isInteractivePanel) frame.style.transform = '';
+    if (mode === 'lab' && labEl && labEl.id === 'vesperLab') {
+      requestAnimationFrame(drawVesperCurve);
+    }
+  };
+
   tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const showBlueprint = tab.dataset.frameMode === 'blueprint';
-      tabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
-      previewBtn.hidden = showBlueprint;
-      blueprintEl.hidden = !showBlueprint;
-      frame.classList.toggle('is-blueprint', showBlueprint);
-      if (showBlueprint) frame.style.transform = '';
+    tab.addEventListener('click', () => setMode(tab.dataset.frameMode));
+  });
+
+  if (labEl && labEl.id === 'vesperLab') {
+    openVesperLab = () => setMode('lab');
+  }
+});
+
+// Simot Sarap Live Menu Filter Demo (authentic items from simotsarap mock.js)
+const simotMenuItems = [
+  { name: 'Classic Wings (6pcs)', price: '₱149', cat: 'wings' },
+  { name: 'Spicy Buffalo Wings (6pcs)', price: '₱159', cat: 'wings' },
+  { name: 'Honey Garlic Wings (6pcs)', price: '₱159', cat: 'wings' },
+  { name: 'Chicken Wings Rice Bowl', price: '₱129', cat: 'rice meals' },
+  { name: 'Chicken Teriyaki Rice', price: '₱149', cat: 'rice meals' },
+  { name: 'Classic Chicken Poppers', price: '₱99', cat: 'poppers' },
+  { name: 'Poppers Bucket (30pcs)', price: '₱249', cat: 'poppers' },
+  { name: 'Chicken Japchae', price: '₱149', cat: 'japchae' }
+];
+const simotMenuTabs = document.getElementById('simotMenuTabs');
+const simotMenuList = document.getElementById('simotMenuList');
+const simotLabCount = document.getElementById('simotLabCount');
+
+function renderSimotLab(cat) {
+  if (!simotMenuList) return;
+  const filtered = cat === 'all' ? simotMenuItems : simotMenuItems.filter(item => item.cat === cat);
+  if (simotMenuTabs) {
+    simotMenuTabs.querySelectorAll('[data-simot-cat]').forEach(btn => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.simotCat === cat));
     });
+  }
+  if (simotLabCount) {
+    simotLabCount.textContent = `${filtered.length} item${filtered.length === 1 ? '' : 's'}`;
+  }
+  simotMenuList.replaceChildren(
+    ...filtered.map(item => {
+      const li = document.createElement('li');
+      const strong = document.createElement('strong');
+      strong.textContent = item.name;
+      const price = document.createElement('span');
+      price.textContent = item.price;
+      li.append(strong, price);
+      return li;
+    })
+  );
+}
+
+if (simotMenuTabs && simotMenuList) {
+  renderSimotLab('all');
+  simotMenuTabs.querySelectorAll('[data-simot-cat]').forEach(btn => {
+    btn.addEventListener('click', () => renderSimotLab(btn.dataset.simotCat));
+  });
+}
+
+// Vesper Audio Mini Hardware & Live DSP Canvas Lab + shared Web Audio synth helper
+const vesperFinishes = {
+  obsidian: 'Matte Obsidian',
+  silver: 'Brushed Silver',
+  orange: 'Signal Orange',
+  bone: 'Warm Bone'
+};
+const vesperUnitBox = document.getElementById('vesperUnitBox');
+const vesperFinishLabel = document.getElementById('vesperFinishLabel');
+const vesperFinishBtns = document.getElementById('vesperFinishBtns');
+const vesperLowSlider = document.getElementById('vesperLowSlider');
+const vesperHighSlider = document.getElementById('vesperHighSlider');
+const lowGainVal = document.getElementById('lowGainVal');
+const highGainVal = document.getElementById('highGainVal');
+const vesperDspCanvas = document.getElementById('vesperDspCanvas');
+
+function drawVesperCurve() {
+  if (!vesperDspCanvas || typeof vesperDspCanvas.getContext !== 'function') return;
+  const ctx = vesperDspCanvas.getContext('2d');
+  if (!ctx) return;
+
+  const rect = vesperDspCanvas.getBoundingClientRect();
+  const w = Math.max(240, Math.floor(rect.width || 420));
+  const h = Math.max(70, Math.floor(rect.height || 82));
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  if (vesperDspCanvas.width !== w * dpr || vesperDspCanvas.height !== h * dpr) {
+    vesperDspCanvas.width = w * dpr;
+    vesperDspCanvas.height = h * dpr;
+  }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+
+  const lowDb = Number(vesperLowSlider?.value || 0);
+  const highDb = Number(vesperHighSlider?.value || 0);
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#ff5c28';
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+  ctx.lineWidth = 1;
+  const midY = h / 2;
+  ctx.beginPath();
+  ctx.moveTo(0, midY);
+  ctx.lineTo(w, midY);
+  ctx.stroke();
+
+  ctx.strokeStyle = accent;
+  ctx.lineWidth = 2.2;
+  ctx.beginPath();
+  for (let x = 0; x <= w; x += 4) {
+    const t = x / w;
+    const lowWeight = 1 / (1 + Math.exp((t - 0.28) * 14));
+    const highWeight = 1 / (1 + Math.exp(-(t - 0.68) * 14));
+    const gain = lowDb * lowWeight + highDb * highWeight;
+    const y = midY - gain * (h * 0.048);
+    if (x === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+refreshVesperCurve = drawVesperCurve;
+
+if (vesperFinishBtns && vesperUnitBox) {
+  vesperFinishBtns.querySelectorAll('[data-vesper-finish]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.vesperFinish;
+      vesperUnitBox.dataset.finish = key;
+      if (vesperFinishLabel) vesperFinishLabel.textContent = vesperFinishes[key] || key;
+      vesperFinishBtns.querySelectorAll('[data-vesper-finish]').forEach(b => {
+        b.setAttribute('aria-pressed', String(b === btn));
+      });
+    });
+  });
+}
+
+[vesperLowSlider, vesperHighSlider].forEach(slider => {
+  if (!slider) return;
+  slider.addEventListener('input', () => {
+    if (lowGainVal && vesperLowSlider) {
+      const v = Number(vesperLowSlider.value);
+      lowGainVal.textContent = `${v > 0 ? '+' + v : v} dB`;
+    }
+    if (highGainVal && vesperHighSlider) {
+      const v = Number(vesperHighSlider.value);
+      highGainVal.textContent = `${v > 0 ? '+' + v : v} dB`;
+    }
+    drawVesperCurve();
   });
 });
 
-// Live Web Audio API reference tone demo inspired by Vesper Audio
-const vesperAudioTest = document.getElementById('vesperAudioTest');
 let activeAudioCtx = null;
+function playVesperTone(btnEl, defaultLabel, lowDb = 0, highDb = 0) {
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) {
+    showToast('Web Audio API unavailable in this browser');
+    return;
+  }
+  try {
+    if (!activeAudioCtx) activeAudioCtx = new AudioCtx();
+    if (activeAudioCtx.state === 'suspended') activeAudioCtx.resume();
+    const now = activeAudioCtx.currentTime;
+    const gain = activeAudioCtx.createGain();
+    const shelfLow = activeAudioCtx.createBiquadFilter();
+    shelfLow.type = 'lowshelf';
+    shelfLow.frequency.setValueAtTime(220, now);
+    shelfLow.gain.setValueAtTime(lowDb, now);
+
+    const shelfHigh = activeAudioCtx.createBiquadFilter();
+    shelfHigh.type = 'highshelf';
+    shelfHigh.frequency.setValueAtTime(1800, now);
+    shelfHigh.gain.setValueAtTime(highDb, now);
+
+    const filter = activeAudioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1600, now);
+    filter.frequency.exponentialRampToValueAtTime(520, now + 0.7);
+
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.11, now + 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.72);
+
+    [440, 659.25].forEach(freq => {
+      const osc = activeAudioCtx.createOscillator();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now);
+      osc.connect(shelfLow);
+      osc.start(now);
+      osc.stop(now + 0.75);
+    });
+
+    shelfLow.connect(shelfHigh);
+    shelfHigh.connect(filter);
+    filter.connect(gain);
+    gain.connect(activeAudioCtx.destination);
+
+    if (btnEl) {
+      btnEl.textContent = 'Playing 440Hz Reference...';
+      btnEl.disabled = true;
+      setTimeout(() => {
+        btnEl.textContent = defaultLabel;
+        btnEl.disabled = false;
+      }, 760);
+    }
+    showToast(`Vesper Audio synth (${lowDb >= 0 ? '+' + lowDb : lowDb} / ${highDb >= 0 ? '+' + highDb : highDb} dB)`);
+  } catch {
+    showToast('Unable to play reference tone');
+  }
+}
+
+const vesperAudioTest = document.getElementById('vesperAudioTest');
 if (vesperAudioTest) {
   vesperAudioTest.addEventListener('click', () => {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) {
-      showToast('Web Audio API unavailable in this browser');
-      return;
-    }
-    try {
-      if (!activeAudioCtx) activeAudioCtx = new AudioCtx();
-      if (activeAudioCtx.state === 'suspended') activeAudioCtx.resume();
-      const now = activeAudioCtx.currentTime;
-      const gain = activeAudioCtx.createGain();
-      const filter = activeAudioCtx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(1600, now);
-      filter.frequency.exponentialRampToValueAtTime(520, now + 0.7);
+    playVesperTone(vesperAudioTest, 'Play Studio Reference Tone', 0, 0);
+  });
+}
 
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.11, now + 0.04);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.72);
-
-      [440, 659.25].forEach(freq => {
-        const osc = activeAudioCtx.createOscillator();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, now);
-        osc.connect(filter);
-        osc.start(now);
-        osc.stop(now + 0.75);
-      });
-
-      filter.connect(gain);
-      gain.connect(activeAudioCtx.destination);
-      vesperAudioTest.textContent = 'Playing 440Hz + Fifth...';
-      vesperAudioTest.disabled = true;
-      showToast('Vesper Audio Web Audio synth reference (440Hz)');
-      setTimeout(() => {
-        vesperAudioTest.textContent = 'Play Studio Reference Tone';
-        vesperAudioTest.disabled = false;
-      }, 760);
-    } catch {
-      showToast('Unable to play reference tone');
-    }
+const vesperLabToneBtn = document.getElementById('vesperLabToneBtn');
+if (vesperLabToneBtn) {
+  vesperLabToneBtn.addEventListener('click', () => {
+    playVesperTone(
+      vesperLabToneBtn,
+      'Play Calibrated Sweep',
+      Number(vesperLowSlider?.value || 0),
+      Number(vesperHighSlider?.value || 0)
+    );
   });
 }
 
@@ -829,6 +1217,8 @@ const copyEmailAddress = async () => {
 
 const paletteActions = [
   { title: 'Open Interactive Terminal (> _)', hint: 'Shortcut `', run: () => { if (openTerminalBtn) openTerminalBtn.click(); } },
+  { title: 'Launch Vesper Audio DSP Live Lab', hint: 'Interactive', run: () => { openVesperLab(); document.getElementById('project-vesper')?.scrollIntoView({ behavior: 'smooth' }); } },
+  { title: 'Trigger Accent Confetti Burst', hint: 'Fun', run: () => launchConfetti(null) },
   { title: 'Jump to Introduction', hint: '#introduction', run: () => { location.hash = '#introduction'; } },
   { title: 'Jump to Experience & Education', hint: '#experience', run: () => { location.hash = '#experience'; } },
   { title: 'Jump to Featured Projects', hint: '#projects', run: () => { location.hash = '#projects'; } },
@@ -939,7 +1329,7 @@ const terminalInput = document.getElementById('terminalInput');
 function appendTermLine(text, className = '') {
   if (!terminalOutput) return;
   const line = document.createElement('p');
-  line.className = `term-line${className ? ` ${className}` : ''}`;
+  line.className = `term-line${className ? ' ' + className : ''}`;
   line.textContent = text;
   terminalOutput.append(line);
   terminalOutput.scrollTop = terminalOutput.scrollHeight;
@@ -968,7 +1358,7 @@ function printTerminalWelcome() {
 function runTerminalCommand(rawInput) {
   const cleaned = rawInput.trim();
   if (!cleaned) return;
-  appendTermLine(`ejg@qc:~$ ${cleaned}`, 'is-cmd');
+  appendTermLine(`ejg@qc:~\$ ${cleaned}`, 'is-cmd');
 
   const [cmdRaw, ...rest] = cleaned.split(/\s+/);
   const cmd = cmdRaw.toLowerCase();
@@ -983,7 +1373,20 @@ function runTerminalCommand(rawInput) {
     return;
   }
   if (cmd === 'help') {
-    appendTermLine('Commands: whoami | experience [qa|systems|all] | projects | skills <keyword> | theme [light|dark|toggle] | accent [rust|cobalt|teal|plum] | status | cv | contact | clear | exit');
+    appendTermLine('Commands: whoami | lab | experience [qa|systems|all] | projects | skills <keyword> | theme [light|dark|toggle] | accent [rust|cobalt|teal|plum] | confetti | status | cv | contact | clear | exit');
+    return;
+  }
+  if (cmd === 'lab') {
+    terminalModal.close();
+    openVesperLab();
+    document.getElementById('project-vesper')?.scrollIntoView({ behavior: 'smooth' });
+    showToast('Opened Vesper Audio VA-01 Interactive Lab');
+    return;
+  }
+  if (cmd === 'confetti') {
+    terminalModal.close();
+    launchConfetti(null);
+    showToast('Confetti burst!');
     return;
   }
   if (cmd === 'whoami') {
@@ -1168,6 +1571,42 @@ const contactForm = document.getElementById('contactForm');
 const mailtoButton = document.getElementById('mailtoButton');
 const copyDraftButton = document.getElementById('copyDraftButton');
 const formFeedback = document.getElementById('formFeedback');
+const topicStarters = document.getElementById('topicStarters');
+const messageField = document.getElementById('message');
+const msgCounter = document.getElementById('msgCounter');
+
+const topicTemplates = {
+  role: 'Hi Edison, I came across your portfolio and would like to connect regarding an IT / Developer opportunity.',
+  web: 'Hi Edison, I liked Simot Sarap and Vesper Audio and would love to discuss building a responsive website or UI.',
+  qa: 'Hi Edison, we are looking for an AI Data QA / Annotation specialist and wanted to discuss your experience at RWS and Innodata.',
+  hi: 'Hi Edison! I wanted to reach out and connect about your work.'
+};
+
+function updateMessageCounter() {
+  if (!msgCounter || !messageField) return;
+  msgCounter.textContent = `${messageField.value.length} / ${messageField.maxLength || 5000}`;
+}
+
+if (topicStarters && messageField) {
+  topicStarters.hidden = false;
+  topicStarters.querySelectorAll('button[data-topic]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.topic;
+      if (!topicTemplates[key]) return;
+      topicStarters.querySelectorAll('button[data-topic]').forEach(b => b.classList.toggle('is-chosen', b === btn));
+      messageField.value = topicTemplates[key];
+      updateMessageCounter();
+      messageField.focus();
+      showToast('Added quick inquiry template');
+    });
+  });
+}
+
+if (msgCounter && messageField) {
+  msgCounter.hidden = false;
+  updateMessageCounter();
+  messageField.addEventListener('input', updateMessageCounter);
+}
 
 function getFormMessageData() {
   const name = document.getElementById('name').value.trim();
@@ -1205,6 +1644,7 @@ if (contactForm) {
       input.value = value;
     });
     showFeedback('Opened pre-filled draft in Gmail.');
+    launchConfetti(contactForm.querySelector('button[type="submit"]'));
   });
 }
 
@@ -1215,6 +1655,7 @@ if (mailtoButton && contactForm) {
     const mailtoUrl = `mailto:gaudicosmedisonjr@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoUrl;
     showFeedback('Opened draft in your email app.');
+    launchConfetti(mailtoButton);
   });
 }
 
@@ -1225,6 +1666,7 @@ if (copyDraftButton && contactForm) {
     try {
       await navigator.clipboard.writeText(`To: gaudicosmedisonjr@gmail.com\nSubject: ${subject}\n\n${body}`);
       showFeedback('Formatted inquiry copied to clipboard.');
+      launchConfetti(copyDraftButton);
     } catch {
       showFeedback('Could not copy automatically.');
     }

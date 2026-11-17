@@ -744,12 +744,7 @@ p {
   padding: 5px 12px;
 }
 
-.hero-highlights .ui-icon {
-  width: 14px;
-  height: 14px;
-  color: var(--accent);
-}
-}
+.hero-highlights .ui-icon {   width: 14px;   height: 14px;   color: var(--accent); }
 
 .button-row {
   display: flex;
@@ -1497,10 +1492,7 @@ p {
   color: var(--accent);
 }
 
-.media-preview-trigger {
-  width: 100%;
-}
-  border: 0;
+.media-preview-trigger {   width: 100%;   border: 0;
   padding: 0;
   background: transparent;
   position: relative;

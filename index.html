@@ -124,6 +124,10 @@
         <div class="intro-text">
           <p class="eyebrow">IT GRADUATE · DEVELOPER · DATA SERVICE SPECIALIST</p>
           <h1>Hi, I’m Edison Jr.<br><span class="accent display-italic">Magparoc Gaudicos.</span></h1>
+          <button type="button" class="role-cycler" id="roleCycler" aria-label="Cycle focus area" hidden>
+            <span class="role-prefix">Focus</span>
+            <span class="role-typed" id="roleTyped">Frontend Web Development</span><span class="role-caret" aria-hidden="true"></span>
+          </button>
           <div class="hero-controls" id="heroControls">
             <div class="bio-switcher" id="bioSwitcher" role="tablist" aria-label="Choose bio focus" hidden>
               <button type="button" role="tab" aria-selected="true" data-bio="overview">Overview</button>
@@ -215,11 +219,12 @@
       </div>
       <div class="terminal-chips" aria-label="Suggested terminal commands">
         <button type="button" class="term-chip" data-cmd="whoami">whoami</button>
+        <button type="button" class="term-chip" data-cmd="lab">lab</button>
         <button type="button" class="term-chip" data-cmd="projects">projects</button>
         <button type="button" class="term-chip" data-cmd="experience">experience</button>
         <button type="button" class="term-chip" data-cmd="skills react">skills react</button>
         <button type="button" class="term-chip" data-cmd="accent cobalt">accent cobalt</button>
-        <button type="button" class="term-chip" data-cmd="theme toggle">theme</button>
+        <button type="button" class="term-chip" data-cmd="confetti">confetti</button>
         <button type="button" class="term-chip" data-cmd="help">help</button>
       </div>
       <div class="terminal-output" id="terminalOutput" role="log" aria-live="polite"></div>
@@ -243,36 +248,49 @@
       </div>
       <div class="experience-layout">
         <div class="timeline-wrap">
-          <div class="timeline" aria-label="Work experience">
+          <div class="timeline" id="careerTimeline" aria-label="Work experience">
+            <div class="timeline-progress" id="timelineProgress" aria-hidden="true"></div>
             <article class="timeline-item spotlight-card is-current" id="role-rws" data-track="qa">
               <div class="timeline-meta"><span class="timeline-date">June 2026 – Present</span><span class="timeline-badge">Current</span></div>
               <h3>Data Service Specialist · <span class="accent">RWS</span></h3>
               <p>Annotate and validate audio, text, and multimedia datasets to improve AI model accuracy while meeting strict quality guidelines and delivery timelines.</p>
+              <button type="button" class="role-detail-btn" aria-expanded="false" hidden>+ Key Focus</button>
+              <ul class="role-chips" hidden><li>Audio &amp; Text Annotation</li><li>Dataset Validation</li><li>Guideline QA</li></ul>
             </article>
             <article class="timeline-item spotlight-card" id="role-innodata" data-track="qa">
               <div class="timeline-meta"><span class="timeline-date">July 2025 – June 2026</span></div>
               <h3>Data Annotator · <span class="accent">Innodata</span></h3>
               <p>Evaluated and annotated multimodal content for AI model training, performing systematic data validation and consistency checks across parallel tasks.</p>
+              <button type="button" class="role-detail-btn" aria-expanded="false" hidden>+ Key Focus</button>
+              <ul class="role-chips" hidden><li>Multimodal Evaluation</li><li>Consistency Checks</li><li>Parallel Tasks</li></ul>
             </article>
             <article class="timeline-item spotlight-card" id="role-deped" data-track="systems">
               <div class="timeline-meta"><span class="timeline-date">January 2025 – June 2025</span></div>
               <h3>IT Support Intern · <span class="accent">DepEd NCR HRDD–NEAP</span></h3>
               <p>Supported system maintenance, user troubleshooting, digital office records organization, and website content updates.</p>
+              <button type="button" class="role-detail-btn" aria-expanded="false" hidden>+ Key Focus</button>
+              <ul class="role-chips" hidden><li>User Troubleshooting</li><li>Office Records</li><li>Website Content Updates</li></ul>
             </article>
             <article class="timeline-item spotlight-card" id="role-sap" data-track="systems">
               <div class="timeline-meta"><span class="timeline-date">January 2024 – June 2024</span></div>
               <h3>SAP Systems Practicum · <span class="accent">STI College Fairview</span></h3>
               <p>Practiced core SAP business workflows across inventory, sales, purchasing, finance, and business report generation.</p>
+              <button type="button" class="role-detail-btn" aria-expanded="false" hidden>+ Key Focus</button>
+              <ul class="role-chips" hidden><li>Inventory &amp; Purchasing</li><li>Sales &amp; Finance</li><li>Business Reports</li></ul>
             </article>
             <article class="timeline-item spotlight-card extra-role" id="role-wilcom" data-track="design" hidden>
               <div class="timeline-meta"><span class="timeline-date">January 2021 – December 2023</span></div>
               <h3>Freelance Embroidery Designer · <span class="accent">Wilcom Embroidery Studio</span></h3>
               <p>Created digital embroidery designs using Wilcom software, preparing production-ready files and adjusting stitch settings across fabrics.</p>
+              <button type="button" class="role-detail-btn" aria-expanded="false" hidden>+ Key Focus</button>
+              <ul class="role-chips" hidden><li>Wilcom Digitizing</li><li>Production Files</li><li>Stitch Calibration</li></ul>
             </article>
             <article class="timeline-item spotlight-card extra-role" id="role-sldm" data-track="systems" hidden>
               <div class="timeline-meta"><span class="timeline-date">March 2020 – July 2020</span></div>
               <h3>Computer System Servicing Trainee · <span class="accent">SLDM College</span></h3>
               <p>Assembled PC units, diagnosed hardware issues, and performed routine system maintenance and troubleshooting.</p>
+              <button type="button" class="role-detail-btn" aria-expanded="false" hidden>+ Key Focus</button>
+              <ul class="role-chips" hidden><li>PC Assembly</li><li>Hardware Diagnostics</li><li>System Maintenance</li></ul>
             </article>
           </div>
           <button type="button" class="timeline-toggle" id="toggleTimeline" aria-expanded="false" hidden>Show earlier experience (2 more)</button>
@@ -309,6 +327,7 @@
                 <div class="browser-mode-switch" role="tablist" aria-label="Simot Sarap preview view" hidden>
                   <button type="button" role="tab" aria-selected="true" data-frame-mode="visual">Preview</button>
                   <button type="button" role="tab" aria-selected="false" data-frame-mode="blueprint">Blueprint</button>
+                  <button type="button" role="tab" aria-selected="false" data-frame-mode="lab">Live Lab</button>
                 </div>
               </div>
               <div class="browser-stage">
@@ -328,6 +347,20 @@
                   <div class="blueprint-actions">
                     <button type="button" class="copy-button" data-casestudy="simotsarap">Open Case Study</button>
                   </div>
+                </div>
+                <div class="browser-lab" id="simotLab" hidden>
+                  <div class="lab-head">
+                    <span class="eyebrow">INTERACTIVE MENU FILTER DEMO</span>
+                    <span class="mono-muted" id="simotLabCount">8 items</span>
+                  </div>
+                  <div class="lab-pills" id="simotMenuTabs" role="group" aria-label="Filter Simot Sarap menu">
+                    <button type="button" data-simot-cat="all" aria-pressed="true">All</button>
+                    <button type="button" data-simot-cat="wings" aria-pressed="false">Wings</button>
+                    <button type="button" data-simot-cat="rice meals" aria-pressed="false">Rice Meals</button>
+                    <button type="button" data-simot-cat="poppers" aria-pressed="false">Poppers</button>
+                    <button type="button" data-simot-cat="japchae" aria-pressed="false">Japchae</button>
+                  </div>
+                  <ul class="simot-menu-list" id="simotMenuList"></ul>
                 </div>
               </div>
             </div>
@@ -355,6 +388,7 @@
                 <div class="browser-mode-switch" role="tablist" aria-label="Vesper Audio preview view" hidden>
                   <button type="button" role="tab" aria-selected="true" data-frame-mode="visual">Preview</button>
                   <button type="button" role="tab" aria-selected="false" data-frame-mode="blueprint">Blueprint</button>
+                  <button type="button" role="tab" aria-selected="false" data-frame-mode="lab">Live Lab</button>
                 </div>
               </div>
               <div class="browser-stage">
@@ -374,6 +408,37 @@
                   <div class="blueprint-actions">
                     <button type="button" class="copy-button" id="vesperAudioTest">Play Studio Reference Tone</button>
                     <button type="button" class="copy-button" data-casestudy="vesper">Open Case Study</button>
+                  </div>
+                </div>
+                <div class="browser-lab browser-lab-dark" id="vesperLab" hidden>
+                  <div class="lab-head">
+                    <span class="eyebrow">VA-01 MINI HARDWARE &amp; DSP LAB</span>
+                    <span class="mono-muted" id="vesperFinishLabel">Matte Obsidian</span>
+                  </div>
+                  <div class="vesper-lab-grid">
+                    <div class="vesper-unit-preview" id="vesperUnitBox" data-finish="obsidian" aria-hidden="true">
+                      <span class="vesper-tweeter"></span>
+                      <span class="vesper-woofer"></span>
+                      <span class="vesper-led"></span>
+                    </div>
+                    <div class="vesper-controls">
+                      <div class="vesper-finishes" id="vesperFinishBtns" role="group" aria-label="Select VA-01 monitor finish">
+                        <button type="button" data-vesper-finish="obsidian" aria-pressed="true" title="Matte Obsidian"></button>
+                        <button type="button" data-vesper-finish="silver" aria-pressed="false" title="Brushed Silver"></button>
+                        <button type="button" data-vesper-finish="orange" aria-pressed="false" title="Signal Orange"></button>
+                        <button type="button" data-vesper-finish="bone" aria-pressed="false" title="Warm Bone"></button>
+                      </div>
+                      <label class="vesper-slider-label">Low Shelf <span id="lowGainVal">0 dB</span>
+                        <input type="range" id="vesperLowSlider" min="-6" max="6" step="1" value="0">
+                      </label>
+                      <label class="vesper-slider-label">HF Tilt <span id="highGainVal">0 dB</span>
+                        <input type="range" id="vesperHighSlider" min="-6" max="6" step="1" value="0">
+                      </label>
+                    </div>
+                  </div>
+                  <canvas id="vesperDspCanvas" class="vesper-dsp-canvas" width="420" height="84" aria-label="VA-01 simulated DSP frequency curve"></canvas>
+                  <div class="blueprint-actions">
+                    <button type="button" class="copy-button" id="vesperLabToneBtn">Play Calibrated Sweep</button>
                   </div>
                 </div>
               </div>
@@ -521,9 +586,19 @@
       </div>
       <form action="https://mail.google.com/mail/" method="get" target="_blank" rel="noopener noreferrer" id="contactForm">
         <input type="hidden" name="view" value="cm"><input type="hidden" name="to" value="gaudicosmedisonjr@gmail.com">
+        <div class="topic-starters" id="topicStarters" role="group" aria-label="Quick message templates" hidden>
+          <button type="button" data-topic="role">IT / Dev Role</button>
+          <button type="button" data-topic="web">Web Project</button>
+          <button type="button" data-topic="qa">AI Data QA</button>
+          <button type="button" data-topic="hi">Say Hello</button>
+        </div>
         <label for="name">Name</label><input type="text" id="name" name="su" autocomplete="name" maxlength="100" placeholder="Your name" required>
         <label for="email">Email</label><input type="email" id="email" name="replyto" autocomplete="email" maxlength="254" placeholder="you@example.com" required>
-        <label for="message">Message</label><textarea id="message" name="body" rows="5" maxlength="5000" placeholder="Tell me about your project or role..." required></textarea>
+        <div class="label-row">
+          <label for="message">Message</label>
+          <span class="char-counter mono-muted" id="msgCounter" hidden>0 / 5000</span>
+        </div>
+        <textarea id="message" name="body" rows="5" maxlength="5000" placeholder="Tell me about your project or role..." required></textarea>
         <div class="form-actions">
           <button class="button primary" type="submit">Open in Gmail <span aria-hidden="true">↗</span></button>
           <button class="button" type="button" id="mailtoButton">Use Email App</button>
@@ -542,7 +617,7 @@
         <span>GitHub</span>
       </a>
       <a class="social-link" href="https://www.linkedin.com/in/edison-gaudicos-297088356/" target="_blank" rel="noopener noreferrer">
-        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" r="2"/></svg>
         <span>LinkedIn</span>
       </a>
       <a class="social-link" href="https://www.facebook.com/EJG.ZETSUMEI.DESU/" target="_blank" rel="noopener noreferrer">
@@ -564,7 +639,9 @@
     <a href="#skills" data-rail="skills" aria-label="Skills section"><span>03 Skills</span></a>
     <a href="#contact" data-rail="contact" aria-label="Contact section"><span>04 Contact</span></a>
   </nav>
-  <button type="button" class="back-to-top" id="backToTop" aria-label="Scroll back to top" hidden>↑ Top</button>
+  <button type="button" class="back-to-top" id="backToTop" aria-label="Scroll back to top" hidden><span>↑ Top</span></button>
   <div class="toast-banner" id="toastBanner" role="status" aria-live="polite" hidden></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+  <canvas class="confetti-canvas" id="confettiCanvas" aria-hidden="true"></canvas>
 </body>
 </html>

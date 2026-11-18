@@ -16,6 +16,7 @@ const ALLOWED_TARGETS = new Set([
   'project-meridian-sync',
   'project-pulsegrid',
   'project-koto-cabin',
+  'project-relay',
 ]);
 
 const VISITOR_ID_RE = /^[a-zA-Z0-9_-]{8,64}$/;

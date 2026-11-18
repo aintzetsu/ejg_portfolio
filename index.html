@@ -1249,25 +1249,43 @@
           <a class="email-link" href="mailto:gaudicosmedisonjr@gmail.com">gaudicosmedisonjr@gmail.com</a>
           <button type="button" class="copy-button" id="copyEmail" aria-label="Copy email address">Copy</button>
         </div>
-        <p class="contact-note">Fill out the form to open a pre-filled draft in Gmail, launch your email app, or copy the formatted message.</p>
+        <p class="contact-note">Verify your email with a 6-digit code to send directly on this page, or use Gmail, your email app, or Copy Draft.</p>
       </div>
       <form action="https://mail.google.com/mail/" method="get" target="_blank" rel="noopener noreferrer" id="contactForm">
         <input type="hidden" name="view" value="cm"><input type="hidden" name="to" value="gaudicosmedisonjr@gmail.com">
+        <div class="hp-field" aria-hidden="true">
+          <label for="website">Website</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
         <div class="topic-starters" id="topicStarters" role="group" aria-label="Quick message templates" hidden>
           <button type="button" data-topic="role">IT / Dev Role</button>
           <button type="button" data-topic="web">Web Project</button>
           <button type="button" data-topic="qa">AI Data QA</button>
           <button type="button" data-topic="hi">Say Hello</button>
         </div>
-        <label for="name">Name</label><input type="text" id="name" name="su" autocomplete="name" maxlength="100" placeholder="Your name" required>
+        <label for="name">Name</label><input type="text" id="name" name="su" autocomplete="name" minlength="2" maxlength="100" placeholder="Your name" required>
         <label for="email">Email</label><input type="email" id="email" name="replyto" autocomplete="email" maxlength="254" placeholder="you@example.com" required>
         <div class="label-row">
           <label for="message">Message</label>
           <span class="char-counter mono-muted" id="msgCounter" hidden>0 / 5000</span>
         </div>
-        <textarea id="message" name="body" rows="5" maxlength="5000" placeholder="Tell me about your project or role..." required></textarea>
+        <textarea id="message" name="body" rows="5" minlength="10" maxlength="5000" placeholder="Tell me about your project or role..." required></textarea>
+        <div class="verify-panel" id="verifyCodePanel" hidden>
+          <p class="eyebrow">EMAIL VERIFICATION REQUIRED</p>
+          <p class="verify-prompt" id="verifyPrompt">Enter the 6-digit code sent to your email address.</p>
+          <div class="verify-row">
+            <label for="verifyCodeInput" class="sr-only">6-digit verification code</label>
+            <input type="text" id="verifyCodeInput" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" placeholder="6-digit code (e.g. 482910)">
+            <button class="button primary" type="button" id="confirmCodeBtn">Confirm &amp; Send</button>
+          </div>
+          <div class="verify-meta-actions">
+            <button type="button" class="text-link button-link" id="resendCodeBtn">Resend code</button>
+            <button type="button" class="text-link button-link" id="editEmailBtn">Change email / edit message</button>
+          </div>
+        </div>
         <div class="form-actions">
-          <button class="button primary" type="submit">Open in Gmail <span aria-hidden="true">↗</span></button>
+          <button class="button primary" type="submit" id="sendVerifiedBtn">Verify Email &amp; Send</button>
+          <button class="button" type="button" id="gmailFallbackBtn">Open in Gmail <span aria-hidden="true">↗</span></button>
           <button class="button" type="button" id="mailtoButton">Use Email App</button>
           <button class="button" type="button" id="copyDraftButton">Copy Draft</button>
         </div>

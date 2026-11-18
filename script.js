@@ -1026,6 +1026,38 @@ const projectCatalog = {
       }
     ]
   },
+  reelfetch: {
+  "title": "ReelFetch — Audio & Video Review",
+  "img": "project-reelfetch.webp",
+  "alt": "ReelFetch comparison set with Original, A and B role selectors",
+  "liveUrl": "https://reelfetch-ten.vercel.app/",
+  "liveLabel": "Visit Live Site ↗",
+  "repoUrl": null,
+  "eyebrow": "MEDIA REVIEW TOOL",
+  "caseTitle": "App Overview — ReelFetch",
+  "flow": [
+    "Scan tab",
+    "Preview clips",
+    "Assign roles",
+    "Download set"
+  ],
+  "tags": [
+    "JavaScript",
+    "Chrome Extensions",
+    "Web Audio API",
+    "Vercel"
+  ],
+  "blocks": [
+    {
+      "heading": "Purpose",
+      "text": "Keep source clips and comparison versions identifiable throughout a dubbing or voice review."
+    },
+    {
+      "heading": "Review workflow",
+      "text": "Locate players on the page, check role assignments, and preview clips before saving a numbered set. Audio pairs include side-by-side waveforms for listening at the same timestamp."
+    }
+  ]
+},
   shiftLedger: {
     title: 'Shift Ledger — Workday & Pay Tracker',
     img: 'project-shift-ledger.webp',
@@ -1086,6 +1118,7 @@ const flowByCatalogKey = {
   pulsegrid: ['Lookahead Clock', '5-Voice Web Audio', 'Oscilloscope Canvas', 'JSON + Relay Sync'],
   kotoCabin: ['SVG Elevations', 'Landscape Filters', 'Rate Calculator', 'Itinerary + Relay'],
   relay: ['Better Auth', 'Webhook & Cron', 'AES-256-GCM Secrets', 'Neon Postgres'],
+  reelfetch: ["Scan tab","Preview clips","Assign roles","Download set"],
   shiftLedger: ['Manila PHT Timer', 'No-Task Gap Log', 'Weekly Pay & CSV', 'Neon Account Sync']
 };
 
@@ -1231,7 +1264,7 @@ function openCaseStudy(key, triggerEl, { syncUrl = true } = {}) {
   openDialog(caseStudyModal, triggerEl);
 }
 
-// Interactive category filter, sorting, layout switcher, search & Show More collapse across all 16 Featured Projects
+// Interactive category filter, sorting, layout switcher, search & Show More collapse across all 17 Featured Projects
 const projectControls = document.getElementById('projectControls');
 const projectSearch = document.getElementById('projectSearch');
 const projectSortToggle = document.getElementById('projectSortToggle');
@@ -1255,6 +1288,7 @@ function sortFeaturedProjects() {
   const sorted = [...featuredProjectCards].sort((a, b) => {
     const idxA = Number(a.dataset.orderIndex) || 0;
     const idxB = Number(b.dataset.orderIndex) || 0;
+    if (projectSort === 'featured' && a.hasAttribute('data-featured-first') !== b.hasAttribute('data-featured-first')) return a.hasAttribute('data-featured-first') ? -1 : 1;
     if (projectSort === 'newest') return idxB - idxA;
     if (projectSort === 'liked') {
       const likesA = Math.max(0, Number(likeCounts[a.id]) || 0);
@@ -1418,7 +1452,7 @@ if (toggleRepos) {
   });
 }
 
-// Populate Blueprint views for cards referencing projectCatalog so all 16 Featured cards share one template
+// Populate Blueprint views for cards referencing projectCatalog so all 17 Featured cards share one template
 document.querySelectorAll('.project-card[data-catalog]').forEach(card => {
   const key = card.dataset.catalog;
   const item = projectCatalog[key];
@@ -1719,7 +1753,7 @@ const skillProofMap = {
   react: { title: 'React', text: 'Built the responsive Simot Sarap frontend and powers Relay React 19 UI components.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
   nextjs: { title: 'Next.js 16', text: 'Built the full-stack Relay workflow automation platform using Next.js 16 App Router, React 19, and server APIs.', target: '#project-relay', label: 'Jump to Relay →' },
   tailwind: { title: 'Tailwind CSS', text: 'Styled responsive sections, cards, and mobile navigation on Simot Sarap and Relay.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
-  javascript: { title: 'JavaScript', text: 'Powers Vesper Audio, Simot Sarap, LabelGrid, RestBench, Relay, Shift Ledger, PulseGrid, PathCraft, and all 16 featured projects.', target: '#projects', label: 'Jump to Featured Projects →' },
+  javascript: { title: 'JavaScript', text: 'Powers Vesper Audio, Simot Sarap, LabelGrid, RestBench, Relay, Shift Ledger, PulseGrid, PathCraft, and all 17 featured projects.', target: '#projects', label: 'Jump to Featured Projects →' },
   htmlcss: { title: 'HTML & CSS', text: 'Modular CSS tokens & responsive grids across Vesper Audio, ChromaLab, Koto Cabin, this portfolio, and DepEd web updates.', target: '#project-vesper', label: 'Jump to Vesper Audio →' },
   canvas: { title: 'HTML5 Canvas', text: 'Built pixel matting (Cutout Studio), bounding-box editors (LabelGrid), document deskewing (FolioVault), oscilloscopes (PulseGrid), and 60fps pathfinding (PathCraft).', target: '#project-cutout-studio', label: 'Jump to Cutout Studio →' },
   webaudio: { title: 'Web Audio API', text: 'Engineered lookahead 5-voice drum synthesis (PulseGrid) and real-time studio monitor DSP filtering (Vesper Audio).', target: '#project-pulsegrid', label: 'Jump to PulseGrid →' },
@@ -1738,7 +1772,7 @@ const skillProofMap = {
   networking: { title: 'Networking', text: 'Covered networking fundamentals and maintenance through System Administration certification at STI.', target: '#experience', label: 'View certification →' },
   sysadmin: { title: 'System Administration', text: 'Certified in System Administration at STI College Fairview and practiced at DepEd NCR.', target: '#experience', label: 'View certification →' },
   git: { title: 'Git & GitHub', text: 'Version control and open-source publishing across 15 public repositories on @aintzetsu.', target: '#githubSnapshot', label: 'View GitHub repositories →' },
-  vercel: { title: 'Vercel', text: 'Production deployment across all 16 featured projects (Simot Sarap, Vesper Audio, LabelGrid, FolioVault, RestBench, Relay, Shift Ledger, etc.) plus this portfolio.', target: '#projects', label: 'Jump to Featured Projects →' },
+  vercel: { title: 'Vercel', text: 'Production deployment across all 17 featured projects (Simot Sarap, Vesper Audio, LabelGrid, FolioVault, RestBench, Relay, Shift Ledger, etc.) plus this portfolio.', target: '#projects', label: 'Jump to Featured Projects →' },
   design: { title: 'Graphic Design', text: 'Digital design production honed as Freelance Embroidery Designer at Wilcom Embroidery Studio.', target: '#role-wilcom', label: 'View design experience →' }
 };
 
@@ -1889,6 +1923,7 @@ const paletteActions = [
   { title: 'Jump to Experience & Education', hint: '#experience', run: () => { location.hash = '#experience'; } },
   { title: 'Jump to Featured Projects (16)', hint: '#projects', run: () => { location.hash = '#projects'; } },
   { title: 'Toggle Projects Layout (Stack / Grid)', hint: 'Layout', run: () => { projectView = projectView === 'grid' ? 'stack' : 'grid'; updateFeaturedProjects(); location.hash = '#projects'; } },
+  { title: 'Read ReelFetch Case Study', hint: 'Featured 17', run: () => openCaseStudy('reelfetch', openPaletteBtn) },
   { title: 'Read Shift Ledger Case Study', hint: 'Featured 16', run: () => openCaseStudy('shiftLedger', openPaletteBtn) },
   { title: 'Inspect LabelGrid (AI Annotation App)', hint: 'Featured 03', run: () => openCaseStudy('labelgrid', openPaletteBtn) },
   { title: 'Read Simot Sarap Case Study', hint: 'Modal', run: () => openCaseStudy('simotsarap', openPaletteBtn) },
@@ -2060,9 +2095,9 @@ function runTerminalCommand(rawInput) {
     return;
   }
   if (cmd === 'apps' || cmd === 'vercel') {
-    appendTermLine('All 16 Featured Web Apps (alongside ejg-portfolio):');
-    appendTermLine('• Simot Sarap, Vesper Audio, LabelGrid, FolioVault, Cutout Studio, RestBench, PathCraft, ChromaLab, Folio Notes, LedgerFlow, SprintDeck, Meridian Sync, PulseGrid, Koto Cabin, Relay, Shift Ledger');
-    appendTermAction('Jump to All 16 Featured Projects', () => {
+    appendTermLine('All 17 Featured Web Apps (alongside ejg-portfolio):');
+    appendTermLine('• Simot Sarap, Vesper Audio, LabelGrid, FolioVault, Cutout Studio, RestBench, PathCraft, ChromaLab, Folio Notes, LedgerFlow, SprintDeck, Meridian Sync, PulseGrid, Koto Cabin, Relay, Shift Ledger, ReelFetch');
+    appendTermAction('Jump to All 17 Featured Projects', () => {
       terminalModal.close();
       location.hash = '#projects';
     });

@@ -2256,19 +2256,31 @@ if (githubReposContainer && typeof fetch === 'function') {
     });
 }
 
-// Contact form handling (supports Gmail, mailto app, and one-click draft copy)
+// Contact form handling (supports 6-digit OTP verified direct send, Gmail, mailto app, and draft copy)
 const copyEmailButton = document.getElementById('copyEmail');
 if (copyEmailButton) {
   copyEmailButton.addEventListener('click', copyEmailAddress);
 }
 
 const contactForm = document.getElementById('contactForm');
+const sendVerifiedBtn = document.getElementById('sendVerifiedBtn');
+const gmailFallbackBtn = document.getElementById('gmailFallbackBtn');
 const mailtoButton = document.getElementById('mailtoButton');
 const copyDraftButton = document.getElementById('copyDraftButton');
 const formFeedback = document.getElementById('formFeedback');
 const topicStarters = document.getElementById('topicStarters');
 const messageField = document.getElementById('message');
 const msgCounter = document.getElementById('msgCounter');
+const verifyCodePanel = document.getElementById('verifyCodePanel');
+const verifyPrompt = document.getElementById('verifyPrompt');
+const verifyCodeInput = document.getElementById('verifyCodeInput');
+const confirmCodeBtn = document.getElementById('confirmCodeBtn');
+const resendCodeBtn = document.getElementById('resendCodeBtn');
+const editEmailBtn = document.getElementById('editEmailBtn');
+const websiteHoneypot = document.getElementById('website');
+
+let activeChallengeId = null;
+let contactBusy = false;
 
 const topicTemplates = {
   role: 'Hi Edison, I came across your portfolio and would like to connect regarding an IT / Developer opportunity.',
@@ -2307,10 +2319,12 @@ function getFormMessageData() {
   const name = document.getElementById('name').value.trim();
   const email = document.getElementById('email').value.trim();
   const message = document.getElementById('message').value.trim();
+  const website = websiteHoneypot ? websiteHoneypot.value.trim() : '';
   return {
     name,
     email,
     message,
+    website,
     subject: `Portfolio Message from ${name}`,
     body: `Name: ${name}\nEmail: ${email}\n\n${message}`
   };
@@ -2323,23 +2337,150 @@ function showFeedback(text) {
   showToast(text);
 }
 
-if (contactForm) {
-  contactForm.addEventListener('submit', () => {
-    const { subject, body } = getFormMessageData();
-    ['name', 'email', 'message'].forEach(id => document.getElementById(id).removeAttribute('name'));
-    const values = { su: subject, body };
-    Object.entries(values).forEach(([key, value]) => {
-      let input = contactForm.querySelector(`input[type="hidden"][name="${key}"]`);
-      if (!input) {
-        input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        contactForm.append(input);
-      }
-      input.value = value;
+function resetVerificationChallenge() {
+  activeChallengeId = null;
+  if (verifyCodePanel) verifyCodePanel.hidden = true;
+  if (verifyCodeInput) verifyCodeInput.value = '';
+  if (sendVerifiedBtn) sendVerifiedBtn.hidden = false;
+}
+
+function setContactBusy(busy, label) {
+  contactBusy = busy;
+  if (sendVerifiedBtn) {
+    sendVerifiedBtn.disabled = busy;
+    sendVerifiedBtn.textContent = label || 'Verify Email & Send';
+  }
+  if (confirmCodeBtn) confirmCodeBtn.disabled = busy;
+  if (resendCodeBtn) resendCodeBtn.disabled = busy;
+}
+
+async function requestVerificationCode() {
+  if (!contactForm || contactBusy) return;
+  if (!contactForm.reportValidity()) return;
+  const { name, email, message, website } = getFormMessageData();
+  setContactBusy(true, 'Verifying domain & sending code…');
+
+  try {
+    const resp = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
+      body: JSON.stringify({
+        action: 'request-code',
+        visitorId: getVisitorId(),
+        name,
+        email,
+        message,
+        website
+      })
     });
+    const data = await resp.json().catch(() => null);
+    if (!resp.ok || !data || !data.ok) {
+      showFeedback(data?.error || 'Unable to verify your email right now. Please try Open in Gmail below.');
+      return;
+    }
+
+    activeChallengeId = data.challengeId;
+    if (verifyPrompt) {
+      verifyPrompt.textContent = `Enter the 6-digit verification code sent to ${data.maskedEmail} (expires in 10 min).`;
+    }
+    if (verifyCodePanel) verifyCodePanel.hidden = false;
+    if (sendVerifiedBtn) sendVerifiedBtn.hidden = true;
+    if (verifyCodeInput) {
+      verifyCodeInput.value = '';
+      verifyCodeInput.focus();
+    }
+    showFeedback(`Verification code sent to ${data.maskedEmail}.`);
+  } catch {
+    showFeedback('Network error while checking email. You can use Open in Gmail below.');
+  } finally {
+    setContactBusy(false, 'Verify Email & Send');
+  }
+}
+
+async function submitVerificationCode() {
+  if (!activeChallengeId || contactBusy) return;
+  const code = verifyCodeInput ? verifyCodeInput.value.trim() : '';
+  if (!/^\d{6}$/.test(code)) {
+    showFeedback('Enter the 6-digit numeric verification code.');
+    verifyCodeInput?.focus();
+    return;
+  }
+
+  setContactBusy(true, 'Confirming code…');
+  if (confirmCodeBtn) confirmCodeBtn.textContent = 'Sending…';
+
+  try {
+    const resp = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
+      body: JSON.stringify({
+        action: 'verify-code',
+        visitorId: getVisitorId(),
+        challengeId: activeChallengeId,
+        code
+      })
+    });
+    const data = await resp.json().catch(() => null);
+    if (!resp.ok || !data || !data.ok) {
+      showFeedback(data?.error || 'Could not verify that code.');
+      if (resp.status === 404 || resp.status === 409 || resp.status === 410 || data?.remainingAttempts === 0) {
+        resetVerificationChallenge();
+      }
+      return;
+    }
+
+    resetVerificationChallenge();
+    contactForm.reset();
+    updateMessageCounter();
+    showFeedback(`Email verified (${data.email}) — your message was sent cleanly!`);
+    launchConfetti(sendVerifiedBtn);
+  } catch {
+    showFeedback('Network error while verifying code. Please try again.');
+  } finally {
+    if (confirmCodeBtn) confirmCodeBtn.textContent = 'Confirm & Send';
+    setContactBusy(false, 'Verify Email & Send');
+  }
+}
+
+if (contactForm) {
+  contactForm.addEventListener('submit', event => {
+    event.preventDefault();
+    if (activeChallengeId && verifyCodePanel && !verifyCodePanel.hidden) {
+      submitVerificationCode();
+    } else {
+      requestVerificationCode();
+    }
+  });
+}
+
+if (confirmCodeBtn) confirmCodeBtn.addEventListener('click', submitVerificationCode);
+if (resendCodeBtn) resendCodeBtn.addEventListener('click', requestVerificationCode);
+if (editEmailBtn) {
+  editEmailBtn.addEventListener('click', () => {
+    resetVerificationChallenge();
+    document.getElementById('email')?.focus();
+    showFeedback('Edit your email or message below, then click Verify Email & Send.');
+  });
+}
+if (verifyCodeInput) {
+  verifyCodeInput.addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      submitVerificationCode();
+    }
+  });
+}
+
+if (gmailFallbackBtn && contactForm) {
+  gmailFallbackBtn.addEventListener('click', () => {
+    if (!contactForm.reportValidity()) return;
+    const { subject, body } = getFormMessageData();
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent('gaudicosmedisonjr@gmail.com')}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUrl, '_blank', 'noopener,noreferrer');
     showFeedback('Opened pre-filled draft in Gmail.');
-    launchConfetti(contactForm.querySelector('button[type="submit"]'));
+    launchConfetti(gmailFallbackBtn);
   });
 }
 

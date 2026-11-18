@@ -325,18 +325,18 @@
       <div class="section-heading">
         <p class="eyebrow">02 / FROM IDEA TO IMPLEMENTATION</p>
         <h2>Featured projects</h2>
-        <p>Every web experience, interactive tool, and storefront I built and deployed live to Vercel &amp; GitHub (14 projects).</p>
+        <p>Every web experience, interactive tool, and storefront I built and deployed live to Vercel (15 projects).</p>
       </div>
       <div class="skills-controls vercel-controls" id="projectControls" hidden>
         <div class="filter-bar" role="group" aria-label="Filter featured projects by category">
-          <button type="button" class="filter-pill" data-proj-cat="all" aria-pressed="true">All Featured (14)</button>
+          <button type="button" class="filter-pill" data-proj-cat="all" aria-pressed="true">All Featured (15)</button>
           <button type="button" class="filter-pill" data-proj-cat="web" aria-pressed="false">Websites &amp; Audio (4)</button>
           <button type="button" class="filter-pill" data-proj-cat="ai" aria-pressed="false">AI &amp; Data QA (3)</button>
-          <button type="button" class="filter-pill" data-proj-cat="dev" aria-pressed="false">Dev &amp; Algorithms (3)</button>
+          <button type="button" class="filter-pill" data-proj-cat="dev" aria-pressed="false">Dev &amp; Algorithms (4)</button>
           <button type="button" class="filter-pill" data-proj-cat="work" aria-pressed="false">Productivity (4)</button>
         </div>
         <label for="projectSearch" class="sr-only">Search featured projects</label>
-        <input type="search" id="projectSearch" class="skill-search" placeholder="Search 14 projects (e.g. react, canvas, ocr, api)..." autocomplete="off">
+        <input type="search" id="projectSearch" class="skill-search" placeholder="Search 15 projects (e.g. react, nextjs, webhooks, api)..." autocomplete="off">
       </div>
       <div class="project-list" id="featuredProjectList">
         <article class="project-card spotlight-card" id="project-simotsarap" data-proj-cat="web" data-proj-keywords="simot sarap chicken wings restaurant react tailwind javascript vercel fairview" aria-labelledby="project1Title">
@@ -895,6 +895,40 @@
               <a class="text-link" href="https://koto-cabin.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
               <a class="text-link secondary-link" href="https://github.com/aintzetsu/koto-cabin" target="_blank" rel="noopener noreferrer">View source on GitHub <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
               <button type="button" class="text-link button-link" data-casestudy="kotoCabin">Read case study</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card spotlight-card" id="project-relay" data-catalog="relay" data-proj-cat="dev" data-proj-keywords="relay nextjs react postgres better auth workflow automation webhook schedules secrets" aria-labelledby="project15Title">
+          <div class="project-media project-showcase project-showcase-dark">
+            <div class="browser-frame tilt-target">
+              <div class="browser-chrome">
+                <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
+                <span class="browser-url">relay-pi-rust.vercel.app</span>
+                <div class="browser-mode-switch" role="tablist" aria-label="Relay preview view" hidden>
+                  <button type="button" role="tab" aria-selected="true" data-frame-mode="visual">Preview</button>
+                  <button type="button" role="tab" aria-selected="false" data-frame-mode="blueprint">Blueprint</button>
+                </div>
+              </div>
+              <div class="browser-stage">
+                <button type="button" class="media-preview-trigger" data-preview="relay" aria-label="Expand Relay preview">
+                  <img src="project-relay.webp" width="960" height="600" loading="lazy" alt="Relay workflow automation and webhook studio preview">
+                  <span class="expand-hint" aria-hidden="true">Expand preview ⤢</span>
+                  <p class="image-fallback" hidden>Relay<span>Workflow &amp; Webhook Studio</span></p>
+                </button>
+                <div class="browser-blueprint" hidden></div>
+              </div>
+            </div>
+          </div>
+          <div class="project-details">
+            <p class="eyebrow">15 / WORKFLOW AUTOMATION STUDIO</p>
+            <h3 id="project15Title">Relay</h3>
+            <p>Full-stack workflow automation and webhook platform built on Next.js, Better Auth, and Neon Postgres — chain HTTP API requests, condition gates, encrypted secrets, scheduled jobs, and Discord or Slack alerts.</p>
+            <ul class="tags" aria-label="Technologies"><li>Next.js 16</li><li>React 19</li><li>Neon Postgres</li><li>Webhooks &amp; Schedules</li></ul>
+            <p class="project-note">Focus: multi-tenant Better Auth accounts, AES-256-GCM secret storage, and step-by-step run logs.</p>
+            <div class="project-links">
+              <a class="text-link" href="https://relay-pi-rust.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+              <button type="button" class="text-link button-link" data-casestudy="relay">Read case study</button>
             </div>
           </div>
         </article>

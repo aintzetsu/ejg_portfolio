@@ -1386,20 +1386,35 @@ if (initialProjectKey) {
   openCaseStudy(initialProjectKey, null, { syncUrl: false });
 }
 
+const INITIAL_REPOS_SHOWN = 6;
 const toggleRepos = document.getElementById('toggleRepos');
 const reposToggleWrap = document.getElementById('reposToggleWrap');
-const extraRepoCards = Array.from(document.querySelectorAll('#githubRepos [data-extra-repo]'));
 let reposExpanded = false;
-if (toggleRepos && reposToggleWrap && extraRepoCards.length > 0) {
-  reposToggleWrap.hidden = false;
-  toggleRepos.hidden = false;
+
+function syncRepoCards() {
+  const repoCards = Array.from(document.querySelectorAll('#githubRepos .repo-mini'));
+  const hasOverflow = repoCards.length > INITIAL_REPOS_SHOWN;
+  repoCards.forEach((card, idx) => {
+    card.hidden = idx >= INITIAL_REPOS_SHOWN && !reposExpanded;
+  });
+  if (reposToggleWrap && toggleRepos) {
+    reposToggleWrap.hidden = !hasOverflow;
+    toggleRepos.hidden = !hasOverflow;
+    if (hasOverflow) {
+      const extraCount = repoCards.length - INITIAL_REPOS_SHOWN;
+      toggleRepos.setAttribute('aria-expanded', String(reposExpanded));
+      toggleRepos.textContent = reposExpanded
+        ? 'Show fewer repos'
+        : `Show all ${repoCards.length} public repos (${extraCount} more)`;
+    }
+  }
+}
+
+syncRepoCards();
+if (toggleRepos) {
   toggleRepos.addEventListener('click', () => {
     reposExpanded = !reposExpanded;
-    extraRepoCards.forEach(card => { card.hidden = !reposExpanded; });
-    toggleRepos.setAttribute('aria-expanded', String(reposExpanded));
-    toggleRepos.textContent = reposExpanded
-      ? 'Show fewer repos'
-      : `Show all 15 public repos (${extraRepoCards.length} more)`;
+    syncRepoCards();
   });
 }
 
@@ -2205,18 +2220,19 @@ if (openTerminalBtn && terminalModal) {
 // Live GitHub snapshot enhancement (safe public unauthenticated endpoint with static fallback)
 const githubReposContainer = document.getElementById('githubRepos');
 if (githubReposContainer && typeof fetch === 'function') {
-  fetch('https://api.github.com/users/aintzetsu/repos?sort=updated&per_page=8', {
+  fetch('https://api.github.com/users/aintzetsu/repos?sort=updated&per_page=30', {
     headers: { Accept: 'application/vnd.github+json' }
   })
     .then(res => (res.ok ? res.json() : null))
     .then(repos => {
       if (!Array.isArray(repos) || repos.length === 0) return;
-      const publicRepos = repos.filter(repo => !repo.private && repo.name !== 'aintzetsu').slice(0, 6);
+      const publicRepos = repos.filter(repo => !repo.private && !repo.fork && repo.name.toLowerCase() !== 'aintzetsu');
       if (publicRepos.length === 0) return;
       githubReposContainer.replaceChildren(
-        ...publicRepos.map(repo => {
+        ...publicRepos.map((repo, idx) => {
           const link = document.createElement('a');
           link.className = 'repo-mini';
+          if (idx >= INITIAL_REPOS_SHOWN) link.dataset.extraRepo = '';
           link.href = repo.html_url;
           link.target = '_blank';
           link.rel = 'noopener noreferrer';
@@ -2233,6 +2249,7 @@ if (githubReposContainer && typeof fetch === 'function') {
           return link;
         })
       );
+      syncRepoCards();
     })
     .catch(() => {
       // Static fallback repositories remain intact.

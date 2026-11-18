@@ -1137,11 +1137,69 @@ const caseStudyBlocks = document.getElementById('caseStudyBlocks');
 const caseStudyTags = document.getElementById('caseStudyTags');
 const caseStudyLiveLink = document.getElementById('caseStudyLiveLink');
 const caseStudyRepoLink = document.getElementById('caseStudyRepoLink');
+const caseStudyShareBtn = document.getElementById('caseStudyShareBtn');
 wireDialogDismiss(caseStudyModal, document.getElementById('closeCaseStudy'));
 
-function openCaseStudy(key, triggerEl) {
+let activeCaseStudySlug = null;
+
+function getCaseStudySlug(key) {
+  const card = document.querySelector(`.project-card[data-catalog="${key}"]`);
+  if (card && card.id.startsWith('project-')) return card.id.slice('project-'.length);
+  return key;
+}
+
+function resolveCatalogKey(rawSlug) {
+  if (!rawSlug) return null;
+  const normalized = String(rawSlug).trim();
+  if (projectCatalog[normalized]) return normalized;
+  const card = document.getElementById(`project-${normalized.toLowerCase()}`);
+  if (card && card.dataset.catalog && projectCatalog[card.dataset.catalog]) return card.dataset.catalog;
+  const lower = normalized.toLowerCase();
+  return Object.keys(projectCatalog).find(k => k.toLowerCase() === lower) || null;
+}
+
+function syncProjectUrlParam(slug) {
+  if (!window.history?.replaceState) return;
+  try {
+    const nextUrl = new URL(location.href);
+    if (slug) {
+      nextUrl.searchParams.set('project', slug);
+    } else {
+      nextUrl.searchParams.delete('project');
+    }
+    history.replaceState(null, '', nextUrl.toString());
+  } catch {}
+}
+
+if (caseStudyModal) {
+  caseStudyModal.addEventListener('close', () => {
+    activeCaseStudySlug = null;
+    syncProjectUrlParam(null);
+  });
+}
+
+if (caseStudyShareBtn) {
+  caseStudyShareBtn.addEventListener('click', async () => {
+    if (!activeCaseStudySlug) return;
+    const shareUrl = `${location.origin}${location.pathname}?project=${encodeURIComponent(activeCaseStudySlug)}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      caseStudyShareBtn.textContent = 'Copied Link ✓';
+      showToast(`Share link copied (?project=${activeCaseStudySlug})`);
+      setTimeout(() => {
+        if (caseStudyShareBtn) caseStudyShareBtn.textContent = 'Copy Share Link';
+      }, 2200);
+    } catch {
+      showToast(`Share URL ready: ?project=${activeCaseStudySlug}`);
+    }
+  });
+}
+
+function openCaseStudy(key, triggerEl, { syncUrl = true } = {}) {
   const item = projectCatalog[key];
   if (!item || !caseStudyModal) return;
+  activeCaseStudySlug = getCaseStudySlug(key);
+  if (caseStudyShareBtn) caseStudyShareBtn.textContent = 'Copy Share Link';
   caseStudyTitle.textContent = item.caseTitle;
   caseStudyEyebrow.textContent = item.eyebrow;
 
@@ -1169,22 +1227,45 @@ function openCaseStudy(key, triggerEl) {
   );
 
   syncModalActionLinks(caseStudyLiveLink, caseStudyRepoLink, item);
+  if (syncUrl) syncProjectUrlParam(activeCaseStudySlug);
   openDialog(caseStudyModal, triggerEl);
 }
 
-// Interactive category filter, layout switcher, search & Show More collapse across all 16 Featured Projects
+// Interactive category filter, sorting, layout switcher, search & Show More collapse across all 16 Featured Projects
 const projectControls = document.getElementById('projectControls');
 const projectSearch = document.getElementById('projectSearch');
+const projectSortToggle = document.getElementById('projectSortToggle');
 const projectViewToggle = document.getElementById('projectViewToggle');
 const featuredProjectList = document.getElementById('featuredProjectList');
 const featuredProjectCards = Array.from(document.querySelectorAll('#featuredProjectList .project-card'));
+featuredProjectCards.forEach((card, idx) => {
+  card.dataset.orderIndex = String(idx);
+});
 const projectsEmpty = document.getElementById('projectsEmpty');
 const projectsToggleWrap = document.getElementById('projectsToggleWrap');
 const toggleProjects = document.getElementById('toggleProjects');
 const INITIAL_PROJECTS_SHOWN = 3;
 let activeProjCat = 'all';
+let projectSort = 'featured';
 let projectView = 'stack';
 let projectsExpanded = false;
+
+function sortFeaturedProjects() {
+  if (!featuredProjectList || featuredProjectCards.length === 0) return featuredProjectCards;
+  const sorted = [...featuredProjectCards].sort((a, b) => {
+    const idxA = Number(a.dataset.orderIndex) || 0;
+    const idxB = Number(b.dataset.orderIndex) || 0;
+    if (projectSort === 'newest') return idxB - idxA;
+    if (projectSort === 'liked') {
+      const likesA = Math.max(0, Number(likeCounts[a.id]) || 0);
+      const likesB = Math.max(0, Number(likeCounts[b.id]) || 0);
+      if (likesB !== likesA) return likesB - likesA;
+    }
+    return idxA - idxB;
+  });
+  sorted.forEach(card => featuredProjectList.append(card));
+  return sorted;
+}
 
 function updateFeaturedProjects() {
   const query = (projectSearch ? projectSearch.value : '').trim().toLowerCase();
@@ -1193,6 +1274,11 @@ function updateFeaturedProjects() {
 
   if (featuredProjectList) {
     featuredProjectList.classList.toggle('is-grid', projectView === 'grid');
+  }
+  if (projectSortToggle) {
+    projectSortToggle.querySelectorAll('[data-proj-sort]').forEach(btn => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.projSort === projectSort));
+    });
   }
   if (projectViewToggle) {
     projectViewToggle.querySelectorAll('[data-proj-view]').forEach(btn => {
@@ -1205,8 +1291,9 @@ function updateFeaturedProjects() {
     });
   }
 
+  const orderedCards = sortFeaturedProjects();
   let matchedCount = 0;
-  featuredProjectCards.forEach(card => {
+  orderedCards.forEach(card => {
     const matchesCat = activeProjCat === 'all' || card.dataset.projCat === activeProjCat;
     const searchable = `${card.dataset.projKeywords || ''} ${card.textContent.toLowerCase()}`;
     const matchesQuery = !query || searchable.includes(query);
@@ -1270,6 +1357,14 @@ if (projectControls && featuredProjectCards.length > 0) {
       updateFeaturedProjects();
     });
   });
+  if (projectSortToggle) {
+    projectSortToggle.querySelectorAll('[data-proj-sort]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        projectSort = btn.dataset.projSort;
+        updateFeaturedProjects();
+      });
+    });
+  }
   if (projectViewToggle) {
     projectViewToggle.querySelectorAll('[data-proj-view]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1281,6 +1376,31 @@ if (projectControls && featuredProjectCards.length > 0) {
   if (projectSearch) {
     projectSearch.addEventListener('input', updateFeaturedProjects);
   }
+}
+
+const initialProjectParam = new URLSearchParams(location.search).get('project');
+const initialProjectKey = resolveCatalogKey(initialProjectParam);
+if (initialProjectKey) {
+  const initialSlug = getCaseStudySlug(initialProjectKey);
+  revealProjectCardIfNeeded(`#project-${initialSlug}`);
+  openCaseStudy(initialProjectKey, null, { syncUrl: false });
+}
+
+const toggleRepos = document.getElementById('toggleRepos');
+const reposToggleWrap = document.getElementById('reposToggleWrap');
+const extraRepoCards = Array.from(document.querySelectorAll('#githubRepos [data-extra-repo]'));
+let reposExpanded = false;
+if (toggleRepos && reposToggleWrap && extraRepoCards.length > 0) {
+  reposToggleWrap.hidden = false;
+  toggleRepos.hidden = false;
+  toggleRepos.addEventListener('click', () => {
+    reposExpanded = !reposExpanded;
+    extraRepoCards.forEach(card => { card.hidden = !reposExpanded; });
+    toggleRepos.setAttribute('aria-expanded', String(reposExpanded));
+    toggleRepos.textContent = reposExpanded
+      ? 'Show fewer repos'
+      : `Show all 15 public repos (${extraRepoCards.length} more)`;
+  });
 }
 
 // Populate Blueprint views for cards referencing projectCatalog so all 16 Featured cards share one template
@@ -1581,23 +1701,28 @@ const skillProofMap = {
   validation: { title: 'Data Validation', text: 'Performed systematic dataset validation and guideline consistency checks at RWS and Innodata.', target: '#role-innodata', label: 'View Innodata role →' },
   qa: { title: 'Quality Assurance', text: 'Reviewed and audited annotation outputs to maintain accuracy and quality standards.', target: '#role-rws', label: 'View QA experience →' },
   multimedia: { title: 'Audio, Text & Multimedia Review', text: 'Evaluated audio, text, and visual content for AI model training at RWS and Innodata.', target: '#role-rws', label: 'View experience →' },
-  react: { title: 'React', text: 'Built the responsive Simot Sarap frontend with interactive menu category filters.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
-  tailwind: { title: 'Tailwind CSS', text: 'Styled responsive sections, cards, and mobile navigation on Simot Sarap.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
+  react: { title: 'React', text: 'Built the responsive Simot Sarap frontend and powers Relay React 19 UI components.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
+  nextjs: { title: 'Next.js 16', text: 'Built the full-stack Relay workflow automation platform using Next.js 16 App Router, React 19, and server APIs.', target: '#project-relay', label: 'Jump to Relay →' },
+  tailwind: { title: 'Tailwind CSS', text: 'Styled responsive sections, cards, and mobile navigation on Simot Sarap and Relay.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
   javascript: { title: 'JavaScript', text: 'Powers Vesper Audio, Simot Sarap, LabelGrid, RestBench, Relay, Shift Ledger, PulseGrid, PathCraft, and all 16 featured projects.', target: '#projects', label: 'Jump to Featured Projects →' },
   htmlcss: { title: 'HTML & CSS', text: 'Modular CSS tokens & responsive grids across Vesper Audio, ChromaLab, Koto Cabin, this portfolio, and DepEd web updates.', target: '#project-vesper', label: 'Jump to Vesper Audio →' },
+  canvas: { title: 'HTML5 Canvas', text: 'Built pixel matting (Cutout Studio), bounding-box editors (LabelGrid), document deskewing (FolioVault), oscilloscopes (PulseGrid), and 60fps pathfinding (PathCraft).', target: '#project-cutout-studio', label: 'Jump to Cutout Studio →' },
+  webaudio: { title: 'Web Audio API', text: 'Engineered lookahead 5-voice drum synthesis (PulseGrid) and real-time studio monitor DSP filtering (Vesper Audio).', target: '#project-pulsegrid', label: 'Jump to PulseGrid →' },
   php: { title: 'PHP', text: 'Server-side web programming studied and practiced during BSIT coursework at STI College Fairview.', target: '#experience', label: 'View education →' },
   python: { title: 'Python', text: 'Scripting and programming fundamentals developed in IT coursework and automation tasks.', target: '#experience', label: 'View education →' },
   java: { title: 'Java', text: 'Object-oriented programming applied during BSIT studies at STI College Fairview.', target: '#experience', label: 'View education →' },
   csharp: { title: 'C#', text: 'Application programming language from BSIT coursework at STI College Fairview.', target: '#experience', label: 'View education →' },
   cpp: { title: 'C++', text: 'Foundational systems and algorithmic programming from BSIT studies.', target: '#experience', label: 'View education →' },
-  sql: { title: 'SQL', text: 'Relational querying and structured data management across IT coursework and reporting.', target: '#experience', label: 'View education →' },
+  neon: { title: 'Neon Postgres', text: 'Serverless Postgres database backing portfolio likes & telemetry (/api/likes), Shift Ledger accounts, and Relay multi-tenant automation.', target: '#project-shift-ledger', label: 'Jump to Shift Ledger →' },
+  restapi: { title: 'REST & Webhooks', text: 'Built an interactive REST & codegen playground (RestBench), serverless portfolio endpoints (/api/likes), and Relay HTTP webhook pipelines.', target: '#project-restbench', label: 'Jump to RestBench →' },
+  sql: { title: 'SQL', text: 'Relational schemas and querying across Neon Postgres (Relay, Shift Ledger, this portfolio) plus BSIT database coursework.', target: '#project-shift-ledger', label: 'Jump to Shift Ledger →' },
   mysql: { title: 'MySQL', text: 'Relational database schema design and data management practiced during BSIT studies.', target: '#experience', label: 'View education →' },
   sap: { title: 'SAP Software', text: 'Practiced inventory, sales, purchasing, finance, and reporting during STI SAP Systems Practicum.', target: '#role-sap', label: 'View SAP practicum →' },
   support: { title: 'IT Support & Troubleshooting', text: 'Supported users, system maintenance, and office records as IT Support Intern at DepEd NCR HRDD–NEAP.', target: '#role-deped', label: 'View DepEd NCR internship →' },
   hardware: { title: 'Hardware Diagnostics', text: 'Assembled PC units and diagnosed hardware issues as Computer System Servicing Trainee at SLDM College.', target: '#role-sldm', label: 'View SLDM training →' },
   networking: { title: 'Networking', text: 'Covered networking fundamentals and maintenance through System Administration certification at STI.', target: '#experience', label: 'View certification →' },
   sysadmin: { title: 'System Administration', text: 'Certified in System Administration at STI College Fairview and practiced at DepEd NCR.', target: '#experience', label: 'View certification →' },
-  git: { title: 'Git & GitHub', text: 'Version control and public source hosting for Vesper Audio, Simot Sarap, and this portfolio.', target: '#githubSnapshot', label: 'View GitHub repositories →' },
+  git: { title: 'Git & GitHub', text: 'Version control and open-source publishing across 15 public repositories on @aintzetsu.', target: '#githubSnapshot', label: 'View GitHub repositories →' },
   vercel: { title: 'Vercel', text: 'Production deployment across all 16 featured projects (Simot Sarap, Vesper Audio, LabelGrid, FolioVault, RestBench, Relay, Shift Ledger, etc.) plus this portfolio.', target: '#projects', label: 'Jump to Featured Projects →' },
   design: { title: 'Graphic Design', text: 'Digital design production honed as Freelance Embroidery Designer at Wilcom Embroidery Studio.', target: '#role-wilcom', label: 'View design experience →' }
 };
@@ -2591,6 +2716,7 @@ async function initVisitorLikes() {
       }
       persistLocalLikes();
       syncLikeButtons();
+      if (projectSort === 'liked') updateFeaturedProjects();
     }
   } catch {
     if (appreciateStatsEl && (Number(likeCounts.portfolio) || 0) === 0) {

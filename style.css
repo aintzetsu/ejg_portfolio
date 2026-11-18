@@ -1593,127 +1593,9 @@ p {
   font-weight: normal;
 }
 
-/* Live Vercel Apps Directory */
-.vercel-directory {
-  margin-top: 46px;
-  padding-top: 38px;
-  border-top: 1px dashed var(--line);
-}
-
-.vercel-head {
-  margin-bottom: 22px;
-}
-
-.vercel-head .eyebrow {
-  margin-bottom: 8px;
-}
-
-.vercel-head h3 {
-  font-family: var(--font-display);
-  font-size: clamp(1.45rem, 2.2vw, 1.9rem);
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.vercel-sub {
-  max-width: 64ch;
-  color: var(--muted);
-  font-size: 0.94rem;
-  margin: 0;
-}
-
 .vercel-controls {
   margin-top: 0;
-  margin-bottom: 22px;
-}
-
-.apps-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-}
-
-.app-card {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  overflow: hidden;
-  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
-}
-
-.app-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--accent);
-  box-shadow: 0 14px 32px #00000012;
-}
-
-.app-thumb {
-  position: relative;
-  display: block;
-  width: 100%;
-  border: 0;
-  padding: 0;
-  background: var(--surface-alt);
-  overflow: hidden;
-  border-bottom: 1px solid var(--line);
-}
-
-.app-thumb img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 8 / 5;
-  object-fit: cover;
-  object-position: top center;
-  transition: transform 0.35s ease;
-}
-
-.app-thumb:hover img {
-  transform: scale(1.03);
-}
-
-.app-thumb:hover .expand-hint,
-.app-thumb:focus-visible .expand-hint {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.app-card-body {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  padding: 20px;
-}
-
-.app-card-body .eyebrow {
-  margin-bottom: 6px;
-}
-
-.app-card-body h4 {
-  margin: 0 0 8px;
-  font-size: 1.15rem;
-  letter-spacing: -0.02em;
-}
-
-.app-card-body > p:not(.eyebrow) {
-  font-size: 0.86rem;
-  color: var(--muted);
-  margin: 0 0 14px;
-}
-
-.app-card-body .tags {
-  margin-bottom: 16px;
-}
-
-.app-card-body .tags li {
-  font-size: 0.74rem;
-  padding: 4px 9px;
-}
-
-.app-card-body .project-links {
-  margin-top: auto;
-  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .vercel-empty {
@@ -1867,6 +1749,12 @@ p {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
+}
+
+.skills-grid.is-single {
+  grid-template-columns: 1fr;
+  max-width: 700px;
+  margin-inline: auto;
 }
 
 .skill-group {
@@ -2706,9 +2594,6 @@ form {
     grid-template-columns: 1fr;
     gap: 28px;
   }
-  .apps-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
   .project-details {
     padding: 24px;
   }
@@ -2823,7 +2708,6 @@ form {
     margin-left: 22px;
   }
   .skills-grid,
-  .apps-grid,
   .contact-grid {
     grid-template-columns: 1fr;
   }

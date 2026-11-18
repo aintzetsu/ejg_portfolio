@@ -157,9 +157,13 @@
               <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
               <span>RWS · Data Service Specialist</span>
             </li>
+            <li class="visit-highlight" title="Total portfolio visits saved in Neon Postgres">
+              <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span><strong data-metric="visits">0</strong> visits</span>
+            </li>
           </ul>
           <div class="button-row">
-            <a href="Edison_Gaudicos_Updated_Resume.pdf" download class="button primary">Download CV</a>
+            <a href="Edison_Gaudicos_Updated_Resume.pdf" download class="button primary" id="downloadCvBtn"><span>Download CV</span><span class="cv-count" data-metric="cvDownloads" aria-label="Resume download count">0</span></a>
             <a href="Edison_Gaudicos_Updated_Resume.pdf" target="_blank" rel="noopener noreferrer" class="button" id="previewButton">Preview CV</a>
             <a href="https://github.com/aintzetsu" target="_blank" rel="noopener noreferrer" class="button">GitHub <span aria-hidden="true">↗</span></a>
             <button type="button" class="button like-button" id="heroLikeBtn" data-like-btn data-like-target="portfolio" aria-pressed="false" aria-label="Like this portfolio">
@@ -1220,6 +1224,7 @@
     </div>
     <div class="footer-bottom">
       <p>© <span id="year">2026</span> Edison Jr. Magparoc Gaudicos · Built with HTML, CSS, Vanilla JS &amp; Neon Postgres</p>
+      <span class="footer-telemetry mono-muted"><strong data-metric="visits">0</strong> visits · <strong data-metric="cvDownloads">0</strong> CV downloads</span>
       <a class="footer-top-link" href="#introduction">Back to top ↑</a>
     </div>
   </footer>

@@ -17,6 +17,7 @@ const ALLOWED_TARGETS = new Set([
   'project-pulsegrid',
   'project-koto-cabin',
   'project-relay',
+  'project-shift-ledger',
 ]);
 
 const VISITOR_ID_RE = /^[a-zA-Z0-9_-]{8,64}$/;

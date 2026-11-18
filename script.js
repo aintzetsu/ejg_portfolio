@@ -1025,6 +1025,28 @@ const projectCatalog = {
         text: 'Chains multi-step HTTP requests, condition gates, and Discord/Slack webhook dispatches with AES-256-GCM encrypted secrets, live webhook URLs, recurring cron triggers, and redacted run logs.'
       }
     ]
+  },
+  shiftLedger: {
+    title: 'Shift Ledger — Workday & Pay Tracker',
+    img: 'project-shift-ledger.webp',
+    alt: 'Shift Ledger Manila-time workday, earnings, and weekly pay tracker preview',
+    liveUrl: 'https://shift-ledger-beige.vercel.app/',
+    liveLabel: 'Visit Live Site ↗',
+    repoUrl: null,
+    eyebrow: 'WORKDAY & PAY LEDGER',
+    caseTitle: 'App Overview — Shift Ledger',
+    flow: ['Manila PHT Timer', 'No-Task Gap Log', 'Weekly Pay & CSV', 'Neon Account Sync'],
+    tags: ['HTML5 / CSS3', 'Vanilla JS', 'Neon Postgres', 'Account Recovery', 'CSV Export', 'Web Notifications'],
+    blocks: [
+      {
+        heading: 'Purpose',
+        text: 'Manila-time (Asia/Manila) shift, active-hour, and weekly pay ledger tailored to 4-hour daily shift targets and 28-hour Saturday–Friday billing cycles.'
+      },
+      {
+        heading: 'Interactive Capabilities',
+        text: 'Tracks active work time, finish-time projections, USD/PHP earnings, average handling time (AHT), pause/no-task gaps, editable timeline history, weekly invoice status & CSV exports, plus guest browser storage with optional private Neon Postgres account sync and recovery codes.'
+      }
+    ]
   }
 };
 
@@ -1063,7 +1085,8 @@ const flowByCatalogKey = {
   meridianSync: ['Intl.DateTimeFormat', '24h Overlap Matrix', 'DST Slot Scorer', 'Relay Cloud Sync'],
   pulsegrid: ['Lookahead Clock', '5-Voice Web Audio', 'Oscilloscope Canvas', 'JSON + Relay Sync'],
   kotoCabin: ['SVG Elevations', 'Landscape Filters', 'Rate Calculator', 'Itinerary + Relay'],
-  relay: ['Better Auth', 'Webhook & Cron', 'AES-256-GCM Secrets', 'Neon Postgres']
+  relay: ['Better Auth', 'Webhook & Cron', 'AES-256-GCM Secrets', 'Neon Postgres'],
+  shiftLedger: ['Manila PHT Timer', 'No-Task Gap Log', 'Weekly Pay & CSV', 'Neon Account Sync']
 };
 
 function createArchFlowEl(key, fallbackTags = []) {
@@ -1149,7 +1172,7 @@ function openCaseStudy(key, triggerEl) {
   openDialog(caseStudyModal, triggerEl);
 }
 
-// Interactive category filter, layout switcher, search & Show More collapse across all 15 Featured Projects
+// Interactive category filter, layout switcher, search & Show More collapse across all 16 Featured Projects
 const projectControls = document.getElementById('projectControls');
 const projectSearch = document.getElementById('projectSearch');
 const projectViewToggle = document.getElementById('projectViewToggle');
@@ -1260,7 +1283,7 @@ if (projectControls && featuredProjectCards.length > 0) {
   }
 }
 
-// Populate Blueprint views for cards referencing projectCatalog so all 15 Featured cards share one template
+// Populate Blueprint views for cards referencing projectCatalog so all 16 Featured cards share one template
 document.querySelectorAll('.project-card[data-catalog]').forEach(card => {
   const key = card.dataset.catalog;
   const item = projectCatalog[key];
@@ -1560,7 +1583,7 @@ const skillProofMap = {
   multimedia: { title: 'Audio, Text & Multimedia Review', text: 'Evaluated audio, text, and visual content for AI model training at RWS and Innodata.', target: '#role-rws', label: 'View experience →' },
   react: { title: 'React', text: 'Built the responsive Simot Sarap frontend with interactive menu category filters.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
   tailwind: { title: 'Tailwind CSS', text: 'Styled responsive sections, cards, and mobile navigation on Simot Sarap.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
-  javascript: { title: 'JavaScript', text: 'Powers Vesper Audio, Simot Sarap, LabelGrid, RestBench, Relay, PulseGrid, PathCraft, and all 15 featured projects.', target: '#projects', label: 'Jump to Featured Projects →' },
+  javascript: { title: 'JavaScript', text: 'Powers Vesper Audio, Simot Sarap, LabelGrid, RestBench, Relay, Shift Ledger, PulseGrid, PathCraft, and all 16 featured projects.', target: '#projects', label: 'Jump to Featured Projects →' },
   htmlcss: { title: 'HTML & CSS', text: 'Modular CSS tokens & responsive grids across Vesper Audio, ChromaLab, Koto Cabin, this portfolio, and DepEd web updates.', target: '#project-vesper', label: 'Jump to Vesper Audio →' },
   php: { title: 'PHP', text: 'Server-side web programming studied and practiced during BSIT coursework at STI College Fairview.', target: '#experience', label: 'View education →' },
   python: { title: 'Python', text: 'Scripting and programming fundamentals developed in IT coursework and automation tasks.', target: '#experience', label: 'View education →' },
@@ -1575,7 +1598,7 @@ const skillProofMap = {
   networking: { title: 'Networking', text: 'Covered networking fundamentals and maintenance through System Administration certification at STI.', target: '#experience', label: 'View certification →' },
   sysadmin: { title: 'System Administration', text: 'Certified in System Administration at STI College Fairview and practiced at DepEd NCR.', target: '#experience', label: 'View certification →' },
   git: { title: 'Git & GitHub', text: 'Version control and public source hosting for Vesper Audio, Simot Sarap, and this portfolio.', target: '#githubSnapshot', label: 'View GitHub repositories →' },
-  vercel: { title: 'Vercel', text: 'Production deployment across all 15 featured projects (Simot Sarap, Vesper Audio, LabelGrid, FolioVault, RestBench, Relay, etc.) plus this portfolio.', target: '#projects', label: 'Jump to Featured Projects →' },
+  vercel: { title: 'Vercel', text: 'Production deployment across all 16 featured projects (Simot Sarap, Vesper Audio, LabelGrid, FolioVault, RestBench, Relay, Shift Ledger, etc.) plus this portfolio.', target: '#projects', label: 'Jump to Featured Projects →' },
   design: { title: 'Graphic Design', text: 'Digital design production honed as Freelance Embroidery Designer at Wilcom Embroidery Studio.', target: '#role-wilcom', label: 'View design experience →' }
 };
 
@@ -1724,8 +1747,9 @@ const paletteActions = [
   { title: 'Trigger Accent Confetti Burst', hint: 'Fun', run: () => launchConfetti(null) },
   { title: 'Jump to Introduction', hint: '#introduction', run: () => { location.hash = '#introduction'; } },
   { title: 'Jump to Experience & Education', hint: '#experience', run: () => { location.hash = '#experience'; } },
-  { title: 'Jump to Featured Projects (15)', hint: '#projects', run: () => { location.hash = '#projects'; } },
+  { title: 'Jump to Featured Projects (16)', hint: '#projects', run: () => { location.hash = '#projects'; } },
   { title: 'Toggle Projects Layout (Stack / Grid)', hint: 'Layout', run: () => { projectView = projectView === 'grid' ? 'stack' : 'grid'; updateFeaturedProjects(); location.hash = '#projects'; } },
+  { title: 'Read Shift Ledger Case Study', hint: 'Featured 16', run: () => openCaseStudy('shiftLedger', openPaletteBtn) },
   { title: 'Inspect LabelGrid (AI Annotation App)', hint: 'Featured 03', run: () => openCaseStudy('labelgrid', openPaletteBtn) },
   { title: 'Read Simot Sarap Case Study', hint: 'Modal', run: () => openCaseStudy('simotsarap', openPaletteBtn) },
   { title: 'Read Vesper Audio Case Study', hint: 'Modal', run: () => openCaseStudy('vesper', openPaletteBtn) },
@@ -1896,9 +1920,9 @@ function runTerminalCommand(rawInput) {
     return;
   }
   if (cmd === 'apps' || cmd === 'vercel') {
-    appendTermLine('All 15 Featured Web Apps (alongside ejg-portfolio):');
-    appendTermLine('• Simot Sarap, Vesper Audio, LabelGrid, FolioVault, Cutout Studio, RestBench, PathCraft, ChromaLab, Folio Notes, LedgerFlow, SprintDeck, Meridian Sync, PulseGrid, Koto Cabin, Relay');
-    appendTermAction('Jump to All 15 Featured Projects', () => {
+    appendTermLine('All 16 Featured Web Apps (alongside ejg-portfolio):');
+    appendTermLine('• Simot Sarap, Vesper Audio, LabelGrid, FolioVault, Cutout Studio, RestBench, PathCraft, ChromaLab, Folio Notes, LedgerFlow, SprintDeck, Meridian Sync, PulseGrid, Koto Cabin, Relay, Shift Ledger');
+    appendTermAction('Jump to All 16 Featured Projects', () => {
       terminalModal.close();
       location.hash = '#projects';
     });
@@ -1955,7 +1979,7 @@ function runTerminalCommand(rawInput) {
   if (cmd === 'projects') {
     appendTermLine('1) Simot Sarap — zetsume-simotsarap.vercel.app');
     appendTermLine('2) Vesper Audio — vesper-audio.vercel.app (GitHub: aintzetsu/vesper-audio)');
-    appendTermLine('+ 13 more live Vercel web apps including Relay (run "apps" to list all).');
+    appendTermLine('+ 14 more live Vercel web apps including Relay & Shift Ledger (run "apps" to list all).');
     appendTermAction('Inspect Featured Projects', () => {
       terminalModal.close();
       location.hash = '#projects';

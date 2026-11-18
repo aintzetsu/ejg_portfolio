@@ -1794,6 +1794,244 @@ html[data-theme="dark"] .cv-count {
   color: var(--accent);
 }
 
+/* ChromaLab Interactive Contrast Widget */
+.chroma-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.chroma-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.chroma-picker input[type="color"] {
+  width: 30px;
+  height: 26px;
+  padding: 2px;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.chroma-preview {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.chroma-preview strong {
+  font-size: 0.96rem;
+}
+
+.chroma-preview span {
+  font-size: 0.78rem;
+  opacity: 0.92;
+}
+
+.chroma-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.chroma-badge {
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  border: 1px solid currentColor;
+  background: rgba(255, 255, 255, 0.85);
+  color: #161513;
+}
+
+.chroma-badge.is-pass {
+  border-color: #15803d;
+  color: #166534;
+  background: #dcfce7;
+}
+
+.chroma-badge.is-fail {
+  border-color: #b91c1c;
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+/* PulseGrid Interactive 8-Step Sequencer */
+.pulse-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+}
+
+.pulse-toolbar .copy-button[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.pulse-bpm-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: #d6d0c5;
+}
+
+.pulse-bpm-wrap input[type="range"] {
+  width: 82px;
+  margin: 0;
+  padding: 0;
+  accent-color: #ff5c28;
+}
+
+.pulse-grid {
+  display: grid;
+  gap: 7px;
+}
+
+.pulse-row {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.pulse-row-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #d6d0c5;
+}
+
+.pulse-steps {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.pulse-step {
+  height: 26px;
+  padding: 0;
+  border: 1px solid #35312c;
+  border-radius: 6px;
+  background: #23201c;
+  transition: transform 0.1s, background 0.12s, border-color 0.12s;
+}
+
+.pulse-step.is-on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.pulse-step.is-playhead {
+  box-shadow: 0 0 0 2px #f5f4f1;
+  transform: scale(1.04);
+}
+
+/* Shift Ledger Interactive Shift Simulator */
+.shift-lab-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.shift-metric-tile {
+  padding: 8px 9px;
+  border: 1px solid #ccd2c5;
+  border-radius: 9px;
+  background: #fffef9;
+  color: #1f392e;
+}
+
+.shift-metric-tile span {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  color: #57675d;
+}
+
+.shift-metric-tile strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.shift-lab progress {
+  width: 100%;
+  height: 8px;
+  accent-color: #244939;
+}
+
+.shift-lab-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.shift-lab-controls label {
+  display: grid;
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+.shift-lab-controls input[type="range"] {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  accent-color: #244939;
+}
+
+.shift-rate-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.shift-rate-row input[type="number"] {
+  width: 68px;
+  margin: 0;
+  padding: 5px 8px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.shift-lab-foot {
+  margin: 0;
+  font-size: 0.72rem;
+}
+
+@media (max-width: 600px) {
+  .shift-lab-metrics,
+  .shift-lab-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .media-preview-trigger {
   width: 100%;
   border: 0;
@@ -3017,7 +3255,6 @@ dialog iframe {
   font-size: 0.9rem;
   color: var(--muted);
 }
-
 .lightbox-footer {
   display: flex;
   flex-wrap: wrap;

@@ -19,9 +19,11 @@ function showToast(message) {
 // Highlight active navigation link and desktop rail based on visible section
 const navLinks = Array.from(document.querySelectorAll('#mainNav a[href^="#"]'));
 const railLinks = Array.from(document.querySelectorAll('#sectionRail a[data-rail]'));
-const sections = navLinks
-  .map(link => document.querySelector(link.getAttribute('href')))
-  .filter(Boolean);
+const sections = Array.from(new Set(
+  [...navLinks, ...railLinks]
+    .map(link => document.querySelector(link.getAttribute('href')))
+    .filter(Boolean)
+));
 
 function setActiveNav(id) {
   navLinks.forEach(link => {
@@ -1421,7 +1423,7 @@ const skillProofMap = {
   validation: { title: 'Data Validation', text: 'Performed systematic dataset validation and guideline consistency checks at RWS and Innodata.', target: '#role-innodata', label: 'View Innodata role →' },
   qa: { title: 'Quality Assurance', text: 'Reviewed and audited annotation outputs to maintain accuracy and quality standards.', target: '#role-rws', label: 'View QA experience →' },
   multimedia: { title: 'Audio, Text & Multimedia Review', text: 'Evaluated audio, text, and visual content for AI model training at RWS and Innodata.', target: '#role-rws', label: 'View experience →' },
-  react: { title: 'React', text: 'Built the responsive Simot Sarap restaurant frontend with interactive menu category filters.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
+  react: { title: 'React', text: 'Built the responsive Simot Sarap frontend with interactive menu category filters.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
   tailwind: { title: 'Tailwind CSS', text: 'Styled responsive sections, cards, and mobile navigation on Simot Sarap.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
   javascript: { title: 'JavaScript', text: 'Powers Vesper Audio, Simot Sarap, LabelGrid, RestBench, PulseGrid, PathCraft, and all 14 featured projects.', target: '#projects', label: 'Jump to Featured Projects →' },
   htmlcss: { title: 'HTML & CSS', text: 'Modular CSS tokens & responsive grids across Vesper Audio, ChromaLab, Koto Cabin, this portfolio, and DepEd web updates.', target: '#project-vesper', label: 'Jump to Vesper Audio →' },
@@ -1564,6 +1566,7 @@ const copyEmailAddress = async () => {
 };
 
 const paletteActions = [
+  { title: 'Leave a Like / Appreciate Portfolio', hint: 'Like ❤️', run: () => { togglePortfolioLike(openPaletteBtn); } },
   { title: 'Open Interactive Terminal (> _)', hint: 'Shortcut `', run: () => { if (openTerminalBtn) openTerminalBtn.click(); } },
   { title: 'Launch Vesper Audio DSP Live Lab', hint: 'Interactive', run: () => { openVesperLab(); document.getElementById('project-vesper')?.scrollIntoView({ behavior: 'smooth' }); } },
   { title: 'Trigger Accent Confetti Burst', hint: 'Fun', run: () => launchConfetti(null) },
@@ -1722,7 +1725,21 @@ function runTerminalCommand(rawInput) {
     return;
   }
   if (cmd === 'help') {
-    appendTermLine('Commands: whoami | apps | lab | experience [qa|systems|all] | projects | skills <keyword> | theme [light|dark|toggle] | accent [rust|cobalt|teal|plum] | confetti | status | cv | contact | clear | exit');
+    appendTermLine('Commands: whoami | apps | lab | like | experience [qa|systems|all] | projects | skills <keyword> | theme [light|dark|toggle] | accent [rust|cobalt|teal|plum] | confetti | status | cv | contact | clear | exit');
+    return;
+  }
+  if (cmd === 'like' || cmd === 'love') {
+    const alreadyLiked = likedTargets.has('portfolio');
+    submitLikeAction('portfolio', 'like', terminalModal).then(res => {
+      const count = res?.likes ?? (likeCounts.portfolio || 0);
+      appendTermLine(alreadyLiked
+        ? `Portfolio already liked (${count} total portfolio ${count === 1 ? 'like' : 'likes'}).`
+        : `Appreciation saved to Neon Postgres! Portfolio likes: ${count}`);
+      appendTermAction('Jump to Visitor Appreciation section', () => {
+        terminalModal.close();
+        document.getElementById('appreciate')?.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
     return;
   }
   if (cmd === 'apps' || cmd === 'vercel') {
@@ -2031,6 +2048,251 @@ if (copyDraftButton && contactForm) {
     }
   });
 }
+
+// Shared Persistent Visitor Likes (Neon Postgres via /api/likes)
+const likeCounts = Object.create(null);
+const likedTargets = new Set();
+const pendingLikeTargets = new Set();
+const projectTitlesById = Object.create(null);
+const appreciateStatsEl = document.getElementById('appreciateStats');
+const appreciateProjectsSummaryEl = document.getElementById('appreciateProjectsSummary');
+
+function getVisitorId() {
+  try {
+    const existing = localStorage.getItem('ejg-visitor-id');
+    if (existing && /^[a-zA-Z0-9_-]{8,64}$/.test(existing)) return existing;
+    const generated = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? `v_${crypto.randomUUID().replace(/-/g, '').slice(0, 24)}`
+      : `v_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 12)}`;
+    localStorage.setItem('ejg-visitor-id', generated);
+    return generated;
+  } catch {
+    return 'v_anon_fallback_001';
+  }
+}
+
+function createHeartSvg() {
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('class', 'ui-icon heart-icon');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '2');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  svg.setAttribute('aria-hidden', 'true');
+  const path = document.createElementNS(ns, 'path');
+  path.setAttribute('d', 'M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z');
+  svg.append(path);
+  return svg;
+}
+
+function injectProjectLikeButtons() {
+  featuredProjectCards.forEach(card => {
+    const target = card.id;
+    const linksRow = card.querySelector('.project-links');
+    const heading = card.querySelector('h3');
+    if (!target || !linksRow || linksRow.querySelector('[data-like-btn]')) return;
+    const title = heading ? heading.textContent.trim() : target;
+    projectTitlesById[target] = title;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'project-like-btn';
+    btn.dataset.likeBtn = '';
+    btn.dataset.likeTarget = target;
+    btn.setAttribute('aria-pressed', 'false');
+    btn.setAttribute('aria-label', `Like ${title}`);
+
+    const countSpan = document.createElement('span');
+    countSpan.className = 'like-count';
+    countSpan.dataset.likeCount = target;
+    countSpan.textContent = '0';
+
+    btn.append(createHeartSvg(), countSpan);
+    linksRow.append(btn);
+  });
+}
+
+function renderLikeSummary() {
+  const portfolioTotal = Math.max(0, Number(likeCounts.portfolio) || 0);
+  const projectLikes = Object.entries(likeCounts)
+    .filter(([key, val]) => key.startsWith('project-') && Number(val) > 0)
+    .sort((a, b) => Number(b[1]) - Number(a[1]));
+  const totalProjectLikes = projectLikes.reduce((acc, [, val]) => acc + Number(val), 0);
+
+  if (appreciateStatsEl) {
+    if (portfolioTotal === 0 && totalProjectLikes === 0) {
+      appreciateStatsEl.textContent = 'Be the first visitor to leave a like on this portfolio.';
+    } else {
+      const visitorLabel = `${portfolioTotal} ${portfolioTotal === 1 ? 'visitor has' : 'visitors have'} liked this portfolio`;
+      const projectPart = totalProjectLikes > 0
+        ? ` · ${totalProjectLikes} project ${totalProjectLikes === 1 ? 'like' : 'likes'}`
+        : '';
+      appreciateStatsEl.textContent = `${visitorLabel}${projectPart}.`;
+    }
+  }
+
+  if (appreciateProjectsSummaryEl) {
+    if (projectLikes.length > 0) {
+      const topList = projectLikes
+        .slice(0, 3)
+        .map(([key, count]) => `${projectTitlesById[key] || key.replace('project-', '')} (${count})`)
+        .join(' · ');
+      appreciateProjectsSummaryEl.textContent = `Top liked projects: ${topList}`;
+      appreciateProjectsSummaryEl.hidden = false;
+    } else {
+      appreciateProjectsSummaryEl.hidden = true;
+    }
+  }
+}
+
+function syncLikeButtons() {
+  document.querySelectorAll('[data-like-btn][data-like-target]').forEach(btn => {
+    const target = btn.dataset.likeTarget;
+    const isLiked = likedTargets.has(target);
+    btn.classList.toggle('is-liked', isLiked);
+    btn.setAttribute('aria-pressed', String(isLiked));
+    const labelEl = btn.querySelector('.like-label');
+    if (labelEl) {
+      if (btn.id === 'mainLikeBtn') {
+        labelEl.textContent = isLiked ? 'Liked · Thank you!' : 'Leave a Like';
+      } else {
+        labelEl.textContent = isLiked ? 'Liked' : 'Like';
+      }
+    }
+  });
+
+  document.querySelectorAll('[data-like-count]').forEach(el => {
+    const target = el.dataset.likeCount;
+    el.textContent = String(Math.max(0, Number(likeCounts[target]) || 0));
+  });
+
+  renderLikeSummary();
+}
+
+function persistLocalLikes() {
+  try {
+    localStorage.setItem('ejg-liked-targets', JSON.stringify(Array.from(likedTargets)));
+    localStorage.setItem('ejg-like-counts-cache', JSON.stringify(likeCounts));
+  } catch {}
+}
+
+function triggerHeartPop(target) {
+  document.querySelectorAll(`[data-like-btn][data-like-target="${target}"]`).forEach(btn => {
+    btn.classList.remove('is-popping');
+    void btn.offsetWidth;
+    btn.classList.add('is-popping');
+  });
+}
+
+async function submitLikeAction(target, action, originEl) {
+  if (!target || pendingLikeTargets.has(target)) return null;
+  pendingLikeTargets.add(target);
+
+  const prevCount = Math.max(0, Number(likeCounts[target]) || 0);
+  const wasLiked = likedTargets.has(target);
+
+  if (action === 'like' && !wasLiked) {
+    likedTargets.add(target);
+    likeCounts[target] = prevCount + 1;
+    triggerHeartPop(target);
+    if (originEl) launchConfetti(originEl);
+  } else if (action === 'unlike' && wasLiked) {
+    likedTargets.delete(target);
+    likeCounts[target] = Math.max(0, prevCount - 1);
+  }
+  syncLikeButtons();
+
+  try {
+    const resp = await fetch('/api/likes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
+      body: JSON.stringify({ target, visitorId: getVisitorId(), action }),
+    });
+    const data = await resp.json().catch(() => null);
+    if (!resp.ok || !data || !data.ok) {
+      throw new Error(data?.error || `HTTP ${resp.status}`);
+    }
+
+    likeCounts[target] = Math.max(0, Number(data.likes) || 0);
+    if (data.liked) {
+      likedTargets.add(target);
+    } else {
+      likedTargets.delete(target);
+    }
+    persistLocalLikes();
+    syncLikeButtons();
+
+    const targetLabel = target === 'portfolio' ? 'portfolio' : (projectTitlesById[target] || 'project');
+    showToast(data.liked ? `Thanks! Liked ${targetLabel} (${data.likes}).` : `Removed like from ${targetLabel}.`);
+    return data;
+  } catch {
+    likeCounts[target] = prevCount;
+    if (wasLiked) likedTargets.add(target);
+    else likedTargets.delete(target);
+    syncLikeButtons();
+    showToast('Could not save like right now. Please try again.');
+    return null;
+  } finally {
+    pendingLikeTargets.delete(target);
+  }
+}
+
+function togglePortfolioLike(originEl) {
+  const targetEl = document.getElementById('appreciate');
+  if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const action = likedTargets.has('portfolio') ? 'unlike' : 'like';
+  return submitLikeAction('portfolio', action, originEl || document.getElementById('mainLikeBtn'));
+}
+
+async function initVisitorLikes() {
+  injectProjectLikeButtons();
+
+  try {
+    const cachedCounts = JSON.parse(localStorage.getItem('ejg-like-counts-cache') || '{}');
+    if (cachedCounts && typeof cachedCounts === 'object') {
+      Object.entries(cachedCounts).forEach(([k, v]) => { likeCounts[k] = Math.max(0, Number(v) || 0); });
+    }
+    const cachedLiked = JSON.parse(localStorage.getItem('ejg-liked-targets') || '[]');
+    if (Array.isArray(cachedLiked)) cachedLiked.forEach(t => likedTargets.add(t));
+  } catch {}
+  syncLikeButtons();
+
+  document.addEventListener('click', event => {
+    const btn = event.target.closest('[data-like-btn][data-like-target]');
+    if (!btn) return;
+    const target = btn.dataset.likeTarget;
+    const action = likedTargets.has(target) ? 'unlike' : 'like';
+    submitLikeAction(target, action, btn);
+  });
+
+  try {
+    const visitorId = encodeURIComponent(getVisitorId());
+    const resp = await fetch(`/api/likes?visitorId=${visitorId}`, { cache: 'no-store' });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    if (data && data.ok && data.counts) {
+      Object.entries(data.counts).forEach(([k, v]) => {
+        likeCounts[k] = Math.max(0, Number(v) || 0);
+      });
+      likedTargets.clear();
+      if (Array.isArray(data.liked)) {
+        data.liked.forEach(t => likedTargets.add(t));
+      }
+      persistLocalLikes();
+      syncLikeButtons();
+    }
+  } catch {
+    if (appreciateStatsEl && (Number(likeCounts.portfolio) || 0) === 0) {
+      appreciateStatsEl.textContent = 'Tap Leave a Like to show appreciation.';
+    }
+  }
+}
+
+initVisitorLikes();
 
 if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const observer = new IntersectionObserver(entries => {

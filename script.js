@@ -2202,13 +2202,113 @@ if (copyDraftButton && contactForm) {
   });
 }
 
-// Shared Persistent Visitor Likes (Neon Postgres via /api/likes)
+// Shared Persistent Visitor Likes & Site Metrics (Neon Postgres via /api/likes)
 const likeCounts = Object.create(null);
 const likedTargets = new Set();
 const pendingLikeTargets = new Set();
 const projectTitlesById = Object.create(null);
+const siteMetrics = { visits: 0, cvDownloads: 0 };
 const appreciateStatsEl = document.getElementById('appreciateStats');
 const appreciateProjectsSummaryEl = document.getElementById('appreciateProjectsSummary');
+
+function syncSiteMetrics() {
+  document.querySelectorAll('[data-metric]').forEach(el => {
+    const key = el.dataset.metric;
+    if (key === 'visits' || key === 'cvDownloads') {
+      el.textContent = String(Math.max(0, Number(siteMetrics[key]) || 0));
+    }
+  });
+}
+
+function persistLocalMetrics() {
+  try {
+    localStorage.setItem('ejg-metrics-cache', JSON.stringify(siteMetrics));
+  } catch {}
+}
+
+async function recordSiteMetric(action) {
+  if (action === 'cv_download') {
+    siteMetrics.cvDownloads++;
+    syncSiteMetrics();
+    persistLocalMetrics();
+    showToast('Downloading CV...');
+  }
+  try {
+    const resp = await fetch('/api/likes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
+      keepalive: true,
+      body: JSON.stringify({ target: 'site', visitorId: getVisitorId(), action }),
+    });
+    const data = await resp.json().catch(() => null);
+    if (resp.ok && data?.ok && data.metrics) {
+      siteMetrics.visits = Math.max(0, Number(data.metrics.visits) || 0);
+      siteMetrics.cvDownloads = Math.max(0, Number(data.metrics.cvDownloads) || 0);
+      persistLocalMetrics();
+      syncSiteMetrics();
+    }
+  } catch {
+    // Silent fallback when offline
+  }
+}
+
+function initHoverPreviewReels() {
+  document.querySelectorAll('.project-card').forEach(card => {
+    const trigger = card.querySelector('.media-preview-trigger');
+    const frame = card.querySelector('.browser-frame');
+    if (!trigger || !frame || trigger.querySelector('.preview-reel')) return;
+
+    const key = trigger.dataset.preview || card.dataset.catalog;
+    const fallbackSteps = Array.from(card.querySelectorAll('.tags li')).map(li => li.textContent.trim()).slice(0, 4);
+    const steps = (key && flowByCatalogKey[key]) || fallbackSteps;
+    if (!steps || steps.length === 0) return;
+
+    const reel = document.createElement('div');
+    reel.className = 'preview-reel';
+    reel.setAttribute('aria-hidden', 'true');
+
+    const dot = document.createElement('span');
+    dot.className = 'preview-reel-dot';
+
+    const label = document.createElement('span');
+    label.className = 'preview-reel-text';
+    label.textContent = `1/${steps.length} · ${steps[0]}`;
+
+    const bar = document.createElement('span');
+    bar.className = 'preview-reel-bar';
+
+    reel.append(dot, label, bar);
+    trigger.append(reel);
+
+    let stepIdx = 0;
+    let timer = null;
+
+    const startReel = () => {
+      frame.classList.add('is-previewing');
+      if (reducedMotionQuery.matches || timer || steps.length <= 1) return;
+      timer = setInterval(() => {
+        stepIdx = (stepIdx + 1) % steps.length;
+        label.textContent = `${stepIdx + 1}/${steps.length} · ${steps[stepIdx]}`;
+      }, 1400);
+    };
+
+    const stopReel = () => {
+      frame.classList.remove('is-previewing');
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+      stepIdx = 0;
+      label.textContent = `1/${steps.length} · ${steps[0]}`;
+    };
+
+    trigger.addEventListener('pointerenter', startReel);
+    trigger.addEventListener('pointerleave', stopReel);
+    trigger.addEventListener('focus', startReel);
+    trigger.addEventListener('blur', stopReel);
+  });
+}
 
 function getVisitorId() {
   try {
@@ -2413,6 +2513,7 @@ function togglePortfolioLike(originEl) {
 
 async function initVisitorLikes() {
   injectProjectLikeButtons();
+  initHoverPreviewReels();
 
   try {
     const cachedCounts = JSON.parse(localStorage.getItem('ejg-like-counts-cache') || '{}');
@@ -2421,8 +2522,21 @@ async function initVisitorLikes() {
     }
     const cachedLiked = JSON.parse(localStorage.getItem('ejg-liked-targets') || '[]');
     if (Array.isArray(cachedLiked)) cachedLiked.forEach(t => likedTargets.add(t));
+    const cachedMetrics = JSON.parse(localStorage.getItem('ejg-metrics-cache') || '{}');
+    if (cachedMetrics && typeof cachedMetrics === 'object') {
+      siteMetrics.visits = Math.max(0, Number(cachedMetrics.visits) || 0);
+      siteMetrics.cvDownloads = Math.max(0, Number(cachedMetrics.cvDownloads) || 0);
+    }
   } catch {}
   syncLikeButtons();
+  syncSiteMetrics();
+
+  const downloadCvBtn = document.getElementById('downloadCvBtn');
+  if (downloadCvBtn) {
+    downloadCvBtn.addEventListener('click', () => {
+      recordSiteMetric('cv_download');
+    });
+  }
 
   document.addEventListener('click', event => {
     const btn = event.target.closest('[data-like-btn][data-like-target]');
@@ -2445,6 +2559,12 @@ async function initVisitorLikes() {
       if (Array.isArray(data.liked)) {
         data.liked.forEach(t => likedTargets.add(t));
       }
+      if (data.metrics) {
+        siteMetrics.visits = Math.max(0, Number(data.metrics.visits) || 0);
+        siteMetrics.cvDownloads = Math.max(0, Number(data.metrics.cvDownloads) || 0);
+        persistLocalMetrics();
+        syncSiteMetrics();
+      }
       persistLocalLikes();
       syncLikeButtons();
     }
@@ -2453,6 +2573,13 @@ async function initVisitorLikes() {
       appreciateStatsEl.textContent = 'Tap Leave a Like to show appreciation.';
     }
   }
+
+  try {
+    if (!sessionStorage.getItem('ejg-visit-recorded')) {
+      sessionStorage.setItem('ejg-visit-recorded', '1');
+      recordSiteMetric('visit');
+    }
+  } catch {}
 }
 
 initVisitorLikes();

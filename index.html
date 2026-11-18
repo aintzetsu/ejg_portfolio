@@ -176,7 +176,7 @@
       </div>
       <div class="container proof-strip" aria-label="Portfolio highlights">
         <a class="proof-tile spotlight-card" href="#projects">
-          <span class="proof-metric">15</span>
+          <span class="proof-metric">16</span>
           <div>
             <strong>Live Web Apps</strong>
             <span>Deployed on Vercel</span>
@@ -360,15 +360,15 @@
       <div class="section-heading">
         <p class="eyebrow">02 / FROM IDEA TO IMPLEMENTATION</p>
         <h2>Featured projects</h2>
-        <p>Every web experience, interactive tool, and storefront I built and deployed live to Vercel (15 projects).</p>
+        <p>Every web experience, interactive tool, and storefront I built and deployed live to Vercel (16 projects).</p>
       </div>
       <div class="skills-controls vercel-controls" id="projectControls" hidden>
         <div class="filter-bar" role="group" aria-label="Filter featured projects by category">
-          <button type="button" class="filter-pill" data-proj-cat="all" aria-pressed="true">All Featured (15)</button>
+          <button type="button" class="filter-pill" data-proj-cat="all" aria-pressed="true">All Featured (16)</button>
           <button type="button" class="filter-pill" data-proj-cat="web" aria-pressed="false">Websites &amp; Audio (4)</button>
           <button type="button" class="filter-pill" data-proj-cat="ai" aria-pressed="false">AI &amp; Data QA (3)</button>
           <button type="button" class="filter-pill" data-proj-cat="dev" aria-pressed="false">Dev &amp; Algorithms (4)</button>
-          <button type="button" class="filter-pill" data-proj-cat="work" aria-pressed="false">Productivity (4)</button>
+          <button type="button" class="filter-pill" data-proj-cat="work" aria-pressed="false">Productivity (5)</button>
         </div>
         <div class="project-tools-right">
           <div class="view-switcher" id="projectViewToggle" role="group" aria-label="Featured projects layout mode">
@@ -376,7 +376,7 @@
             <button type="button" class="view-btn" data-proj-view="grid" aria-pressed="false">Compact Grid</button>
           </div>
           <label for="projectSearch" class="sr-only">Search featured projects</label>
-          <input type="search" id="projectSearch" class="skill-search" placeholder="Search 15 projects (e.g. react, nextjs, webhooks, api)..." autocomplete="off">
+          <input type="search" id="projectSearch" class="skill-search" placeholder="Search 16 projects (e.g. react, nextjs, neon, webhooks)..." autocomplete="off">
         </div>
       </div>
       <div class="project-list" id="featuredProjectList">
@@ -973,10 +973,44 @@
             </div>
           </div>
         </article>
+
+        <article class="project-card spotlight-card" id="project-shift-ledger" data-catalog="shiftLedger" data-proj-cat="work" data-proj-keywords="shift ledger workday time tracker neon postgres earnings aht csv weekly pay invoice manila pht" aria-labelledby="project16Title">
+          <div class="project-media project-showcase">
+            <div class="browser-frame tilt-target">
+              <div class="browser-chrome">
+                <span class="dot-red" aria-hidden="true"></span><span class="dot-amber" aria-hidden="true"></span><span class="dot-green" aria-hidden="true"></span>
+                <span class="browser-url">shift-ledger-beige.vercel.app</span>
+                <div class="browser-mode-switch" role="tablist" aria-label="Shift Ledger preview view" hidden>
+                  <button type="button" role="tab" aria-selected="true" data-frame-mode="visual">Preview</button>
+                  <button type="button" role="tab" aria-selected="false" data-frame-mode="blueprint">Blueprint</button>
+                </div>
+              </div>
+              <div class="browser-stage">
+                <button type="button" class="media-preview-trigger" data-preview="shiftLedger" aria-label="Expand Shift Ledger preview">
+                  <img src="project-shift-ledger.webp" width="960" height="600" loading="lazy" alt="Shift Ledger Manila-time workday, earnings, and weekly pay tracker preview">
+                  <span class="expand-hint" aria-hidden="true">Expand preview ⤢</span>
+                  <p class="image-fallback" hidden>Shift Ledger<span>Workday &amp; Pay Ledger</span></p>
+                </button>
+                <div class="browser-blueprint" hidden></div>
+              </div>
+            </div>
+          </div>
+          <div class="project-details">
+            <p class="eyebrow">16 / WORKDAY &amp; PAY LEDGER</p>
+            <h3 id="project16Title">Shift Ledger</h3>
+            <p>Manila-time (PHT) workday and active-hour tracker built for 4-hour daily shift goals and 28-hour Saturday–Friday billing weeks — featuring live AHT &amp; USD/PHP earnings, pause gap logging, editable shift timeline history, weekly CSV exports, and private Neon Postgres account sync.</p>
+            <ul class="tags" aria-label="Technologies"><li>Vanilla JS</li><li>Neon Postgres</li><li>Account Auth</li><li>CSV &amp; Alerts</li></ul>
+            <p class="project-note">Focus: zero-dependency shift telemetry, optimistic cloud sync, and weekly work-order reconciliation.</p>
+            <div class="project-links">
+              <a class="text-link" href="https://shift-ledger-beige.vercel.app/" target="_blank" rel="noopener noreferrer">Visit website <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+              <button type="button" class="text-link button-link" data-casestudy="shiftLedger">Read case study</button>
+            </div>
+          </div>
+        </article>
       </div>
       <p class="vercel-empty" id="projectsEmpty" hidden>No matching featured projects found. Try clearing the search or choosing another category.</p>
       <div class="projects-toggle-wrap" id="projectsToggleWrap" hidden>
-        <button type="button" class="timeline-toggle projects-toggle" id="toggleProjects" aria-expanded="false">Show more projects (12 more)</button>
+        <button type="button" class="timeline-toggle projects-toggle" id="toggleProjects" aria-expanded="false">Show more projects (13 more)</button>
       </div>
 
       <div class="github-strip" id="githubSnapshot">
@@ -1190,7 +1224,7 @@
         <p class="footer-col-title">Sections &amp; Shortcuts</p>
         <div class="footer-links-list">
           <a href="#experience">01 Experience</a>
-          <a href="#projects">02 Featured Projects (15)</a>
+          <a href="#projects">02 Featured Projects (16)</a>
           <a href="#skills">03 Skills Toolkit</a>
           <a href="#appreciate">Visitor Appreciation (<span data-like-count="portfolio">0</span>)</a>
           <a href="#contact">04 Contact</a>

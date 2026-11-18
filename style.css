@@ -1608,6 +1608,18 @@ p {
   font-size: 0.9rem;
 }
 
+.projects-toggle-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.projects-toggle {
+  margin-left: 0;
+  padding: 11px 24px;
+  cursor: pointer;
+}
+
 /* GitHub Snapshot Strip */
 .github-strip {
   margin-top: 32px;
@@ -3034,6 +3046,7 @@ form {
   .button-row,
   .expand-hint,
   .timeline-toggle,
+  .projects-toggle-wrap,
   .github-strip,
   .appreciate-band,
   .like-button,

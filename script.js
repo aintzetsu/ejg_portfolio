@@ -1107,34 +1107,81 @@ function openCaseStudy(key, triggerEl) {
   openDialog(caseStudyModal, triggerEl);
 }
 
-// Interactive category filter & search across all 15 Featured Projects
+// Interactive category filter, search & Show More collapse across all 15 Featured Projects
 const projectControls = document.getElementById('projectControls');
 const projectSearch = document.getElementById('projectSearch');
 const featuredProjectCards = Array.from(document.querySelectorAll('#featuredProjectList .project-card'));
 const projectsEmpty = document.getElementById('projectsEmpty');
+const projectsToggleWrap = document.getElementById('projectsToggleWrap');
+const toggleProjects = document.getElementById('toggleProjects');
+const INITIAL_PROJECTS_SHOWN = 3;
 let activeProjCat = 'all';
+let projectsExpanded = false;
 
 function updateFeaturedProjects() {
   const query = (projectSearch ? projectSearch.value : '').trim().toLowerCase();
+  const isFiltered = activeProjCat !== 'all' || Boolean(query);
+
   if (projectControls) {
     projectControls.querySelectorAll('[data-proj-cat]').forEach(btn => {
       btn.setAttribute('aria-pressed', String(btn.dataset.projCat === activeProjCat));
     });
   }
-  let shownCount = 0;
+
+  let matchedCount = 0;
   featuredProjectCards.forEach(card => {
     const matchesCat = activeProjCat === 'all' || card.dataset.projCat === activeProjCat;
     const searchable = `${card.dataset.projKeywords || ''} ${card.textContent.toLowerCase()}`;
     const matchesQuery = !query || searchable.includes(query);
-    const show = matchesCat && matchesQuery;
+    const matches = matchesCat && matchesQuery;
+    if (matches) matchedCount++;
+    const show = matches && (isFiltered || projectsExpanded || matchedCount <= INITIAL_PROJECTS_SHOWN);
     card.hidden = !show;
-    if (show) shownCount++;
   });
-  if (projectsEmpty) projectsEmpty.hidden = shownCount > 0;
+
+  if (projectsEmpty) projectsEmpty.hidden = matchedCount > 0;
+
+  if (projectsToggleWrap && toggleProjects) {
+    const canCollapse = !isFiltered && matchedCount > INITIAL_PROJECTS_SHOWN;
+    projectsToggleWrap.hidden = !canCollapse;
+    if (canCollapse) {
+      const hiddenCount = matchedCount - INITIAL_PROJECTS_SHOWN;
+      toggleProjects.setAttribute('aria-expanded', String(projectsExpanded));
+      toggleProjects.textContent = projectsExpanded
+        ? 'Show fewer projects'
+        : `Show more projects (${hiddenCount} more)`;
+    }
+  }
 }
+
+if (toggleProjects) {
+  toggleProjects.addEventListener('click', () => {
+    projectsExpanded = !projectsExpanded;
+    updateFeaturedProjects();
+    if (!projectsExpanded) {
+      document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+}
+
+function revealProjectCardIfNeeded(cardOrId) {
+  const card = typeof cardOrId === 'string' ? document.querySelector(cardOrId) : cardOrId;
+  if (card && card.classList.contains('project-card') && card.hidden) {
+    activeProjCat = 'all';
+    if (projectSearch) projectSearch.value = '';
+    projectsExpanded = true;
+    updateFeaturedProjects();
+  }
+}
+
+window.addEventListener('hashchange', () => {
+  if (location.hash.startsWith('#project-')) revealProjectCardIfNeeded(location.hash);
+});
+if (location.hash.startsWith('#project-')) revealProjectCardIfNeeded(location.hash);
 
 if (projectControls && featuredProjectCards.length > 0) {
   projectControls.hidden = false;
+  updateFeaturedProjects();
   projectControls.querySelectorAll('[data-proj-cat]').forEach(btn => {
     btn.addEventListener('click', () => {
       activeProjCat = btn.dataset.projCat;
@@ -1504,6 +1551,9 @@ function selectSkillProof(key) {
     }
     if (targetEl.classList.contains('extra-role') && targetEl.hidden && toggleTimeline) {
       toggleTimeline.click();
+    }
+    if (targetEl.classList.contains('project-card') && targetEl.hidden) {
+      revealProjectCardIfNeeded(targetEl);
     }
     targetEl.classList.add('is-proof-highlight');
   }

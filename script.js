@@ -1920,7 +1920,7 @@ const paletteActions = [
   { title: 'Trigger Accent Confetti Burst', hint: 'Fun', run: () => launchConfetti(null) },
   { title: 'Jump to Introduction', hint: '#introduction', run: () => { location.hash = '#introduction'; } },
   { title: 'Jump to Experience & Education', hint: '#experience', run: () => { location.hash = '#experience'; } },
-  { title: 'Jump to Featured Projects (16)', hint: '#projects', run: () => { location.hash = '#projects'; } },
+  { title: 'Jump to Featured Projects (17)', hint: '#projects', run: () => { location.hash = '#projects'; } },
   { title: 'Toggle Projects Layout (Stack / Grid)', hint: 'Layout', run: () => { projectView = projectView === 'grid' ? 'stack' : 'grid'; updateFeaturedProjects(); location.hash = '#projects'; } },
   { title: 'Read ReelFetch Case Study', hint: 'Featured 17', run: () => openCaseStudy('reelfetch', openPaletteBtn) },
   { title: 'Read Shift Ledger Case Study', hint: 'Featured 16', run: () => openCaseStudy('shiftLedger', openPaletteBtn) },
@@ -2153,7 +2153,7 @@ function runTerminalCommand(rawInput) {
   if (cmd === 'projects') {
     appendTermLine('1) Simot Sarap — zetsume-simotsarap.vercel.app');
     appendTermLine('2) Vesper Audio — vesper-audio.vercel.app (GitHub: aintzetsu/vesper-audio)');
-    appendTermLine('+ 14 more live Vercel web apps including Relay & Shift Ledger (run "apps" to list all).');
+    appendTermLine('+ 15 more live Vercel web apps including Relay, Shift Ledger & ReelFetch (run "apps" to list all).');
     appendTermAction('Inspect Featured Projects', () => {
       terminalModal.close();
       location.hash = '#projects';

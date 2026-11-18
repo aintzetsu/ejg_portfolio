@@ -1288,7 +1288,6 @@ function sortFeaturedProjects() {
   const sorted = [...featuredProjectCards].sort((a, b) => {
     const idxA = Number(a.dataset.orderIndex) || 0;
     const idxB = Number(b.dataset.orderIndex) || 0;
-    if (projectSort === 'featured' && a.hasAttribute('data-featured-first') !== b.hasAttribute('data-featured-first')) return a.hasAttribute('data-featured-first') ? -1 : 1;
     if (projectSort === 'newest') return idxB - idxA;
     if (projectSort === 'liked') {
       const likesA = Math.max(0, Number(likeCounts[a.id]) || 0);

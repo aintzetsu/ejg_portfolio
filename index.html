@@ -239,6 +239,7 @@
       <div class="lightbox-footer">
         <a class="button primary" id="caseStudyLiveLink" href="https://zetsume-simotsarap.vercel.app/" target="_blank" rel="noopener noreferrer">Visit Live Site ↗</a>
         <a class="button" id="caseStudyRepoLink" href="https://github.com/aintzetsu/simotsarap" target="_blank" rel="noopener noreferrer">View Source on GitHub ↗</a>
+        <button type="button" class="button" id="caseStudyShareBtn">Copy Share Link</button>
       </div>
     </dialog>
 
@@ -371,6 +372,11 @@
           <button type="button" class="filter-pill" data-proj-cat="work" aria-pressed="false">Productivity (5)</button>
         </div>
         <div class="project-tools-right">
+          <div class="view-switcher" id="projectSortToggle" role="group" aria-label="Sort featured projects">
+            <button type="button" class="view-btn" data-proj-sort="featured" aria-pressed="true">Featured</button>
+            <button type="button" class="view-btn" data-proj-sort="newest" aria-pressed="false">Newest</button>
+            <button type="button" class="view-btn" data-proj-sort="liked" aria-pressed="false">Most Liked</button>
+          </div>
           <div class="view-switcher" id="projectViewToggle" role="group" aria-label="Featured projects layout mode">
             <button type="button" class="view-btn" data-proj-view="stack" aria-pressed="true">Stack View</button>
             <button type="button" class="view-btn" data-proj-view="grid" aria-pressed="false">Compact Grid</button>
@@ -1016,24 +1022,75 @@
       <div class="github-strip" id="githubSnapshot">
         <div class="github-strip-head">
           <div>
-            <p class="eyebrow">OPEN SOURCE &amp; CODE</p>
+            <p class="eyebrow">OPEN SOURCE &amp; CODE · 15 PUBLIC REPOS</p>
             <h3>Live on GitHub <span class="mono-muted">@aintzetsu</span></h3>
           </div>
           <a class="button" href="https://github.com/aintzetsu" target="_blank" rel="noopener noreferrer">View GitHub Profile ↗</a>
         </div>
         <div class="github-repos" id="githubRepos">
-          <a class="repo-mini" href="https://github.com/aintzetsu/vesper-audio" target="_blank" rel="noopener noreferrer">
-            <strong>vesper-audio ↗</strong>
-            <span>Interactive studio audio storefront · HTML / CSS / JS</span>
-          </a>
           <a class="repo-mini" href="https://github.com/aintzetsu/ejg_portfolio" target="_blank" rel="noopener noreferrer">
             <strong>ejg_portfolio ↗</strong>
-            <span>Personal IT portfolio · HTML / CSS / JS</span>
+            <span>Personal IT portfolio · HTML / CSS / JS / Neon Postgres</span>
           </a>
-          <a class="repo-mini" href="https://github.com/aintzetsu/simotsarap" target="_blank" rel="noopener noreferrer">
+          <a class="repo-mini" href="https://github.com/aintzetsu/labelgrid" target="_blank" rel="noopener noreferrer">
+            <strong>labelgrid ↗</strong>
+            <span>Multi-modal AI annotation workbench · COCO / YOLO / JSONL</span>
+          </a>
+          <a class="repo-mini" href="https://github.com/aintzetsu/restbench" target="_blank" rel="noopener noreferrer">
+            <strong>restbench ↗</strong>
+            <span>REST API playground with mock CRUD &amp; codegen</span>
+          </a>
+          <a class="repo-mini" href="https://github.com/aintzetsu/pulsegrid" target="_blank" rel="noopener noreferrer">
+            <strong>pulsegrid ↗</strong>
+            <span>16-step drum sequencer &amp; 5-voice Web Audio synth</span>
+          </a>
+          <a class="repo-mini" href="https://github.com/aintzetsu/foliovault" target="_blank" rel="noopener noreferrer">
+            <strong>foliovault ↗</strong>
+            <span>Document scanner, Canvas enhancer &amp; IndexedDB vault</span>
+          </a>
+          <a class="repo-mini" href="https://github.com/aintzetsu/koto-cabin" target="_blank" rel="noopener noreferrer">
+            <strong>koto-cabin ↗</strong>
+            <span>Architectural retreat showcase · Custom SVG &amp; pricing</span>
+          </a>
+          <a class="repo-mini" data-extra-repo href="https://github.com/aintzetsu/vesper-audio" target="_blank" rel="noopener noreferrer" hidden>
+            <strong>vesper-audio ↗</strong>
+            <span>Interactive studio audio storefront · Web Audio &amp; Canvas</span>
+          </a>
+          <a class="repo-mini" data-extra-repo href="https://github.com/aintzetsu/simotsarap" target="_blank" rel="noopener noreferrer" hidden>
             <strong>simotsarap ↗</strong>
-            <span>Food restaurant website · JavaScript / React</span>
+            <span>Food restaurant website · React &amp; Tailwind CSS</span>
           </a>
+          <a class="repo-mini" data-extra-repo href="https://github.com/aintzetsu/cutout-studio" target="_blank" rel="noopener noreferrer" hidden>
+            <strong>cutout-studio ↗</strong>
+            <span>Client-side Canvas background remover &amp; matte studio</span>
+          </a>
+          <a class="repo-mini" data-extra-repo href="https://github.com/aintzetsu/pathcraft" target="_blank" rel="noopener noreferrer" hidden>
+            <strong>pathcraft ↗</strong>
+            <span>Interactive A*, Dijkstra, BFS &amp; DFS visualizer</span>
+          </a>
+          <a class="repo-mini" data-extra-repo href="https://github.com/aintzetsu/chromalab" target="_blank" rel="noopener noreferrer" hidden>
+            <strong>chromalab ↗</strong>
+            <span>WCAG 2.1 contrast scale, CVD simulator &amp; token foundry</span>
+          </a>
+          <a class="repo-mini" data-extra-repo href="https://github.com/aintzetsu/folio-notes" target="_blank" rel="noopener noreferrer" hidden>
+            <strong>folio-notes ↗</strong>
+            <span>Local-first Markdown notebook &amp; Canvas force graph</span>
+          </a>
+          <a class="repo-mini" data-extra-repo href="https://github.com/aintzetsu/ledgerflow" target="_blank" rel="noopener noreferrer" hidden>
+            <strong>ledgerflow ↗</strong>
+            <span>SaaS revenue analytics · HiDPI Canvas charts &amp; CSV</span>
+          </a>
+          <a class="repo-mini" data-extra-repo href="https://github.com/aintzetsu/sprintdeck" target="_blank" rel="noopener noreferrer" hidden>
+            <strong>sprintdeck ↗</strong>
+            <span>Drag-and-drop Kanban sprint board · Story points</span>
+          </a>
+          <a class="repo-mini" data-extra-repo href="https://github.com/aintzetsu/meridian-sync" target="_blank" rel="noopener noreferrer" hidden>
+            <strong>meridian-sync ↗</strong>
+            <span>DST-accurate remote team time-zone &amp; overlap planner</span>
+          </a>
+        </div>
+        <div class="projects-toggle-wrap" id="reposToggleWrap" hidden>
+          <button type="button" class="timeline-toggle projects-toggle" id="toggleRepos" aria-expanded="false">Show all 15 public repos (9 more)</button>
         </div>
       </div>
     </section>
@@ -1043,27 +1100,31 @@
       <div class="skill-ribbon" id="skillRibbon" aria-label="Interactive skill stack shortcuts">
         <div class="skill-ribbon-track">
           <button type="button" class="ribbon-pill" data-skill="react">React</button>
+          <button type="button" class="ribbon-pill" data-skill="nextjs">Next.js 16</button>
           <button type="button" class="ribbon-pill" data-skill="javascript">JavaScript ES6+</button>
-          <button type="button" class="ribbon-pill" data-skill="vercel">Vercel &amp; Next.js</button>
-          <button type="button" class="ribbon-pill" data-skill="sql">Neon Postgres &amp; SQL</button>
-          <button type="button" class="ribbon-pill" data-skill="htmlcss">HTML5 Canvas &amp; CSS</button>
+          <button type="button" class="ribbon-pill" data-skill="neon">Neon Postgres</button>
+          <button type="button" class="ribbon-pill" data-skill="canvas">HTML5 Canvas</button>
+          <button type="button" class="ribbon-pill" data-skill="webaudio">Web Audio API</button>
+          <button type="button" class="ribbon-pill" data-skill="restapi">REST &amp; Webhooks</button>
           <button type="button" class="ribbon-pill" data-skill="qa">AI Data QA</button>
           <button type="button" class="ribbon-pill" data-skill="sap">SAP Workflows</button>
           <button type="button" class="ribbon-pill" data-skill="git">Git &amp; GitHub</button>
+          <button type="button" class="ribbon-pill" data-skill="vercel">Vercel Deploy</button>
           <button type="button" class="ribbon-pill" data-skill="sysadmin">System Admin</button>
-          <button type="button" class="ribbon-pill" data-skill="hardware">Hardware Diagnostics</button>
         </div>
         <div class="skill-ribbon-track" aria-hidden="true">
           <button type="button" class="ribbon-pill" data-skill="react" tabindex="-1">React</button>
+          <button type="button" class="ribbon-pill" data-skill="nextjs" tabindex="-1">Next.js 16</button>
           <button type="button" class="ribbon-pill" data-skill="javascript" tabindex="-1">JavaScript ES6+</button>
-          <button type="button" class="ribbon-pill" data-skill="vercel" tabindex="-1">Vercel &amp; Next.js</button>
-          <button type="button" class="ribbon-pill" data-skill="sql" tabindex="-1">Neon Postgres &amp; SQL</button>
-          <button type="button" class="ribbon-pill" data-skill="htmlcss" tabindex="-1">HTML5 Canvas &amp; CSS</button>
+          <button type="button" class="ribbon-pill" data-skill="neon" tabindex="-1">Neon Postgres</button>
+          <button type="button" class="ribbon-pill" data-skill="canvas" tabindex="-1">HTML5 Canvas</button>
+          <button type="button" class="ribbon-pill" data-skill="webaudio" tabindex="-1">Web Audio API</button>
+          <button type="button" class="ribbon-pill" data-skill="restapi" tabindex="-1">REST &amp; Webhooks</button>
           <button type="button" class="ribbon-pill" data-skill="qa" tabindex="-1">AI Data QA</button>
           <button type="button" class="ribbon-pill" data-skill="sap" tabindex="-1">SAP Workflows</button>
           <button type="button" class="ribbon-pill" data-skill="git" tabindex="-1">Git &amp; GitHub</button>
+          <button type="button" class="ribbon-pill" data-skill="vercel" tabindex="-1">Vercel Deploy</button>
           <button type="button" class="ribbon-pill" data-skill="sysadmin" tabindex="-1">System Admin</button>
-          <button type="button" class="ribbon-pill" data-skill="hardware" tabindex="-1">Hardware Diagnostics</button>
         </div>
       </div>
       <div class="skills-controls" id="skillsControls" hidden>
@@ -1075,7 +1136,7 @@
           <button type="button" class="filter-pill" data-skill-cat="it" aria-pressed="false">IT &amp; Workflow</button>
         </div>
         <label for="skillFilterInput" class="sr-only">Search skills</label>
-        <input type="search" id="skillFilterInput" class="skill-search" placeholder="Filter skills (e.g. react, sap, sql, git)..." autocomplete="off">
+        <input type="search" id="skillFilterInput" class="skill-search" placeholder="Filter skills (e.g. next.js, neon, react, canvas, sap)..." autocomplete="off">
       </div>
       <div class="skill-proof" id="skillProofBox" role="status" aria-live="polite" hidden>
         <div>
@@ -1110,29 +1171,34 @@
           <h3>Web &amp; programming</h3>
           <div class="tags">
             <button type="button" class="skill-tag" data-skill="react" aria-pressed="false">React</button>
+            <button type="button" class="skill-tag" data-skill="nextjs" aria-pressed="false">Next.js 16</button>
             <button type="button" class="skill-tag" data-skill="tailwind" aria-pressed="false">Tailwind CSS</button>
             <button type="button" class="skill-tag" data-skill="javascript" aria-pressed="false">JavaScript</button>
             <button type="button" class="skill-tag" data-skill="htmlcss" aria-pressed="false">HTML &amp; CSS</button>
+            <button type="button" class="skill-tag" data-skill="canvas" aria-pressed="false">HTML5 Canvas</button>
+            <button type="button" class="skill-tag" data-skill="webaudio" aria-pressed="false">Web Audio API</button>
             <button type="button" class="skill-tag" data-skill="php" aria-pressed="false">PHP</button>
             <button type="button" class="skill-tag" data-skill="python" aria-pressed="false">Python</button>
             <button type="button" class="skill-tag" data-skill="java" aria-pressed="false">Java</button>
             <button type="button" class="skill-tag" data-skill="csharp" aria-pressed="false">C#</button>
             <button type="button" class="skill-tag" data-skill="cpp" aria-pressed="false">C++</button>
           </div>
-          <p>Used across Vesper Audio, Simot Sarap, this portfolio, website updates, and my BSIT foundations.</p>
+          <p>Applied across Next.js 16, React, Vanilla JS, Canvas 2D, and Web Audio production apps plus BSIT coursework.</p>
         </article>
         <article class="skill-group spotlight-card" data-cat="db">
           <div class="skill-head">
             <span class="skill-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg></span>
             <span class="skill-number" aria-hidden="true">03</span>
           </div>
-          <h3>Databases &amp; enterprise</h3>
+          <h3>Databases, APIs &amp; enterprise</h3>
           <div class="tags">
+            <button type="button" class="skill-tag" data-skill="neon" aria-pressed="false">Neon Postgres</button>
+            <button type="button" class="skill-tag" data-skill="restapi" aria-pressed="false">REST &amp; Webhooks</button>
             <button type="button" class="skill-tag" data-skill="sql" aria-pressed="false">SQL</button>
             <button type="button" class="skill-tag" data-skill="mysql" aria-pressed="false">MySQL</button>
             <button type="button" class="skill-tag" data-skill="sap" aria-pressed="false">SAP software</button>
           </div>
-          <p>Relational database management and SAP business workflows from my IT training.</p>
+          <p>Serverless Postgres persistence, REST API endpoints, relational schemas, and SAP enterprise workflows.</p>
         </article>
         <article class="skill-group spotlight-card" data-cat="it">
           <div class="skill-head">

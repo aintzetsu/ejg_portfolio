@@ -623,7 +623,7 @@ function applyExperienceFilter(track) {
     }
   });
   if (toggleTimeline) {
-    toggleTimeline.hidden = activeExpTrack !== 'all';
+    toggleTimeline.hidden = activeExpTrack != 'all';
   }
 }
 
@@ -1500,6 +1500,7 @@ document.querySelectorAll('[data-casestudy]').forEach(btn => {
 
 // Interactive Preview vs Blueprint vs Live Lab switcher inside project browser mockups
 let openVesperLab = () => {};
+let stopPulseLab = () => {};
 document.querySelectorAll('.browser-frame').forEach(frame => {
   const modeBar = frame.querySelector('.browser-mode-switch');
   const previewBtn = frame.querySelector('.media-preview-trigger');
@@ -1514,6 +1515,9 @@ document.querySelectorAll('.browser-frame').forEach(frame => {
     previewBtn.hidden = mode !== 'visual';
     blueprintEl.hidden = mode !== 'blueprint';
     if (labEl) labEl.hidden = mode !== 'lab';
+    if (mode !== 'lab' && labEl && labEl.id === 'pulseLab') {
+      stopPulseLab();
+    }
     const isInteractivePanel = mode !== 'visual';
     frame.classList.toggle('is-blueprint', isInteractivePanel);
     if (isInteractivePanel) frame.style.transform = '';
@@ -1666,16 +1670,22 @@ if (vesperFinishBtns && vesperUnitBox) {
 });
 
 let activeAudioCtx = null;
-function playVesperTone(btnEl, defaultLabel, lowDb = 0, highDb = 0) {
+function getAudioContext() {
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  if (!AudioCtx) {
+  if (!AudioCtx) return null;
+  if (!activeAudioCtx) activeAudioCtx = new AudioCtx();
+  if (activeAudioCtx.state === 'suspended') activeAudioCtx.resume();
+  return activeAudioCtx;
+}
+
+function playVesperTone(btnEl, defaultLabel, lowDb = 0, highDb = 0) {
+  const ctx = getAudioContext();
+  if (!ctx) {
     showToast('Web Audio API unavailable in this browser');
     return;
   }
   try {
-    if (!activeAudioCtx) activeAudioCtx = new AudioCtx();
-    if (activeAudioCtx.state === 'suspended') activeAudioCtx.resume();
-    const now = activeAudioCtx.currentTime;
+    const now = ctx.currentTime;
     const gain = activeAudioCtx.createGain();
     const shelfLow = activeAudioCtx.createBiquadFilter();
     shelfLow.type = 'lowshelf';
@@ -1741,6 +1751,315 @@ if (vesperLabToneBtn) {
       Number(vesperHighSlider?.value || 0)
     );
   });
+}
+
+// ChromaLab Live WCAG 2.1 Contrast & Auto-Fix Lab
+const chromaFgInput = document.getElementById('chromaFgInput');
+const chromaBgInput = document.getElementById('chromaBgInput');
+const chromaPresets = document.getElementById('chromaPresets');
+const chromaPreviewBox = document.getElementById('chromaPreviewBox');
+const chromaRatioVal = document.getElementById('chromaRatioVal');
+const chromaAaBadge = document.getElementById('chromaAaBadge');
+const chromaAaaBadge = document.getElementById('chromaAaaBadge');
+const chromaAutoFixBtn = document.getElementById('chromaAutoFixBtn');
+
+function parseHexRgb(hex) {
+  const clean = String(hex || '').replace('#', '');
+  if (!/^[0-9a-fA-F]{6}$/.test(clean)) return [0, 0, 0];
+  return [
+    parseInt(clean.slice(0, 2), 16),
+    parseInt(clean.slice(2, 4), 16),
+    parseInt(clean.slice(4, 6), 16)
+  ];
+}
+
+function rgbToHex(r, g, b) {
+  return `#${[r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('')}`;
+}
+
+function relativeLuminance([r, g, b]) {
+  const linear = [r, g, b].map(c => {
+    const s = c / 255;
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+}
+
+function contrastRatio(fgHex, bgHex) {
+  const l1 = relativeLuminance(parseHexRgb(fgHex));
+  const l2 = relativeLuminance(parseHexRgb(bgHex));
+  return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+}
+
+function renderChromaLab() {
+  if (!chromaFgInput || !chromaBgInput || !chromaPreviewBox) return;
+  const fg = chromaFgInput.value;
+  const bg = chromaBgInput.value;
+  const ratio = contrastRatio(fg, bg);
+  const passAa = ratio >= 4.5;
+  const passAaa = ratio >= 7;
+
+  chromaPreviewBox.style.color = fg;
+  chromaPreviewBox.style.backgroundColor = bg;
+  if (chromaRatioVal) chromaRatioVal.textContent = `${ratio.toFixed(2)} : 1`;
+  if (chromaAaBadge) {
+    chromaAaBadge.textContent = passAa ? 'AA Normal · Pass' : 'AA Normal · Fail';
+    chromaAaBadge.className = `chroma-badge ${passAa ? 'is-pass' : 'is-fail'}`;
+  }
+  if (chromaAaaBadge) {
+    chromaAaaBadge.textContent = passAaa ? 'AAA · Pass' : 'AAA · Fail';
+    chromaAaaBadge.className = `chroma-badge ${passAaa ? 'is-pass' : 'is-fail'}`;
+  }
+  if (chromaPresets) {
+    chromaPresets.querySelectorAll('button[data-fg]').forEach(btn => {
+      const active = btn.dataset.fg.toLowerCase() === fg.toLowerCase() && btn.dataset.bg.toLowerCase() === bg.toLowerCase();
+      btn.setAttribute('aria-pressed', String(active));
+    });
+  }
+}
+
+if (chromaFgInput && chromaBgInput) {
+  chromaFgInput.addEventListener('input', renderChromaLab);
+  chromaBgInput.addEventListener('input', renderChromaLab);
+  if (chromaPresets) {
+    chromaPresets.querySelectorAll('button[data-fg]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        chromaFgInput.value = btn.dataset.fg;
+        chromaBgInput.value = btn.dataset.bg;
+        renderChromaLab();
+      });
+    });
+  }
+  if (chromaAutoFixBtn) {
+    chromaAutoFixBtn.addEventListener('click', () => {
+      const bg = chromaBgInput.value;
+      if (contrastRatio(chromaFgInput.value, bg) >= 4.5) {
+        showToast('Already passes WCAG AA (>= 4.5:1)');
+        return;
+      }
+      const bgLum = relativeLuminance(parseHexRgb(bg));
+      const darken = bgLum > 0.179;
+      let [r, g, b] = parseHexRgb(chromaFgInput.value);
+      for (let i = 0; i < 64; i++) {
+        const candidate = rgbToHex(r, g, b);
+        if (contrastRatio(candidate, bg) >= 4.6) {
+          chromaFgInput.value = candidate;
+          renderChromaLab();
+          showToast(`Auto-fixed foreground to ${candidate} (>= 4.5:1 AA)`);
+          return;
+        }
+        r = darken ? r * 0.9 : r + (255 - r) * 0.12;
+        g = darken ? g * 0.9 : g + (255 - g) * 0.12;
+        b = darken ? b * 0.9 : b + (255 - b) * 0.12;
+      }
+      chromaFgInput.value = darken ? '#161513' : '#f5f4f1';
+      renderChromaLab();
+    });
+  }
+  renderChromaLab();
+}
+
+// PulseGrid Live 8-Step Web Audio Sequencer Lab
+const pulseStepGrid = document.getElementById('pulseStepGrid');
+const pulsePlayBtn = document.getElementById('pulsePlayBtn');
+const pulsePresetBtn = document.getElementById('pulsePresetBtn');
+const pulseClearBtn = document.getElementById('pulseClearBtn');
+const pulseBpmSlider = document.getElementById('pulseBpmSlider');
+const pulseBpmLabel = document.getElementById('pulseBpmLabel');
+
+if (pulseStepGrid) {
+  const defaultPattern = [
+    [1, 0, 0, 0, 1, 0, 1, 0],
+    [0, 0, 1, 0, 0, 0, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1]
+  ];
+  const rows = [
+    { name: 'Kick', steps: [...defaultPattern[0]] },
+    { name: 'Snare', steps: [...defaultPattern[1]] },
+    { name: 'Hi-Hat', steps: [...defaultPattern[2]] }
+  ];
+  let pulseStepButtons = [];
+  let pulseTimer = null;
+  let pulseStepIdx = 0;
+
+  function triggerDrumHit(ctx, rowIdx) {
+    const now = ctx.currentTime;
+    if (rowIdx === 0) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.exponentialRampToValueAtTime(42, now + 0.12);
+      gain.gain.setValueAtTime(0.28, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.17);
+      return;
+    }
+    const bufLen = Math.floor(ctx.sampleRate * (rowIdx === 1 ? 0.12 : 0.05));
+    const buffer = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufLen; i++) data[i] = Math.random() * 2 - 1;
+    const src = ctx.createBufferSource();
+    src.buffer = buffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = rowIdx === 1 ? 'bandpass' : 'highpass';
+    filter.frequency.setValueAtTime(rowIdx === 1 ? 1800 : 6500, now);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(rowIdx === 1 ? 0.16 : 0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + (rowIdx === 1 ? 0.12 : 0.05));
+    src.connect(filter).connect(gain).connect(ctx.destination);
+    src.start(now);
+  }
+
+  function renderPulseMatrix() {
+    pulseStepButtons = [];
+    pulseStepGrid.replaceChildren();
+    rows.forEach((row, rIdx) => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'pulse-row';
+      const label = document.createElement('span');
+      label.className = 'pulse-row-label';
+      label.textContent = row.name;
+      const stepsWrap = document.createElement('div');
+      stepsWrap.className = 'pulse-steps';
+      const rowBtns = [];
+      row.steps.forEach((on, sIdx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `pulse-step${on ? ' is-on' : ''}`;
+        btn.setAttribute('aria-label', `${row.name} step ${sIdx + 1}`);
+        btn.setAttribute('aria-pressed', String(Boolean(on)));
+        btn.addEventListener('click', () => {
+          row.steps[sIdx] = row.steps[sIdx] ? 0 : 1;
+          btn.classList.toggle('is-on', Boolean(row.steps[sIdx]));
+          btn.setAttribute('aria-pressed', String(Boolean(row.steps[sIdx])));
+          if (row.steps[sIdx]) {
+            const ctx = getAudioContext();
+            if (ctx) triggerDrumHit(ctx, rIdx);
+          }
+        });
+        rowBtns.push(btn);
+        stepsWrap.append(btn);
+      });
+      pulseStepButtons.push(rowBtns);
+      rowEl.append(label, stepsWrap);
+      pulseStepGrid.append(rowEl);
+    });
+  }
+
+  function clearPlayhead() {
+    pulseStepButtons.forEach(rowBtns => rowBtns.forEach(btn => btn.classList.remove('is-playhead')));
+  }
+
+  function stopSeq() {
+    if (pulseTimer) {
+      clearInterval(pulseTimer);
+      pulseTimer = null;
+    }
+    clearPlayhead();
+    if (pulsePlayBtn) {
+      pulsePlayBtn.textContent = 'Play Beat';
+      pulsePlayBtn.setAttribute('aria-pressed', 'false');
+    }
+  }
+  stopPulseLab = stopSeq;
+
+  function stepSeq() {
+    const ctx = getAudioContext();
+    clearPlayhead();
+    rows.forEach((row, rIdx) => {
+      pulseStepButtons[rIdx]?.[pulseStepIdx]?.classList.add('is-playhead');
+      if (row.steps[pulseStepIdx] && ctx) triggerDrumHit(ctx, rIdx);
+    });
+    pulseStepIdx = (pulseStepIdx + 1) % 8;
+  }
+
+  function startSeq() {
+    stopSeq();
+    const bpm = Number(pulseBpmSlider?.value || 116);
+    const stepMs = Math.round(60000 / bpm / 2);
+    pulseStepIdx = 0;
+    if (pulsePlayBtn) {
+      pulsePlayBtn.textContent = 'Stop Beat';
+      pulsePlayBtn.setAttribute('aria-pressed', 'true');
+    }
+    stepSeq();
+    pulseTimer = setInterval(stepSeq, stepMs);
+  }
+
+  renderPulseMatrix();
+  if (pulsePlayBtn) {
+    pulsePlayBtn.addEventListener('click', () => (pulseTimer ? stopSeq() : startSeq()));
+  }
+  if (pulseBpmSlider) {
+    pulseBpmSlider.addEventListener('input', () => {
+      if (pulseBpmLabel) pulseBpmLabel.textContent = `${pulseBpmSlider.value} BPM`;
+      if (pulseTimer) startSeq();
+    });
+  }
+  if (pulsePresetBtn) {
+    pulsePresetBtn.addEventListener('click', () => {
+      rows.forEach((r, idx) => { r.steps = [...defaultPattern[idx]]; });
+      renderPulseMatrix();
+    });
+  }
+  if (pulseClearBtn) {
+    pulseClearBtn.addEventListener('click', () => {
+      stopSeq();
+      rows.forEach(r => { r.steps = Array(8).fill(0); });
+      renderPulseMatrix();
+    });
+  }
+}
+
+// Shift Ledger Live 4-Hour Workday & AHT Simulator
+const shiftMinsSlider = document.getElementById('shiftMinsSlider');
+const shiftTasksSlider = document.getElementById('shiftTasksSlider');
+const shiftRateInput = document.getElementById('shiftRateInput');
+const shiftCurrencyBtn = document.getElementById('shiftCurrencyBtn');
+const shiftLabProgress = document.getElementById('shiftLabProgress');
+const shiftGoalStatus = document.getElementById('shiftGoalStatus');
+const shiftActiveOut = document.getElementById('shiftActiveOut');
+const shiftPayOut = document.getElementById('shiftPayOut');
+const shiftAhtOut = document.getElementById('shiftAhtOut');
+const shiftPaceOut = document.getElementById('shiftPaceOut');
+const shiftWeeklyOut = document.getElementById('shiftWeeklyOut');
+
+if (shiftMinsSlider && shiftTasksSlider && shiftRateInput) {
+  let shiftCurrency = 'USD';
+  function renderShiftLab() {
+    const mins = Math.max(15, Math.min(240, Number(shiftMinsSlider.value) || 195));
+    const tasks = Math.max(1, Number(shiftTasksSlider.value) || 1);
+    const rate = Math.max(0, Number(shiftRateInput.value) || 0);
+    const hours = mins / 60;
+    const pay = hours * rate;
+    const weeklyEst = 28 * rate;
+    const sym = shiftCurrency === 'PHP' ? '₱' : '$';
+    const rem = Math.max(0, 240 - mins);
+
+    if (shiftActiveOut) shiftActiveOut.textContent = `${Math.floor(mins / 60)}h ${mins % 60}m`;
+    if (shiftPayOut) shiftPayOut.textContent = `${sym}${pay.toFixed(2)}`;
+    if (shiftAhtOut) shiftAhtOut.textContent = `${(mins / tasks).toFixed(1)}m`;
+    if (shiftPaceOut) shiftPaceOut.textContent = `${(tasks / hours).toFixed(1)}/hr`;
+    if (shiftLabProgress) shiftLabProgress.value = mins;
+    if (shiftGoalStatus) shiftGoalStatus.textContent = rem === 0 ? '4h goal reached' : `${Math.floor(rem / 60)}h ${rem % 60}m remaining`;
+    if (shiftWeeklyOut) shiftWeeklyOut.textContent = `28h Weekly Goal Est.: ${sym}${weeklyEst.toFixed(2)} / wk · Paid time caps at 4h/day`;
+  }
+
+  [shiftMinsSlider, shiftTasksSlider, shiftRateInput].forEach(input => input.addEventListener('input', renderShiftLab));
+  if (shiftCurrencyBtn) {
+    shiftCurrencyBtn.addEventListener('click', () => {
+      shiftCurrency = shiftCurrency === 'USD' ? 'PHP' : 'USD';
+      if (shiftCurrency === 'PHP' && Number(shiftRateInput.value) === 4) shiftRateInput.value = '230';
+      else if (shiftCurrency === 'USD' && Number(shiftRateInput.value) === 230) shiftRateInput.value = '4';
+      shiftCurrencyBtn.textContent = shiftCurrency === 'PHP' ? 'PHP (₱)' : 'USD ($)';
+      shiftCurrencyBtn.setAttribute('aria-pressed', String(shiftCurrency === 'PHP'));
+      renderShiftLab();
+    });
+  }
+  renderShiftLab();
 }
 
 // Interactive Skill-to-Proof Linking

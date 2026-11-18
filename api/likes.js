@@ -21,6 +21,10 @@ const ALLOWED_TARGETS = new Set([
 
 const VISITOR_ID_RE = /^[a-zA-Z0-9_-]{8,64}$/;
 const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' };
+const METRIC_ACTIONS = {
+  visit: 'visits',
+  cv_download: 'cv_downloads',
+};
 
 let schemaPromise = null;
 
@@ -50,6 +54,13 @@ async function ensureSchema(sql) {
           PRIMARY KEY (target, visitor_id)
         )
       `;
+      await sql`
+        CREATE TABLE IF NOT EXISTS portfolio_site_metrics (
+          metric TEXT PRIMARY KEY,
+          total_count INTEGER NOT NULL DEFAULT 0,
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+      `;
     })().catch(err => {
       schemaPromise = null;
       throw err;
@@ -68,6 +79,20 @@ function createEmptyCounts() {
 
 function jsonResponse(payload, status = 200) {
   return Response.json(payload, { status, headers: NO_STORE_HEADERS });
+}
+
+async function readSiteMetrics(sql) {
+  const metricRows = await sql`
+    SELECT metric, total_count
+    FROM portfolio_site_metrics
+  `;
+  const metrics = { visits: 0, cvDownloads: 0 };
+  for (const row of metricRows) {
+    const count = Math.max(0, Number(row.total_count) || 0);
+    if (row.metric === 'visits') metrics.visits = count;
+    if (row.metric === 'cv_downloads') metrics.cvDownloads = count;
+  }
+  return metrics;
 }
 
 export async function GET(request) {
@@ -106,12 +131,15 @@ export async function GET(request) {
         .filter(target => ALLOWED_TARGETS.has(target));
     }
 
+    const metrics = await readSiteMetrics(sql);
+
     return jsonResponse({
       ok: true,
       counts,
       liked,
       portfolioLikes: counts.portfolio,
       totalAllLikes,
+      metrics,
     });
   } catch (err) {
     console.error('GET /api/likes failed:', err);
@@ -132,11 +160,30 @@ export async function POST(request) {
     const visitorId = typeof body?.visitorId === 'string' ? body.visitorId.trim() : '';
     const action = typeof body?.action === 'string' ? body.action.trim() : 'like';
 
-    if (!ALLOWED_TARGETS.has(target)) {
-      return jsonResponse({ ok: false, error: 'Unsupported like target.' }, 400);
-    }
     if (!VISITOR_ID_RE.test(visitorId)) {
       return jsonResponse({ ok: false, error: 'Valid visitorId is required.' }, 400);
+    }
+
+    const metricKey = METRIC_ACTIONS[action];
+    if (metricKey) {
+      if (target !== 'site') {
+        return jsonResponse({ ok: false, error: 'Metric updates require target "site".' }, 400);
+      }
+      const sql = getSql();
+      await ensureSchema(sql);
+      await sql`
+        INSERT INTO portfolio_site_metrics (metric, total_count, updated_at)
+        VALUES (${metricKey}, 1, NOW())
+        ON CONFLICT (metric) DO UPDATE
+        SET total_count = portfolio_site_metrics.total_count + 1,
+            updated_at = NOW()
+      `;
+      const metrics = await readSiteMetrics(sql);
+      return jsonResponse({ ok: true, action, metrics });
+    }
+
+    if (!ALLOWED_TARGETS.has(target)) {
+      return jsonResponse({ ok: false, error: 'Unsupported like target.' }, 400);
     }
     if (action !== 'like' && action !== 'unlike') {
       return jsonResponse({ ok: false, error: 'Action must be "like" or "unlike".' }, 400);

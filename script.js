@@ -756,7 +756,7 @@ const projectCatalog = {
     alt: 'LabelGrid multimodal AI data annotation workbench',
     liveUrl: 'https://labelgrid.vercel.app/',
     liveLabel: 'Visit Live Site ↗',
-    repoUrl: '',
+    repoUrl: 'https://github.com/aintzetsu/labelgrid',
     eyebrow: 'AI & DATA QUALITY TOOLING',
     caseTitle: 'App Overview — LabelGrid',
     tags: ['HTML5 Canvas', 'Pointer Events', 'NER Tagging', 'COCO / YOLO / JSONL', 'Vercel'],
@@ -777,7 +777,7 @@ const projectCatalog = {
     alt: 'FolioVault physical document scanner and IndexedDB vault',
     liveUrl: 'https://foliovault-gamma.vercel.app/',
     liveLabel: 'Visit Live Site ↗',
-    repoUrl: '',
+    repoUrl: 'https://github.com/aintzetsu/foliovault',
     eyebrow: 'DOCUMENT CAPTURE & INDEXEDDB',
     caseTitle: 'App Overview — FolioVault',
     tags: ['IndexedDB', 'HTML5 Canvas', 'OCR Metadata', 'Vanilla JS', 'Vercel'],
@@ -798,7 +798,7 @@ const projectCatalog = {
     alt: 'Cutout Studio image background removal workspace',
     liveUrl: 'https://cutout-studio-navy.vercel.app/',
     liveLabel: 'Visit Live Site ↗',
-    repoUrl: '',
+    repoUrl: 'https://github.com/aintzetsu/cutout-studio',
     eyebrow: 'PIXEL-LEVEL CANVAS EDITING',
     caseTitle: 'App Overview — Cutout Studio',
     tags: ['HTML5 Canvas', 'ImageData', 'Flood Fill', 'Magic Wand', 'PNG Export'],
@@ -819,7 +819,7 @@ const projectCatalog = {
     alt: 'RestBench REST API client and inspector',
     liveUrl: 'https://restbench.vercel.app/',
     liveLabel: 'Visit Live Site ↗',
-    repoUrl: '',
+    repoUrl: 'https://github.com/aintzetsu/restbench',
     eyebrow: 'DEVELOPER API CLIENT',
     caseTitle: 'App Overview — RestBench',
     tags: ['Fetch API', 'Stateful Mock CRUD', 'JSON Inspector', 'cURL / Python Codegen', 'Vercel'],
@@ -840,7 +840,7 @@ const projectCatalog = {
     alt: 'PathCraft pathfinding algorithm grid visualizer',
     liveUrl: 'https://pathcraft-inky.vercel.app/',
     liveLabel: 'Visit Live Site ↗',
-    repoUrl: '',
+    repoUrl: 'https://github.com/aintzetsu/pathcraft',
     eyebrow: 'ALGORITHMS & DATA STRUCTURES',
     caseTitle: 'App Overview — PathCraft',
     tags: ['A* Search', 'Dijkstra / BFS / DFS', 'HTML5 Canvas', 'Benchmark Metrics', 'Vercel'],
@@ -861,7 +861,7 @@ const projectCatalog = {
     alt: 'ChromaLab WCAG contrast scale and design token foundry',
     liveUrl: 'https://chromalab-three.vercel.app/',
     liveLabel: 'Visit Live Site ↗',
-    repoUrl: '',
+    repoUrl: 'https://github.com/aintzetsu/chromalab',
     eyebrow: 'ACCESSIBILITY & DESIGN SYSTEMS',
     caseTitle: 'App Overview — ChromaLab',
     tags: ['WCAG 2.1', 'CSS Custom Properties', 'Tailwind @theme', 'SVG Color Filters', 'Vercel'],
@@ -882,7 +882,7 @@ const projectCatalog = {
     alt: 'Folio Notes Markdown workspace and interactive force graph',
     liveUrl: 'https://folio-notes-puce.vercel.app/',
     liveLabel: 'Visit Live Site ↗',
-    repoUrl: '',
+    repoUrl: 'https://github.com/aintzetsu/folio-notes',
     eyebrow: 'LOCAL-FIRST NOTEBOOK',
     caseTitle: 'App Overview — Folio Notes',
     tags: ['IndexedDB', 'Canvas Force Graph', 'Markdown Parser', 'Wiki Links', 'Vercel'],
@@ -903,7 +903,7 @@ const projectCatalog = {
     alt: 'LedgerFlow B2B SaaS financial dashboard',
     liveUrl: 'https://ledgerflow-sooty.vercel.app/',
     liveLabel: 'Visit Live Site ↗',
-    repoUrl: '',
+    repoUrl: 'https://github.com/aintzetsu/ledgerflow',
     eyebrow: 'FINTECH DASHBOARD',
     caseTitle: 'App Overview — LedgerFlow',
     tags: ['HiDPI Canvas Charts', 'Invoice Ledger', 'CSV Export', 'Ctrl+K Palette', 'Vercel'],
@@ -924,7 +924,7 @@ const projectCatalog = {
     alt: 'SprintDeck drag-and-drop Kanban sprint board',
     liveUrl: 'https://sprintdeck-delta.vercel.app/',
     liveLabel: 'Visit Live Site ↗',
-    repoUrl: '',
+    repoUrl: 'https://github.com/aintzetsu/sprintdeck',
     eyebrow: 'AGILE PRODUCTIVITY',
     caseTitle: 'App Overview — SprintDeck',
     tags: ['HTML5 Drag & Drop', 'Kanban / List Views', 'Story Points', 'localStorage', 'Vercel'],
@@ -945,7 +945,7 @@ const projectCatalog = {
     alt: 'Meridian Sync DST-accurate timezone overlap grid',
     liveUrl: 'https://meridian-sync.vercel.app/',
     liveLabel: 'Visit Live Site ↗',
-    repoUrl: '',
+    repoUrl: 'https://github.com/aintzetsu/meridian-sync',
     eyebrow: 'DISTRIBUTED SCHEDULING',
     caseTitle: 'App Overview — Meridian Sync',
     tags: ['Intl.DateTimeFormat', 'DST-Aware', '24h Overlap Grid', 'localStorage', 'Vercel'],
@@ -966,7 +966,7 @@ const projectCatalog = {
     alt: 'PulseGrid Web Audio 16-step drum sequencer',
     liveUrl: 'https://pulsegrid-gilt.vercel.app/',
     liveLabel: 'Visit Live Site ↗',
-    repoUrl: '',
+    repoUrl: 'https://github.com/aintzetsu/pulsegrid',
     eyebrow: 'WEB AUDIO INSTRUMENT',
     caseTitle: 'App Overview — PulseGrid',
     tags: ['Web Audio API', '5-Voice Synth', 'Oscilloscope Canvas', 'JSON Export', 'Vercel'],
@@ -987,7 +987,7 @@ const projectCatalog = {
     alt: 'Koto Cabin architectural stay collection and reservation showcase',
     liveUrl: 'https://koto-cabin.vercel.app/',
     liveLabel: 'Visit Live Site ↗',
-    repoUrl: '',
+    repoUrl: 'https://github.com/aintzetsu/koto-cabin',
     eyebrow: 'EDITORIAL HOSPITALITY UI',
     caseTitle: 'App Overview — Koto Cabin',
     tags: ['HTML5 / CSS3', 'Custom SVG', 'Stay Calculator', 'localStorage', 'Vercel'],
@@ -1084,44 +1084,87 @@ function openCaseStudy(key, triggerEl) {
   openDialog(caseStudyModal, triggerEl);
 }
 
-// Interactive filter & keyword search across the 12 additional Vercel apps
-const vercelControls = document.getElementById('vercelControls');
-const vercelSearch = document.getElementById('vercelSearch');
-const vercelCards = Array.from(document.querySelectorAll('#vercelAppsGrid .app-card'));
-const vercelEmpty = document.getElementById('vercelEmpty');
-let activeAppCat = 'all';
+// Interactive category filter & search across all 14 Featured Projects
+const projectControls = document.getElementById('projectControls');
+const projectSearch = document.getElementById('projectSearch');
+const featuredProjectCards = Array.from(document.querySelectorAll('#featuredProjectList .project-card'));
+const projectsEmpty = document.getElementById('projectsEmpty');
+let activeProjCat = 'all';
 
-function updateVercelDirectory() {
-  const query = (vercelSearch ? vercelSearch.value : '').trim().toLowerCase();
-  if (vercelControls) {
-    vercelControls.querySelectorAll('[data-app-cat]').forEach(btn => {
-      btn.setAttribute('aria-pressed', String(btn.dataset.appCat === activeAppCat));
+function updateFeaturedProjects() {
+  const query = (projectSearch ? projectSearch.value : '').trim().toLowerCase();
+  if (projectControls) {
+    projectControls.querySelectorAll('[data-proj-cat]').forEach(btn => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.projCat === activeProjCat));
     });
-}
+  }
   let shownCount = 0;
-  vercelCards.forEach(card => {
-    const matchesCat = activeAppCat === 'all' || card.dataset.appCat === activeAppCat;
-    const searchable = `${card.dataset.appKeywords || ''} ${card.textContent.toLowerCase()}`;
+  featuredProjectCards.forEach(card => {
+    const matchesCat = activeProjCat === 'all' || card.dataset.projCat === activeProjCat;
+    const searchable = `${card.dataset.projKeywords || ''} ${card.textContent.toLowerCase()}`;
     const matchesQuery = !query || searchable.includes(query);
     const show = matchesCat && matchesQuery;
     card.hidden = !show;
     if (show) shownCount++;
   });
-  if (vercelEmpty) vercelEmpty.hidden = shownCount > 0;
+  if (projectsEmpty) projectsEmpty.hidden = shownCount > 0;
 }
 
-if (vercelControls && vercelCards.length > 0) {
-  vercelControls.hidden = false;
-  vercelControls.querySelectorAll('[data-app-cat]').forEach(btn => {
+if (projectControls && featuredProjectCards.length > 0) {
+  projectControls.hidden = false;
+  projectControls.querySelectorAll('[data-proj-cat]').forEach(btn => {
     btn.addEventListener('click', () => {
-      activeAppCat = btn.dataset.appCat;
-      updateVercelDirectory();
+      activeProjCat = btn.dataset.projCat;
+      updateFeaturedProjects();
     });
   });
-  if (vercelSearch) {
-    vercelSearch.addEventListener('input', updateVercelDirectory);
+  if (projectSearch) {
+    projectSearch.addEventListener('input', updateFeaturedProjects);
   }
 }
+
+// Populate Blueprint views for cards referencing projectCatalog so all 14 Featured cards share one template
+document.querySelectorAll('.project-card[data-catalog]').forEach(card => {
+  const key = card.dataset.catalog;
+  const item = projectCatalog[key];
+  const blueprintEl = card.querySelector('.browser-blueprint');
+  if (!item || !blueprintEl || blueprintEl.childElementCount > 0) return;
+
+  const eyebrow = document.createElement('p');
+  eyebrow.className = 'eyebrow';
+  eyebrow.textContent = 'ARCHITECTURE BLUEPRINT';
+
+  const list = document.createElement('ul');
+  list.className = 'blueprint-list';
+  item.blocks.forEach(block => {
+    const li = document.createElement('li');
+    const strong = document.createElement('strong');
+    strong.textContent = block.heading;
+    const span = document.createElement('span');
+    span.textContent = block.text;
+    li.append(strong, span);
+    list.append(li);
+  });
+
+  const stackLi = document.createElement('li');
+  const stackTitle = document.createElement('strong');
+  stackTitle.textContent = 'Stack';
+  const stackText = document.createElement('span');
+  stackText.textContent = item.tags.join(' · ');
+  stackLi.append(stackTitle, stackText);
+  list.append(stackLi);
+
+  const actions = document.createElement('div');
+  actions.className = 'blueprint-actions';
+  const caseBtn = document.createElement('button');
+  caseBtn.type = 'button';
+  caseBtn.className = 'copy-button';
+  caseBtn.dataset.casestudy = key;
+  caseBtn.textContent = 'Open Case Study';
+  actions.append(caseBtn);
+
+  blueprintEl.append(eyebrow, list, actions);
+});
 
 document.querySelectorAll('[data-casestudy]').forEach(btn => {
   btn.addEventListener('click', () => openCaseStudy(btn.dataset.casestudy, btn));
@@ -1380,7 +1423,7 @@ const skillProofMap = {
   multimedia: { title: 'Audio, Text & Multimedia Review', text: 'Evaluated audio, text, and visual content for AI model training at RWS and Innodata.', target: '#role-rws', label: 'View experience →' },
   react: { title: 'React', text: 'Built the responsive Simot Sarap restaurant frontend with interactive menu category filters.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
   tailwind: { title: 'Tailwind CSS', text: 'Styled responsive sections, cards, and mobile navigation on Simot Sarap.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
-  javascript: { title: 'JavaScript', text: 'Powers Vesper Audio, Simot Sarap, this portfolio, and 12 deployed interactive Vercel tools (LabelGrid, RestBench, PulseGrid, PathCraft, and more).', target: '#vercelDirectory', label: 'Explore live Vercel web apps →' },
+  javascript: { title: 'JavaScript', text: 'Powers Vesper Audio, Simot Sarap, LabelGrid, RestBench, PulseGrid, PathCraft, and all 14 featured projects.', target: '#projects', label: 'Jump to Featured Projects →' },
   htmlcss: { title: 'HTML & CSS', text: 'Modular CSS tokens & responsive grids across Vesper Audio, ChromaLab, Koto Cabin, this portfolio, and DepEd web updates.', target: '#project-vesper', label: 'Jump to Vesper Audio →' },
   php: { title: 'PHP', text: 'Server-side web programming studied and practiced during BSIT coursework at STI College Fairview.', target: '#experience', label: 'View education →' },
   python: { title: 'Python', text: 'Scripting and programming fundamentals developed in IT coursework and automation tasks.', target: '#experience', label: 'View education →' },
@@ -1395,7 +1438,7 @@ const skillProofMap = {
   networking: { title: 'Networking', text: 'Covered networking fundamentals and maintenance through System Administration certification at STI.', target: '#experience', label: 'View certification →' },
   sysadmin: { title: 'System Administration', text: 'Certified in System Administration at STI College Fairview and practiced at DepEd NCR.', target: '#experience', label: 'View certification →' },
   git: { title: 'Git & GitHub', text: 'Version control and public source hosting for Vesper Audio, Simot Sarap, and this portfolio.', target: '#githubSnapshot', label: 'View GitHub repositories →' },
-  vercel: { title: 'Vercel', text: 'Production deployment across 15 Vercel projects including Simot Sarap, Vesper Audio, LabelGrid, FolioVault, RestBench, and this portfolio.', target: '#vercelDirectory', label: 'Browse Vercel web apps →' },
+  vercel: { title: 'Vercel', text: 'Production deployment across all 14 featured projects (Simot Sarap, Vesper Audio, LabelGrid, FolioVault, RestBench, etc.) plus this portfolio.', target: '#projects', label: 'Jump to Featured Projects →' },
   design: { title: 'Graphic Design', text: 'Digital design production honed as Freelance Embroidery Designer at Wilcom Embroidery Studio.', target: '#role-wilcom', label: 'View design experience →' }
 };
 
@@ -1451,7 +1494,9 @@ if (clearProofBtn) clearProofBtn.addEventListener('click', clearSkillProof);
 // Interactive skill category filter and keyword search
 const skillsControls = document.getElementById('skillsControls');
 const skillFilterInput = document.getElementById('skillFilterInput');
+const skillsGrid = document.querySelector('.skills-grid');
 const skillGroups = Array.from(document.querySelectorAll('.skill-group[data-cat]'));
+const skillsEmpty = document.getElementById('skillsEmpty');
 let activeSkillCat = 'all';
 
 function updateSkillsFilter() {
@@ -1459,6 +1504,7 @@ function updateSkillsFilter() {
   const catBtns = skillsControls ? Array.from(skillsControls.querySelectorAll('[data-skill-cat]')) : [];
   catBtns.forEach(btn => btn.setAttribute('aria-pressed', String(btn.dataset.skillCat === activeSkillCat)));
 
+  let shownCount = 0;
   skillGroups.forEach(group => {
     const matchesCat = activeSkillCat === 'all' || group.dataset.cat === activeSkillCat;
     const chips = Array.from(group.querySelectorAll('.skill-tag'));
@@ -1470,12 +1516,16 @@ function updateSkillsFilter() {
       const hit = !query || label.includes(query) || key.includes(query);
       if (hit) hasQueryMatch = true;
       chip.classList.toggle('is-match', Boolean(query) && hit && matchesCat);
-      chip.classList.toggle('is-dimmed', Boolean(query) && !hit);
+      chip.hidden = Boolean(query) && !hit;
     });
 
     const visibleGroup = matchesCat && (!query || hasQueryMatch);
-    group.classList.toggle('is-dimmed', !visibleGroup);
+    group.hidden = !visibleGroup;
+    if (visibleGroup) shownCount++;
   });
+
+  if (skillsGrid) skillsGrid.classList.toggle('is-single', shownCount === 1);
+  if (skillsEmpty) skillsEmpty.hidden = shownCount > 0;
 }
 
 if (skillsControls) {
@@ -1519,9 +1569,8 @@ const paletteActions = [
   { title: 'Trigger Accent Confetti Burst', hint: 'Fun', run: () => launchConfetti(null) },
   { title: 'Jump to Introduction', hint: '#introduction', run: () => { location.hash = '#introduction'; } },
   { title: 'Jump to Experience & Education', hint: '#experience', run: () => { location.hash = '#experience'; } },
-  { title: 'Jump to Featured Projects', hint: '#projects', run: () => { location.hash = '#projects'; } },
-  { title: 'Browse 12 Deployed Vercel Web Apps', hint: '#vercelDirectory', run: () => { location.hash = '#vercelDirectory'; } },
-  { title: 'Inspect LabelGrid (AI Annotation App)', hint: 'Vercel App', run: () => openCaseStudy('labelgrid', openPaletteBtn) },
+  { title: 'Jump to Featured Projects (14)', hint: '#projects', run: () => { location.hash = '#projects'; } },
+  { title: 'Inspect LabelGrid (AI Annotation App)', hint: 'Featured 03', run: () => openCaseStudy('labelgrid', openPaletteBtn) },
   { title: 'Read Simot Sarap Case Study', hint: 'Modal', run: () => openCaseStudy('simotsarap', openPaletteBtn) },
   { title: 'Read Vesper Audio Case Study', hint: 'Modal', run: () => openCaseStudy('vesper', openPaletteBtn) },
   { title: 'Jump to Skills', hint: '#skills', run: () => { location.hash = '#skills'; } },
@@ -1677,11 +1726,11 @@ function runTerminalCommand(rawInput) {
     return;
   }
   if (cmd === 'apps' || cmd === 'vercel') {
-    appendTermLine('14 deployed web apps alongside ejg-portfolio:');
+    appendTermLine('All 14 Featured Web Apps (alongside ejg-portfolio):');
     appendTermLine('• Simot Sarap, Vesper Audio, LabelGrid, FolioVault, Cutout Studio, RestBench, PathCraft, ChromaLab, Folio Notes, LedgerFlow, SprintDeck, Meridian Sync, PulseGrid, Koto Cabin');
-    appendTermAction('Jump to Live Vercel Apps Grid (12)', () => {
+    appendTermAction('Jump to All 14 Featured Projects', () => {
       terminalModal.close();
-      location.hash = '#vercelDirectory';
+      location.hash = '#projects';
     });
     return;
   }
@@ -1837,13 +1886,13 @@ if (openTerminalBtn && terminalModal) {
 // Live GitHub snapshot enhancement (safe public unauthenticated endpoint with static fallback)
 const githubReposContainer = document.getElementById('githubRepos');
 if (githubReposContainer && typeof fetch === 'function') {
-  fetch('https://api.github.com/users/aintzetsu/repos?sort=updated&per_page=3', {
+  fetch('https://api.github.com/users/aintzetsu/repos?sort=updated&per_page=8', {
     headers: { Accept: 'application/vnd.github+json' }
   })
     .then(res => (res.ok ? res.json() : null))
     .then(repos => {
       if (!Array.isArray(repos) || repos.length === 0) return;
-      const publicRepos = repos.filter(repo => !repo.private).slice(0, 3);
+      const publicRepos = repos.filter(repo => !repo.private && repo.name !== 'aintzetsu').slice(0, 6);
       if (publicRepos.length === 0) return;
       githubReposContainer.replaceChildren(
         ...publicRepos.map(repo => {

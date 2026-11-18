@@ -161,6 +161,11 @@
             <a href="Edison_Gaudicos_Updated_Resume.pdf" download class="button primary">Download CV</a>
             <a href="Edison_Gaudicos_Updated_Resume.pdf" target="_blank" rel="noopener noreferrer" class="button" id="previewButton">Preview CV</a>
             <a href="https://github.com/aintzetsu" target="_blank" rel="noopener noreferrer" class="button">GitHub <span aria-hidden="true">↗</span></a>
+            <button type="button" class="button like-button" id="heroLikeBtn" data-like-btn data-like-target="portfolio" aria-pressed="false" aria-label="Like this portfolio">
+              <svg class="ui-icon heart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+              <span class="like-label">Like</span>
+              <span class="like-count" data-like-count="portfolio">0</span>
+            </button>
           </div>
         </div>
       </div>
@@ -1012,6 +1017,25 @@
       <p class="vercel-empty" id="skillsEmpty" hidden>No matching skills found. Try another keyword or reset category.</p>
     </section>
 
+    <section id="appreciate" class="section appreciate-band container" aria-labelledby="appreciateTitle">
+      <div class="appreciate-card spotlight-card">
+        <div class="appreciate-copy">
+          <p class="eyebrow">VISITOR APPRECIATION</p>
+          <h2 id="appreciateTitle">Like what you see? Leave a like.</h2>
+          <p id="appreciateStats" class="appreciate-stats" role="status" aria-live="polite">Loading live visitor likes…</p>
+          <p id="appreciateProjectsSummary" class="appreciate-top" hidden></p>
+        </div>
+        <div class="appreciate-actions">
+          <button type="button" class="appreciate-btn" id="mainLikeBtn" data-like-btn data-like-target="portfolio" aria-pressed="false" aria-label="Leave a like on this portfolio">
+            <svg class="ui-icon heart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+            <span class="like-label">Leave a Like</span>
+            <span class="like-count" data-like-count="portfolio">0</span>
+          </button>
+          <p class="appreciate-hint">Saved live in Neon Postgres for every visitor — also tap the heart on any project above.</p>
+        </div>
+      </div>
+    </section>
+
     <section id="contact" class="section container contact-grid">
       <div>
         <p class="eyebrow">04 / LET’S CONNECT</p>
@@ -1076,6 +1100,7 @@
     <a href="#experience" data-rail="experience" aria-label="Experience section"><span>01 Exp</span></a>
     <a href="#projects" data-rail="projects" aria-label="Projects section"><span>02 Work</span></a>
     <a href="#skills" data-rail="skills" aria-label="Skills section"><span>03 Skills</span></a>
+    <a href="#appreciate" data-rail="appreciate" aria-label="Visitor appreciation section"><span>♥ Like</span></a>
     <a href="#contact" data-rail="contact" aria-label="Contact section"><span>04 Contact</span></a>
   </nav>
   <button type="button" class="back-to-top" id="backToTop" aria-label="Scroll back to top" hidden><span>↑ Top</span></button>

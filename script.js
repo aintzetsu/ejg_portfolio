@@ -1013,6 +1013,7 @@ const projectCatalog = {
     repoUrl: null,
     eyebrow: 'WORKFLOW AUTOMATION STUDIO',
     caseTitle: 'App Overview — Relay',
+    flow: ['Better Auth', 'Next.js API', 'Condition & Secrets', 'Neon Postgres'],
     tags: ['Next.js 16', 'React 19', 'Tailwind CSS', 'Better Auth', 'Neon Postgres', 'Vercel Schedules'],
     blocks: [
       {
@@ -1045,6 +1046,45 @@ function syncModalActionLinks(liveEl, repoEl, item) {
       repoEl.hidden = true;
     }
   }
+}
+
+const flowByCatalogKey = {
+  simotsarap: ['Menu UI (React)', 'Category Filters', 'Static Media Bundle', 'Maps Embed'],
+  vesper: ['Finish Customizer', 'DSP Biquad Synth', 'Canvas Visualizer', 'localStorage + Relay'],
+  labelgrid: ['Canvas Box Engine', 'UTF-16 NER Spans', 'COCO / YOLO / JSONL', 'Relay Cloud Sync'],
+  foliovault: ['Canvas Enhancer', 'Deskew & Filters', 'OCR Metadata Index', 'IndexedDB + Relay'],
+  cutoutStudio: ['Perimeter Sampling', 'Flood-Fill Matte', '20-Step Undo', 'PNG + Relay Sync'],
+  restbench: ['Request Builder', 'Mock CRUD Engine', 'Live fetch() Runner', 'Codegen + Relay'],
+  pathcraft: ['Grid & Weights', 'Heuristic Stepper', '60fps Canvas Draw', 'Metrics + Relay'],
+  chromalab: ['Color Scale Engine', 'WCAG AA/AAA Audit', 'CVD SVG Matrices', 'Tokens + Relay'],
+  folioNotes: ['Markdown Parser', '[[Wiki Links]]', 'Force Graph Canvas', 'IndexedDB + Relay'],
+  ledgerflow: ['Horizon Filters', 'HiDPI Canvas Charts', 'Sortable Ledger', 'CSV + Relay Sync'],
+  sprintdeck: ['Drag & Drop Board', 'Story Point Metrics', 'Priority Filters', 'localStorage + Relay'],
+  meridianSync: ['Intl.DateTimeFormat', '24h Overlap Matrix', 'DST Slot Scorer', 'Relay Cloud Sync'],
+  pulsegrid: ['Lookahead Clock', '5-Voice Web Audio', 'Oscilloscope Canvas', 'JSON + Relay Sync'],
+  kotoCabin: ['SVG Elevations', 'Landscape Filters', 'Rate Calculator', 'Itinerary + Relay'],
+  relay: ['Better Auth', 'Webhook & Cron', 'AES-256-GCM Secrets', 'Neon Postgres']
+};
+
+function createArchFlowEl(key, fallbackTags = []) {
+  const steps = flowByCatalogKey[key] || fallbackTags.slice(0, 4);
+  const wrap = document.createElement('div');
+  wrap.className = 'arch-flow';
+  wrap.setAttribute('aria-label', 'Architecture data flow');
+  steps.forEach((step, idx) => {
+    if (idx > 0) {
+      const arrow = document.createElement('span');
+      arrow.className = 'arch-arrow';
+      arrow.setAttribute('aria-hidden', 'true');
+      arrow.textContent = '→';
+      wrap.append(arrow);
+    }
+    const node = document.createElement('span');
+    node.className = 'arch-node';
+    node.textContent = step;
+    wrap.append(node);
+  });
+  return wrap;
 }
 
 const imageModal = document.getElementById('imageModal');
@@ -1095,6 +1135,8 @@ function openCaseStudy(key, triggerEl) {
     })
   );
 
+  caseStudyBlocks.append(createArchFlowEl(key, item.tags));
+
   caseStudyTags.replaceChildren(
     ...item.tags.map(tag => {
       const li = document.createElement('li');
@@ -1107,21 +1149,33 @@ function openCaseStudy(key, triggerEl) {
   openDialog(caseStudyModal, triggerEl);
 }
 
-// Interactive category filter, search & Show More collapse across all 15 Featured Projects
+// Interactive category filter, layout switcher, search & Show More collapse across all 15 Featured Projects
 const projectControls = document.getElementById('projectControls');
 const projectSearch = document.getElementById('projectSearch');
+const projectViewToggle = document.getElementById('projectViewToggle');
+const featuredProjectList = document.getElementById('featuredProjectList');
 const featuredProjectCards = Array.from(document.querySelectorAll('#featuredProjectList .project-card'));
 const projectsEmpty = document.getElementById('projectsEmpty');
 const projectsToggleWrap = document.getElementById('projectsToggleWrap');
 const toggleProjects = document.getElementById('toggleProjects');
 const INITIAL_PROJECTS_SHOWN = 3;
 let activeProjCat = 'all';
+let projectView = 'stack';
 let projectsExpanded = false;
 
 function updateFeaturedProjects() {
   const query = (projectSearch ? projectSearch.value : '').trim().toLowerCase();
   const isFiltered = activeProjCat !== 'all' || Boolean(query);
+  const showAllMatches = isFiltered || projectsExpanded || projectView === 'grid';
 
+  if (featuredProjectList) {
+    featuredProjectList.classList.toggle('is-grid', projectView === 'grid');
+  }
+  if (projectViewToggle) {
+    projectViewToggle.querySelectorAll('[data-proj-view]').forEach(btn => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.projView === projectView));
+    });
+  }
   if (projectControls) {
     projectControls.querySelectorAll('[data-proj-cat]').forEach(btn => {
       btn.setAttribute('aria-pressed', String(btn.dataset.projCat === activeProjCat));
@@ -1135,14 +1189,14 @@ function updateFeaturedProjects() {
     const matchesQuery = !query || searchable.includes(query);
     const matches = matchesCat && matchesQuery;
     if (matches) matchedCount++;
-    const show = matches && (isFiltered || projectsExpanded || matchedCount <= INITIAL_PROJECTS_SHOWN);
+    const show = matches && (showAllMatches || matchedCount <= INITIAL_PROJECTS_SHOWN);
     card.hidden = !show;
   });
 
   if (projectsEmpty) projectsEmpty.hidden = matchedCount > 0;
 
   if (projectsToggleWrap && toggleProjects) {
-    const canCollapse = !isFiltered && matchedCount > INITIAL_PROJECTS_SHOWN;
+    const canCollapse = projectView === 'stack' && !isFiltered && matchedCount > INITIAL_PROJECTS_SHOWN;
     projectsToggleWrap.hidden = !canCollapse;
     if (canCollapse) {
       const hiddenCount = matchedCount - INITIAL_PROJECTS_SHOWN;
@@ -1174,6 +1228,11 @@ function revealProjectCardIfNeeded(cardOrId) {
   }
 }
 
+document.addEventListener('click', event => {
+  const anchor = event.target.closest('a[href^="#project-"]');
+  if (anchor) revealProjectCardIfNeeded(anchor.getAttribute('href'));
+});
+
 window.addEventListener('hashchange', () => {
   if (location.hash.startsWith('#project-')) revealProjectCardIfNeeded(location.hash);
 });
@@ -1188,6 +1247,14 @@ if (projectControls && featuredProjectCards.length > 0) {
       updateFeaturedProjects();
     });
   });
+  if (projectViewToggle) {
+    projectViewToggle.querySelectorAll('[data-proj-view]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        projectView = btn.dataset.projView === 'grid' ? 'grid' : 'stack';
+        updateFeaturedProjects();
+      });
+    });
+  }
   if (projectSearch) {
     projectSearch.addEventListener('input', updateFeaturedProjects);
   }
@@ -1233,7 +1300,7 @@ document.querySelectorAll('.project-card[data-catalog]').forEach(card => {
   caseBtn.textContent = 'Open Case Study';
   actions.append(caseBtn);
 
-  blueprintEl.append(eyebrow, list, actions);
+  blueprintEl.append(eyebrow, list, createArchFlowEl(key, item.tags), actions);
 });
 
 document.querySelectorAll('[data-casestudy]').forEach(btn => {
@@ -1564,6 +1631,20 @@ skillButtons.forEach(btn => {
 });
 if (clearProofBtn) clearProofBtn.addEventListener('click', clearSkillProof);
 
+const skillRibbon = document.getElementById('skillRibbon');
+if (skillRibbon) {
+  skillRibbon.addEventListener('click', event => {
+    const btn = event.target.closest('[data-skill]');
+    if (!btn) return;
+    if (activeSkillKey === btn.dataset.skill) {
+      document.getElementById('skillProofBox')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
+    selectSkillProof(btn.dataset.skill);
+    document.getElementById('skillProofBox')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+}
+
 // Interactive skill category filter and keyword search
 const skillsControls = document.getElementById('skillsControls');
 const skillFilterInput = document.getElementById('skillFilterInput');
@@ -1644,6 +1725,7 @@ const paletteActions = [
   { title: 'Jump to Introduction', hint: '#introduction', run: () => { location.hash = '#introduction'; } },
   { title: 'Jump to Experience & Education', hint: '#experience', run: () => { location.hash = '#experience'; } },
   { title: 'Jump to Featured Projects (15)', hint: '#projects', run: () => { location.hash = '#projects'; } },
+  { title: 'Toggle Projects Layout (Stack / Grid)', hint: 'Layout', run: () => { projectView = projectView === 'grid' ? 'stack' : 'grid'; updateFeaturedProjects(); location.hash = '#projects'; } },
   { title: 'Inspect LabelGrid (AI Annotation App)', hint: 'Featured 03', run: () => openCaseStudy('labelgrid', openPaletteBtn) },
   { title: 'Read Simot Sarap Case Study', hint: 'Modal', run: () => openCaseStudy('simotsarap', openPaletteBtn) },
   { title: 'Read Vesper Audio Case Study', hint: 'Modal', run: () => openCaseStudy('vesper', openPaletteBtn) },
@@ -1781,7 +1863,7 @@ function printTerminalWelcome() {
 function runTerminalCommand(rawInput) {
   const cleaned = rawInput.trim();
   if (!cleaned) return;
-  appendTermLine(`ejg@qc:~\$ ${cleaned}`, 'is-cmd');
+  appendTermLine(`ejg@qc:~$ ${cleaned}`, 'is-cmd');
 
   const [cmdRaw, ...rest] = cleaned.split(/\s+/);
   const cmd = cmdRaw.toLowerCase();
@@ -2217,6 +2299,16 @@ function renderLikeSummary() {
       appreciateProjectsSummaryEl.hidden = true;
     }
   }
+
+  document.querySelectorAll('.favorite-crown').forEach(el => el.remove());
+  projectLikes.slice(0, 3).forEach(([targetId]) => {
+    const eyebrow = document.querySelector(`#${targetId} .project-details .eyebrow`);
+    if (!eyebrow) return;
+    const crown = document.createElement('span');
+    crown.className = 'favorite-crown';
+    crown.textContent = '★ Top Liked';
+    eyebrow.append(crown);
+  });
 }
 
 function syncLikeButtons() {
@@ -2364,6 +2456,18 @@ async function initVisitorLikes() {
 }
 
 initVisitorLikes();
+
+const footerPaletteBtn = document.getElementById('footerPaletteBtn');
+if (footerPaletteBtn && commandModal) {
+  footerPaletteBtn.hidden = false;
+  footerPaletteBtn.addEventListener('click', openCommandPalette);
+}
+
+const footerTermBtn = document.getElementById('footerTermBtn');
+if (footerTermBtn && openTerminalBtn) {
+  footerTermBtn.hidden = false;
+  footerTermBtn.addEventListener('click', () => openTerminalBtn.click());
+}
 
 if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const observer = new IntersectionObserver(entries => {

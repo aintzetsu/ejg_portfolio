@@ -710,6 +710,7 @@
                 <div class="browser-mode-switch" role="tablist" aria-label="ChromaLab preview view" hidden>
                   <button type="button" role="tab" aria-selected="true" data-frame-mode="visual">Preview</button>
                   <button type="button" role="tab" aria-selected="false" data-frame-mode="blueprint">Blueprint</button>
+                  <button type="button" role="tab" aria-selected="false" data-frame-mode="lab">Live Lab</button>
                 </div>
               </div>
               <div class="browser-stage">
@@ -719,6 +720,30 @@
                   <p class="image-fallback" hidden>ChromaLab<span>Token Foundry</span></p>
                 </button>
                 <div class="browser-blueprint" hidden></div>
+                <div class="browser-lab" id="chromaLab" hidden>
+                  <div class="lab-head">
+                    <span class="eyebrow">WCAG 2.1 CONTRAST LAB</span>
+                    <span class="mono-muted" id="chromaRatioVal">13.84 : 1</span>
+                  </div>
+                  <div class="chroma-controls">
+                    <label class="chroma-picker"><span>Text</span><input type="color" id="chromaFgInput" value="#1b1a17" aria-label="Foreground text color"></label>
+                    <label class="chroma-picker"><span>BG</span><input type="color" id="chromaBgInput" value="#f5f4f1" aria-label="Background fill color"></label>
+                    <div class="lab-pills" id="chromaPresets" role="group" aria-label="Color presets">
+                      <button type="button" data-fg="#1b1a17" data-bg="#f5f4f1" aria-pressed="true">Editorial</button>
+                      <button type="button" data-fg="#244939" data-bg="#f4f3ec" aria-pressed="false">Sage</button>
+                      <button type="button" data-fg="#949087" data-bg="#f5f4f1" aria-pressed="false">Low Contrast</button>
+                    </div>
+                  </div>
+                  <div class="chroma-preview" id="chromaPreviewBox">
+                    <strong>Accessible UI Typography Preview</strong>
+                    <span>Verify contrast ratio cleanly before shipping tokens.</span>
+                    <div class="chroma-badges">
+                      <span class="chroma-badge is-pass" id="chromaAaBadge">AA Normal · Pass</span>
+                      <span class="chroma-badge is-pass" id="chromaAaaBadge">AAA · Pass</span>
+                      <button type="button" class="copy-button" id="chromaAutoFixBtn">Auto-Fix to AA</button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -885,6 +910,7 @@
                 <div class="browser-mode-switch" role="tablist" aria-label="PulseGrid preview view" hidden>
                   <button type="button" role="tab" aria-selected="true" data-frame-mode="visual">Preview</button>
                   <button type="button" role="tab" aria-selected="false" data-frame-mode="blueprint">Blueprint</button>
+                  <button type="button" role="tab" aria-selected="false" data-frame-mode="lab">Live Lab</button>
                 </div>
               </div>
               <div class="browser-stage">
@@ -894,6 +920,19 @@
                   <p class="image-fallback" hidden>PulseGrid<span>Web Audio Sequencer</span></p>
                 </button>
                 <div class="browser-blueprint" hidden></div>
+                <div class="browser-lab browser-lab-dark" id="pulseLab" hidden>
+                  <div class="lab-head">
+                    <span class="eyebrow">8-STEP WEB AUDIO SEQUENCER</span>
+                    <span class="mono-muted" id="pulseBpmLabel">116 BPM</span>
+                  </div>
+                  <div class="pulse-toolbar">
+                    <button type="button" class="copy-button" id="pulsePlayBtn" aria-pressed="false">Play Beat</button>
+                    <button type="button" class="copy-button" id="pulsePresetBtn">Preset Groove</button>
+                    <button type="button" class="copy-button" id="pulseClearBtn">Clear</button>
+                    <label class="pulse-bpm-wrap"><span>Tempo</span><input type="range" id="pulseBpmSlider" min="90" max="145" value="116" aria-label="Tempo BPM"></label>
+                  </div>
+                  <div class="pulse-grid" id="pulseStepGrid" aria-label="Drum sequencer step matrix"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -989,6 +1028,7 @@
                 <div class="browser-mode-switch" role="tablist" aria-label="Shift Ledger preview view" hidden>
                   <button type="button" role="tab" aria-selected="true" data-frame-mode="visual">Preview</button>
                   <button type="button" role="tab" aria-selected="false" data-frame-mode="blueprint">Blueprint</button>
+                  <button type="button" role="tab" aria-selected="false" data-frame-mode="lab">Live Lab</button>
                 </div>
               </div>
               <div class="browser-stage">
@@ -998,6 +1038,29 @@
                   <p class="image-fallback" hidden>Shift Ledger<span>Workday &amp; Pay Ledger</span></p>
                 </button>
                 <div class="browser-blueprint" hidden></div>
+                <div class="browser-lab shift-lab" id="shiftLab" hidden>
+                  <div class="lab-head">
+                    <span class="eyebrow">4-HOUR SHIFT &amp; AHT SIMULATOR</span>
+                    <span class="mono-muted" id="shiftGoalStatus">45m to 4h goal</span>
+                  </div>
+                  <div class="shift-lab-metrics">
+                    <div class="shift-metric-tile"><span>Active</span><strong id="shiftActiveOut">3h 15m</strong></div>
+                    <div class="shift-metric-tile"><span>Earnings</span><strong id="shiftPayOut">$13.00</strong></div>
+                    <div class="shift-metric-tile"><span>Avg AHT</span><strong id="shiftAhtOut">7.5m</strong></div>
+                    <div class="shift-metric-tile"><span>Pace</span><strong id="shiftPaceOut">8.0/hr</strong></div>
+                  </div>
+                  <progress id="shiftLabProgress" max="240" value="195" aria-label="Shift 4-hour progress"></progress>
+                  <div class="shift-lab-controls">
+                    <label><span>Active Mins</span><input type="range" id="shiftMinsSlider" min="15" max="240" step="5" value="195"></label>
+                    <label><span>Tasks</span><input type="range" id="shiftTasksSlider" min="1" max="120" value="26"></label>
+                    <div class="shift-rate-row">
+                      <label for="shiftRateInput" class="sr-only">Hourly rate</label>
+                      <input type="number" id="shiftRateInput" min="1" max="5000" step="0.5" value="4" aria-label="Hourly rate">
+                      <button type="button" class="copy-button" id="shiftCurrencyBtn" aria-pressed="false">USD ($)</button>
+                    </div>
+                  </div>
+                  <p class="shift-lab-foot mono-muted" id="shiftWeeklyOut">28h Weekly Goal Est.: $112.00 / wk · Cap stops at 4h daily</p>
+                </div>
               </div>
             </div>
           </div>

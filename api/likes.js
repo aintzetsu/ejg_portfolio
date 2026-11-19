@@ -19,6 +19,7 @@ const ALLOWED_TARGETS = new Set([
   'project-relay',
   'project-shift-ledger',
   'project-reelfetch',
+  'project-saldo',
 ]);
 
 const VISITOR_ID_RE = /^[a-zA-Z0-9_-]{8,64}$/;

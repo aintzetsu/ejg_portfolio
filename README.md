@@ -8,17 +8,17 @@ Personal IT portfolio website of **Edison Jr. Magparoc Gaudicos** — IT Graduat
 
 ## Overview
 
-Built with semantic HTML5, responsive CSS custom properties, optimized WebP imagery, vanilla JavaScript ES6+, and serverless **Neon Postgres** (`api/likes.js`):
-- **16 Featured Projects with Sort, Filter & Direct Share URLs**: Filter by category (`Websites & Audio`, `AI & Data QA`, `Dev & Algorithms`, `Productivity`), search by keyword, sort by **Featured**, **Newest**, or **Most Liked** (Neon Postgres counts), switch between **Stack View** and **Compact Grid**, and open shareable case studies via `?project=<slug>`.
-- **Live Motion Preview Reels & Interactive Blueprint Mode**: Hovering any project frame reveals a live feature reel (`1/4`–`4/4`), while toggling **Blueprint** renders its architecture data flow; **Simot Sarap** and **Vesper Audio** also include live in-card interactive labs.
-- **Neon Postgres Appreciation & Telemetry (`/api/likes`)**: Live portfolio & per-project likes plus site visit and CV download counters backed by serverless Neon Postgres (`api/likes.js`).
-- **Role-Tailored Bio Switcher & Live PHT Clock**: Switch hero messaging between *Overview*, *Web Development*, and *IT Support & Data QA* alongside live Quezon City (`Asia/Manila`) time.
-- **Experience Timeline & Skill-to-Proof Linking**: Filter career timeline (`RWS`, `Innodata`, `DepEd NCR`, `STI SAP Practicum`, plus earlier roles) and click any skill tag (`Next.js 16`, `React`, `Neon Postgres`, `HTML5 Canvas`, `Web Audio API`, `SQL`, `SAP`, etc.) to highlight live proof.
-- **Quick Command Palette (`Ctrl+K` / `⌘K`), Interactive Shell (`>`), Themes & Lightbox**: Keyboard navigation, 4 accent swatches + dark mode, confetti triggers, `404.html`, and print stylesheet.
+Built with semantic HTML5, responsive CSS custom properties, optimized WebP imagery, vanilla JavaScript ES6+, **Neon Postgres** (`api/likes.js`, `api/contact.js`), and hardened Vercel HTTP headers (`vercel.json`):
+- **18 Featured Projects with Sort, Filter & Direct Share URLs**: Filter by category (`Websites & Audio`, `AI & Data QA`, `Dev & Algorithms`, `Productivity`), search by keyword, sort by **Featured**, **Newest**, or **Most Liked** (Neon Postgres counts), switch between **Stack View** and **Compact Grid**, and open shareable case studies via `?project=<slug>`.
+- **Live Motion Preview Reels, Blueprint Mode & Interactive Live Labs**: Hovering any project frame reveals a live feature reel (`1/4`–`4/4`), **Blueprint** renders its architecture data flow, and **Simot Sarap**, **Vesper Audio**, **ChromaLab**, **PulseGrid**, and **Shift Ledger** include interactive in-card Live Labs.
+- **Verified Contact Inbox (`POST /api/contact`)**: Blocks disposable domains, runs DNS MX validation, sends 6-digit OTP verification codes via Gmail SMTP (`nodemailer`) or Resend, and stores verified messages in Neon Postgres.
+- **Neon Postgres Appreciation & Telemetry (`/api/likes`)**: Live portfolio & per-project likes plus site visit and CV download counters.
+- **Security Headers & Asset Caching (`vercel.json`)**: Hash-verified CSP, `X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`, and 30-day static asset caching.
+- **Command Palette (`Ctrl+K` / `⌘K`), Interactive Shell (`>`), Bio Switcher & Themes**: Keyboard navigation, live PHT clock, 4 accent swatches + dark mode, confetti triggers, `404.html`, and print stylesheet.
 
 ---
 
-## Featured Projects (16)
+## Featured Projects (18)
 
 | # | Project | Category | Live Demo | GitHub Source |
 |---|---------|----------|-----------|---------------|
@@ -36,8 +36,10 @@ Built with semantic HTML5, responsive CSS custom properties, optimized WebP imag
 | 12 | **Meridian Sync** | Productivity | [meridian-sync.vercel.app](https://meridian-sync.vercel.app/) | [aintzetsu/meridian-sync](https://github.com/aintzetsu/meridian-sync) |
 | 13 | **PulseGrid** | Websites & Audio | [pulsegrid-gilt.vercel.app](https://pulsegrid-gilt.vercel.app/) | [aintzetsu/pulsegrid](https://github.com/aintzetsu/pulsegrid) |
 | 14 | **Koto Cabin** | Websites & Audio | [koto-cabin.vercel.app](https://koto-cabin.vercel.app/) | [aintzetsu/koto-cabin](https://github.com/aintzetsu/koto-cabin) |
-| 15 | **Relay** | Dev & Algorithms | [relay-pi-rust.vercel.app](https://relay-pi-rust.vercel.app/) | Private repo |
+| 15 | **Relay** | Dev & Algorithms | [relay-pi-rust.vercel.app](https://relay-pi-rust.vercel.app/) | Local / Vercel deploy |
 | 16 | **Shift Ledger** | Productivity | [shift-ledger-beige.vercel.app](https://shift-ledger-beige.vercel.app/) | Private repo |
+| 17 | **ReelFetch** | Productivity | [reelfetch-ten.vercel.app](https://reelfetch-ten.vercel.app/) | Private repo |
+| 18 | **Saldo** | Productivity | [saldo-ledger.vercel.app](https://saldo-ledger.vercel.app/) | [aintzetsu/saldo](https://github.com/aintzetsu/saldo) |
 
 ---
 

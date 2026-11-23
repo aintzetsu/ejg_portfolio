@@ -477,6 +477,12 @@ if (cursorRing && finePointerQuery.matches && !reducedMotionQuery.matches) {
   let ringX = -100;
   let ringY = -100;
   let ringRaf = null;
+  let ringIdleTimer = null;
+
+  const hideRing = () => {
+    clearTimeout(ringIdleTimer);
+    cursorRing.classList.remove('is-visible', 'is-hover', 'is-down');
+  };
 
   const tickRing = () => {
     ringX += (targetX - ringX) * 0.22;
@@ -491,14 +497,22 @@ if (cursorRing && finePointerQuery.matches && !reducedMotionQuery.matches) {
   };
 
   document.addEventListener('pointermove', event => {
+    if (window.innerWidth <= 840) {
+      hideRing();
+      return;
+    }
     targetX = event.clientX;
     targetY = event.clientY;
     cursorRing.classList.add('is-visible');
     const interactive = Boolean(event.target.closest('a, button, input, textarea, [role="tab"]'));
     cursorRing.classList.toggle('is-hover', interactive);
+    clearTimeout(ringIdleTimer);
+    ringIdleTimer = setTimeout(hideRing, 2000);
     if (!ringRaf) ringRaf = requestAnimationFrame(tickRing);
   });
-  document.addEventListener('pointerleave', () => cursorRing.classList.remove('is-visible'));
+  document.addEventListener('pointerleave', hideRing);
+  window.addEventListener('blur', hideRing);
+  window.addEventListener('scroll', hideRing, { passive: true });
   document.addEventListener('pointerdown', () => cursorRing.classList.add('is-down'));
   document.addEventListener('pointerup', () => cursorRing.classList.remove('is-down'));
 }
@@ -2597,6 +2611,14 @@ if (openTerminalBtn && terminalModal) {
 // Live GitHub snapshot enhancement (safe public unauthenticated endpoint with static fallback)
 const githubReposContainer = document.getElementById('githubRepos');
 if (githubReposContainer && typeof fetch === 'function') {
+  const staticDescByRepo = new Map(
+    Array.from(githubReposContainer.querySelectorAll('a.repo-mini')).map(card => {
+      const name = (card.querySelector('strong')?.textContent || '').replace(/\s*↗\s*$/, '').trim().toLowerCase();
+      const desc = card.querySelector('span')?.textContent.trim() || '';
+      return [name, desc];
+    })
+  );
+
   fetch('https://api.github.com/users/aintzetsu/repos?sort=updated&per_page=30', {
     headers: { Accept: 'application/vnd.github+json' }
   })
@@ -2619,8 +2641,13 @@ if (githubReposContainer && typeof fetch === 'function') {
 
           const meta = document.createElement('span');
           const lang = repo.language || 'Code';
-          const desc = repo.description ? `${repo.description} · ` : '';
-          meta.textContent = `${desc}${lang}`;
+          const apiDesc = (repo.description || '').trim();
+          const hasUsefulApiDesc = Boolean(apiDesc) && apiDesc.toLowerCase() !== 'project and etc';
+          const fallbackDesc = staticDescByRepo.get(repo.name.toLowerCase()) || '';
+          const descText = hasUsefulApiDesc ? apiDesc : fallbackDesc;
+          meta.textContent = descText
+            ? (descText.toLowerCase().includes(lang.toLowerCase()) ? descText : `${descText} · ${lang}`)
+            : lang;
 
           link.append(title, meta);
           return link;
@@ -2731,9 +2758,17 @@ function setContactBusy(busy, label) {
   if (resendCodeBtn) resendCodeBtn.disabled = busy;
 }
 
+function validateContactMessageFields() {
+  for (const id of ['name', 'email', 'message']) {
+    const field = document.getElementById(id);
+    if (field && !field.reportValidity()) return false;
+  }
+  return true;
+}
+
 async function requestVerificationCode() {
   if (!contactForm || contactBusy) return;
-  if (!contactForm.reportValidity()) return;
+  if (!validateContactMessageFields()) return;
   const { name, email, message, website } = getFormMessageData();
   setContactBusy(true, 'Verifying domain & sending code…');
 
@@ -2852,7 +2887,7 @@ if (verifyCodeInput) {
 
 if (gmailFallbackBtn && contactForm) {
   gmailFallbackBtn.addEventListener('click', () => {
-    if (!contactForm.reportValidity()) return;
+    if (!validateContactMessageFields()) return;
     const { subject, body } = getFormMessageData();
     const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent('gaudicosmedisonjr@gmail.com')}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.open(gmailUrl, '_blank', 'noopener,noreferrer');
@@ -2863,7 +2898,7 @@ if (gmailFallbackBtn && contactForm) {
 
 if (mailtoButton && contactForm) {
   mailtoButton.addEventListener('click', () => {
-    if (!contactForm.reportValidity()) return;
+    if (!validateContactMessageFields()) return;
     const { subject, body } = getFormMessageData();
     const mailtoUrl = `mailto:gaudicosmedisonjr@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoUrl;
@@ -2874,7 +2909,7 @@ if (mailtoButton && contactForm) {
 
 if (copyDraftButton && contactForm) {
   copyDraftButton.addEventListener('click', async () => {
-    if (!contactForm.reportValidity()) return;
+    if (!validateContactMessageFields()) return;
     const { subject, body } = getFormMessageData();
     try {
       await navigator.clipboard.writeText(`To: gaudicosmedisonjr@gmail.com\nSubject: ${subject}\n\n${body}`);

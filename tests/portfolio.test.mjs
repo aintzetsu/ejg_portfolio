@@ -130,6 +130,16 @@ test('api/likes GET & POST validate inputs, update counts, and preserve metrics'
   );
   assert.equal(badTarget.status, 400);
 
+  const jobRadarLike = await likesPost(
+    new Request('https://ejg-portfolio.vercel.app/api/likes', {
+      method: 'POST',
+      body: JSON.stringify({ target: 'project-job-radar', visitorId: 'v_new_visitor_001', action: 'like' }),
+    }),
+    { sqlClient }
+  );
+  assert.equal(jobRadarLike.status, 200);
+  assert.equal((await jobRadarLike.json()).likes, 1);
+
   const likeResp = await likesPost(
     new Request('https://ejg-portfolio.vercel.app/api/likes', {
       method: 'POST',

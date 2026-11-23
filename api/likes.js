@@ -98,14 +98,14 @@ async function readSiteMetrics(sql) {
   return metrics;
 }
 
-export async function GET(request) {
+export async function GET(request, { sqlClient = null } = {}) {
   try {
     const { searchParams } = new URL(request.url);
     const visitorIdRaw = (searchParams.get('visitorId') || '').trim();
     const visitorId = VISITOR_ID_RE.test(visitorIdRaw) ? visitorIdRaw : null;
 
-    const sql = getSql();
-    await ensureSchema(sql);
+    const sql = sqlClient || getSql();
+    if (!sqlClient) await ensureSchema(sql);
 
     const targetRows = await sql`
       SELECT target, total_likes
@@ -150,7 +150,7 @@ export async function GET(request) {
   }
 }
 
-export async function POST(request) {
+export async function POST(request, { sqlClient = null } = {}) {
   try {
     let body;
     try {
@@ -172,8 +172,8 @@ export async function POST(request) {
       if (target !== 'site') {
         return jsonResponse({ ok: false, error: 'Metric updates require target "site".' }, 400);
       }
-      const sql = getSql();
-      await ensureSchema(sql);
+      const sql = sqlClient || getSql();
+      if (!sqlClient) await ensureSchema(sql);
       await sql`
         INSERT INTO portfolio_site_metrics (metric, total_count, updated_at)
         VALUES (${metricKey}, 1, NOW())
@@ -192,8 +192,8 @@ export async function POST(request) {
       return jsonResponse({ ok: false, error: 'Action must be "like" or "unlike".' }, 400);
     }
 
-    const sql = getSql();
-    await ensureSchema(sql);
+    const sql = sqlClient || getSql();
+    if (!sqlClient) await ensureSchema(sql);
 
     let rows;
     if (action === 'like') {

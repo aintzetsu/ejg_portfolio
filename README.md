@@ -9,7 +9,7 @@ Personal IT portfolio website of **Edison Jr. Magparoc Gaudicos** — IT Graduat
 ## Overview
 
 Built with semantic HTML5, responsive CSS custom properties, optimized WebP imagery, vanilla JavaScript ES6+, **Neon Postgres** (`api/likes.js`, `api/contact.js`), and hardened Vercel HTTP headers (`vercel.json`):
-- **18 Featured Projects with Sort, Filter & Direct Share URLs**: Filter by category (`Websites & Audio`, `AI & Data QA`, `Dev & Algorithms`, `Productivity`), search by keyword, sort by **Featured**, **Newest**, or **Most Liked** (Neon Postgres counts), switch between **Stack View** and **Compact Grid**, and open shareable case studies via `?project=<slug>`.
+- **19 Featured Projects with Sort, Filter & Direct Share URLs**: Filter by category (`Websites & Audio`, `AI & Data QA`, `Dev & Algorithms`, `Productivity`), search by keyword, sort by **Featured**, **Newest**, or **Most Liked** (Neon Postgres counts), switch between **Stack View** and **Compact Grid**, and open shareable case studies via `?project=<slug>`.
 - **Live Motion Preview Reels, Blueprint Mode & Interactive Live Labs**: Hovering any project frame reveals a live feature reel (`1/4`–`4/4`), **Blueprint** renders its architecture data flow, and **Simot Sarap**, **Vesper Audio**, **PathCraft**, **ChromaLab**, **PulseGrid**, **Shift Ledger**, **ReelFetch**, and **Saldo** include interactive in-card Live Labs.
 - **Verified Contact Inbox (`POST /api/contact`)**: Blocks disposable domains, runs DNS MX validation, sends 6-digit OTP verification codes via Gmail SMTP (`nodemailer`) or Resend, and stores verified messages in Neon Postgres.
 - **Neon Postgres Appreciation & Telemetry (`/api/likes`)**: Live portfolio & per-project likes plus site visit and CV download counters.
@@ -18,7 +18,7 @@ Built with semantic HTML5, responsive CSS custom properties, optimized WebP imag
 
 ---
 
-## Featured Projects (18)
+## Featured Projects (19)
 
 | # | Project | Category | Live Demo | GitHub Source |
 |---|---------|----------|-----------|---------------|
@@ -40,6 +40,7 @@ Built with semantic HTML5, responsive CSS custom properties, optimized WebP imag
 | 16 | **Shift Ledger** | Productivity | [shift-ledger-beige.vercel.app](https://shift-ledger-beige.vercel.app/) | Private repo |
 | 17 | **ReelFetch** | Productivity | [reelfetch-ten.vercel.app](https://reelfetch-ten.vercel.app/) | Private repo |
 | 18 | **Saldo** | Productivity | [saldo-ledger.vercel.app](https://saldo-ledger.vercel.app/) | [aintzetsu/saldo](https://github.com/aintzetsu/saldo) |
+| 19 | **Job Radar PH** | Productivity | [job-radar-ph.vercel.app](https://job-radar-ph.vercel.app/) | — |
 
 ---
 

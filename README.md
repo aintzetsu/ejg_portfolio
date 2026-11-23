@@ -40,6 +40,7 @@ Built with semantic HTML5, responsive CSS custom properties, optimized WebP imag
 | 16 | **Shift Ledger** | Productivity | [shift-ledger-beige.vercel.app](https://shift-ledger-beige.vercel.app/) | Private repo |
 | 17 | **ReelFetch** | Productivity | [reelfetch-ten.vercel.app](https://reelfetch-ten.vercel.app/) | Private repo |
 | 18 | **Saldo** | Productivity | [saldo-ledger.vercel.app](https://saldo-ledger.vercel.app/) | [aintzetsu/saldo](https://github.com/aintzetsu/saldo) |
+| 19 | **Job Radar PH** | Productivity | [job-radar-ph.vercel.app](https://job-radar-ph.vercel.app/) | — |
 
 ---
 

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resume | Edison Jr. Magparoc Gaudicos</title>
+  <meta name="description" content="Printable ATS resume for Edison Jr. Magparoc Gaudicos — IT Graduate, Frontend Developer, and AI Data Service Specialist in Quezon City, PH.">
+  <meta name="theme-color" content="#f5f4f1">
+  <link rel="canonical" href="https://ejg-portfolio.vercel.app/resume.html">
+  <link rel="icon" type="image/png" href="/logo-192.png">
+  <link rel="apple-touch-icon" href="/logo-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <script>
+    try {
+      var savedTheme = localStorage.getItem('ejg-theme');
+      var savedAccent = localStorage.getItem('ejg-accent');
+      if (savedTheme === 'dark') document.documentElement.dataset.theme = 'dark';
+      if (savedAccent) document.documentElement.dataset.accent = savedAccent;
+    } catch {}
+  </script>
+  <script src="/resume.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="logo" href="/" aria-label="Back to Edison Gaudicos portfolio">
+        <img src="/logo.png" width="60" height="40" alt="EJG logo">
+        <span>EJG<span class="accent">.</span></span>
+      </a>
+      <div class="header-actions">
+        <button type="button" class="button primary" id="printResumeBtn">Print / Save PDF</button>
+        <a href="/Edison_Gaudicos_Updated_Resume.pdf" download class="button">Download PDF</a>
+        <a href="/" class="button">Back to Portfolio</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container resume-sheet" id="resumeMain">
+    <section class="resume-header">
+      <div>
+        <p class="eyebrow">CURRICULUM VITAE · ATS READABLE</p>
+        <h1>Edison Jr. Magparoc <span class="accent display-italic">Gaudicos</span></h1>
+        <p class="resume-role">Data Service Specialist · Frontend Web Developer · IT Support</p>
+      </div>
+      <ul class="resume-contact-list">
+        <li>Quezon City, Metro Manila, Philippines</li>
+        <li><a href="mailto:gaudicosmedisonjr@gmail.com">gaudicosmedisonjr@gmail.com</a></li>
+        <li><a href="https://ejg-portfolio.vercel.app/">ejg-portfolio.vercel.app</a></li>
+        <li><a href="https://github.com/aintzetsu" target="_blank" rel="noopener noreferrer">github.com/aintzetsu</a></li>
+        <li><a href="https://www.linkedin.com/in/edison-gaudicos-297088356/" target="_blank" rel="noopener noreferrer">linkedin.com/in/edison-gaudicos-297088356</a></li>
+      </ul>
+    </section>
+
+    <section class="resume-block">
+      <h2>Professional Summary</h2>
+      <p>BS Information Technology graduate (STI College Fairview) combining production AI multimodal data validation experience (RWS, Innodata), IT support and system administration training (DepEd NCR, SLDM College), and 18 deployed full-stack and zero-dependency web applications built with HTML5, CSS3, JavaScript ES6+, React, Next.js 16, Canvas, Web Audio API, and Neon Postgres.</p>
+    </section>
+
+    <section class="resume-block">
+      <h2>Work Experience</h2>
+      <article class="resume-entry">
+        <div class="resume-entry-head"><strong>Data Service Specialist · RWS</strong><span>June 2026 – Present</span></div>
+        <p>Annotate and validate audio, text, and multimodal AI training datasets against strict accuracy guidelines and production SLA timelines.</p>
+      </article>
+      <article class="resume-entry">
+        <div class="resume-entry-head"><strong>Data Annotator · Innodata</strong><span>July 2025 – June 2026</span></div>
+        <p>Evaluated multimodal content and executed systematic data consistency QA audits across parallel training datasets.</p>
+      </article>
+      <article class="resume-entry">
+        <div class="resume-entry-head"><strong>IT Support Intern · DepEd NCR HRDD–NEAP</strong><span>January 2025 – June 2025</span></div>
+        <p>Delivered hardware/software user troubleshooting, digital office records management, system maintenance, and website content updates.</p>
+      </article>
+      <article class="resume-entry">
+        <div class="resume-entry-head"><strong>SAP Systems Practicum · STI College Fairview</strong><span>January 2024 – June 2024</span></div>
+        <p>Executed core SAP business workflows spanning inventory, purchasing, sales, finance, and enterprise reporting.</p>
+      </article>
+      <article class="resume-entry">
+        <div class="resume-entry-head"><strong>Freelance Embroidery Designer · Wilcom Embroidery Studio</strong><span>January 2021 – December 2023</span></div>
+        <p>Digitized custom artwork and calibrated stitch parameters for production garment machinery.</p>
+      </article>
+      <article class="resume-entry">
+        <div class="resume-entry-head"><strong>Computer System Servicing Trainee · SLDM College</strong><span>March 2020 – July 2020</span></div>
+        <p>Assembled desktop hardware, diagnosed component faults, and performed OS/network maintenance.</p>
+      </article>
+    </section>
+
+    <section class="resume-block">
+      <h2>Selected Deployed Projects (18 Live on Vercel)</h2>
+      <ul class="resume-projects-list">
+        <li><strong>Saldo</strong> (WebAuthn Passkeys, Tesseract OCR, Vercel Blob) — Private multi-account finance ledger across banks, e-wallets, and cash (<a href="https://saldo-ledger.vercel.app/">saldo-ledger.vercel.app</a>).</li>
+        <li><strong>ReelFetch</strong> (Vanilla JS, Chrome Extensions, Web Audio API) — Browser media QA tool for Original / A / B waveform comparison and tagged downloads (<a href="https://reelfetch-ten.vercel.app/">reelfetch-ten.vercel.app</a>).</li>
+        <li><strong>Shift Ledger</strong> (Vanilla JS, Neon Postgres, Auth) — Manila-time (PHT) workday and weekly billing tracker with AHT and CSV exports (<a href="https://shift-ledger-beige.vercel.app/">shift-ledger-beige.vercel.app</a>).</li>
+        <li><strong>Relay</strong> (Next.js 16, React 19, Neon Postgres, Better Auth) — Multi-tenant webhook and scheduled workflow automation studio (<a href="https://relay-pi-rust.vercel.app/">relay-pi-rust.vercel.app</a>).</li>
+        <li><strong>LabelGrid &amp; Cutout Studio</strong> (HTML5 Canvas) — Multimodal AI annotation (COCO/YOLO/JSONL) and client-side background matte studio (<a href="https://labelgrid.vercel.app/">labelgrid.vercel.app</a>).</li>
+        <li><strong>PathCraft, RestBench, ChromaLab, PulseGrid &amp; Simot Sarap</strong> — Graph pathfinding visualizer, REST CRUD playground, WCAG token generator, Web Audio synth, and restaurant web app.</li>
+      </ul>
+    </section>
+
+    <section class="resume-block resume-two-col">
+      <div>
+        <h2>Technical Skills</h2>
+        <p><strong>Web &amp; Code:</strong> HTML5, CSS3, JavaScript (ES6+), React, Next.js 16, Tailwind CSS, HTML5 Canvas, Web Audio API, PHP, Python, Java, C#, C++</p>
+        <p><strong>Data &amp; Cloud:</strong> Neon Postgres, SQL, MySQL, REST APIs &amp; Webhooks, Vercel Serverless, Git &amp; GitHub, AI Multimodal QA</p>
+        <p><strong>IT &amp; Systems:</strong> System Administration, Networking, Hardware Diagnostics, Technical Support, SAP Software</p>
+      </div>
+      <div>
+        <h2>Education &amp; Credentials</h2>
+        <p><strong>BS in Information Technology</strong><br>STI College Fairview · 2021 – 2025</p>
+        <p><strong>System Administration Certificate</strong><br>STI College Fairview — Server setup, networking fundamentals, and system maintenance</p>
+        <p><strong>Computer System Servicing</strong><br>SLDM College · 2020</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

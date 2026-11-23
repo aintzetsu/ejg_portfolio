@@ -1115,26 +1115,6 @@ const projectCatalog = {
         text: 'Combines WebAuthn passkeys (@simplewebauthn), on-device Tesseract.js receipt OCR capture, weekly spending budgets, subscription calendar tracking, CSV imports, and private Vercel Blob storage guarded by ETag conditional writes.'
       }
     ]
-  },
-  jobRadar: {
-    title: 'Job Radar PH',
-    img: 'project-job-radar.webp',
-    alt: 'Job Radar PH job search controls and eclipse theme switch',
-    liveUrl: 'https://job-radar-ph.vercel.app/',
-    eyebrow: 'JOB SEARCH AND APPLICATIONS',
-    caseTitle: 'App Overview — Job Radar PH',
-    flow: ['Live employer feeds', 'Résumé matching', 'Application drafts', 'Progress tracker'],
-    tags: ['Vanilla JavaScript', 'Employer Job Feeds', 'Browser Storage', 'Vercel'],
-    blocks: [
-      {
-        heading: 'Purpose',
-        text: 'Find relevant Philippine and remote jobs from live employer feeds in one dashboard.'
-      },
-      {
-        heading: 'Application workflow',
-        text: 'Ranks jobs using pasted résumé text, displays employer-supplied job details, generates editable résumé and cover letter drafts, and tracks saved jobs, statuses, and follow-up dates.'
-      }
-    ]
   }
 };
 
@@ -1176,8 +1156,7 @@ const flowByCatalogKey = {
   relay: ['Better Auth', 'Webhook & Cron', 'AES-256-GCM Secrets', 'Neon Postgres'],
   reelfetch: ["Scan tab","Preview clips","Assign roles","Download set"],
   shiftLedger: ['Manila PHT Timer', 'No-Task Gap Log', 'Weekly Pay & CSV', 'Neon Account Sync'],
-  saldo: ['Passkeys & Key Auth', 'Tesseract.js OCR', 'CSV & Weekly Budgets', 'Private Vercel Blob'],
-  jobRadar: ['Live employer feeds', 'Résumé matching', 'Application drafts', 'Progress tracker']
+  saldo: ['Passkeys & Key Auth', 'Tesseract.js OCR', 'CSV & Weekly Budgets', 'Private Vercel Blob']
 };
 
 function createArchFlowEl(key, fallbackTags = []) {
@@ -1509,7 +1488,7 @@ if (toggleRepos) {
   });
 }
 
-// Populate Blueprint views for cards referencing projectCatalog so all 19 Featured cards share one template
+// Populate Blueprint views for cards referencing projectCatalog so all 18 Featured cards share one template
 document.querySelectorAll('.project-card[data-catalog]').forEach(card => {
   const key = card.dataset.catalog;
   const item = projectCatalog[key];
@@ -1559,6 +1538,7 @@ document.querySelectorAll('[data-casestudy]').forEach(btn => {
 // Interactive Preview vs Blueprint vs Live Lab switcher inside project browser mockups
 let openVesperLab = () => {};
 let stopPulseLab = () => {};
+let stopPathLab = () => {};
 document.querySelectorAll('.browser-frame').forEach(frame => {
   const modeBar = frame.querySelector('.browser-mode-switch');
   const previewBtn = frame.querySelector('.media-preview-trigger');
@@ -1575,6 +1555,9 @@ document.querySelectorAll('.browser-frame').forEach(frame => {
     if (labEl) labEl.hidden = mode !== 'lab';
     if (mode !== 'lab' && labEl && labEl.id === 'pulseLab') {
       stopPulseLab();
+    }
+    if (mode !== 'lab' && labEl && labEl.id === 'pathLab') {
+      stopPathLab();
     }
     const isInteractivePanel = mode !== 'visual';
     frame.classList.toggle('is-blueprint', isInteractivePanel);
@@ -2120,6 +2103,274 @@ if (shiftMinsSlider && shiftTasksSlider && shiftRateInput) {
   renderShiftLab();
 }
 
+// PathCraft Interactive 5x10 A* & BFS Grid Search Lab
+const pathGrid = document.getElementById('pathGrid');
+const pathRunAStar = document.getElementById('pathRunAStar');
+const pathRunBfs = document.getElementById('pathRunBfs');
+const pathClearBtn = document.getElementById('pathClearBtn');
+const pathMetrics = document.getElementById('pathMetrics');
+
+if (pathGrid) {
+  const ROWS = 5;
+  const COLS = 10;
+  const START = '2,1';
+  const GOAL = '2,8';
+  const defaultWalls = ['1,4', '2,4', '3,4'];
+  let walls = new Set(defaultWalls);
+  let visitedCells = new Set();
+  let shortestCells = new Set();
+  let pathTimer = null;
+  const cellBtns = new Map();
+
+  const stopGridSearch = () => {
+    if (pathTimer) {
+      clearInterval(pathTimer);
+      pathTimer = null;
+    }
+  };
+  stopPathLab = stopGridSearch;
+
+  const paintPathGrid = () => {
+    for (const [key, btn] of cellBtns) {
+      const isStart = key === START;
+      const isGoal = key === GOAL;
+      btn.classList.toggle('is-start', isStart);
+      btn.classList.toggle('is-goal', isGoal);
+      btn.classList.toggle('is-wall', walls.has(key));
+      btn.classList.toggle('is-visited', !isStart && !isGoal && visitedCells.has(key) && !shortestCells.has(key));
+      btn.classList.toggle('is-path', !isStart && !isGoal && shortestCells.has(key));
+      btn.textContent = isStart ? 'S' : (isGoal ? 'G' : '');
+    }
+  };
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const key = `${r},${c}`;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'path-cell';
+      btn.setAttribute('aria-label', `Grid cell ${r + 1}, ${c + 1}`);
+      if (key !== START && key !== GOAL) {
+        btn.addEventListener('click', () => {
+          stopGridSearch();
+          visitedCells.clear();
+          shortestCells.clear();
+          if (walls.has(key)) walls.delete(key);
+          else walls.add(key);
+          paintPathGrid();
+          if (pathMetrics) pathMetrics.textContent = `Walls: ${walls.size} · Ready`;
+        });
+      }
+      cellBtns.set(key, btn);
+      pathGrid.append(btn);
+    }
+  }
+  paintPathGrid();
+
+  const runSearch = mode => {
+    stopGridSearch();
+    visitedCells.clear();
+    shortestCells.clear();
+    paintPathGrid();
+
+    const [gr, gc] = GOAL.split(',').map(Number);
+    const manhattan = key => {
+      const [r, c] = key.split(',').map(Number);
+      return Math.abs(r - gr) + Math.abs(c - gc);
+    };
+
+    const gScore = new Map([[START, 0]]);
+    const parent = new Map();
+    const open = [START];
+    const closed = new Set();
+    const visitOrder = [];
+    let found = false;
+
+    while (open.length > 0) {
+      if (mode === 'astar') {
+        open.sort((a, b) => (gScore.get(a) + manhattan(a)) - (gScore.get(b) + manhattan(b)));
+      }
+      const cur = open.shift();
+      if (closed.has(cur)) continue;
+      closed.add(cur);
+      visitOrder.push(cur);
+      if (cur === GOAL) {
+        found = true;
+        break;
+      }
+      const [r, c] = cur.split(',').map(Number);
+      for (const [dr, dc] of [[0, 1], [1, 0], [0, -1], [-1, 0]]) {
+        const nr = r + dr;
+        const nc = c + dc;
+        if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) continue;
+        const next = `${nr},${nc}`;
+        if (walls.has(next) || closed.has(next)) continue;
+        const tentG = (gScore.get(cur) || 0) + 1;
+        if (!gScore.has(next) || tentG < gScore.get(next)) {
+          gScore.set(next, tentG);
+          parent.set(next, cur);
+          open.push(next);
+        }
+      }
+    }
+
+    const finalPath = [];
+    if (found) {
+      let cur = GOAL;
+      while (cur && cur !== START) {
+        finalPath.unshift(cur);
+        cur = parent.get(cur);
+      }
+    }
+
+    let stepIdx = 0;
+    pathTimer = setInterval(() => {
+      if (stepIdx < visitOrder.length) {
+        visitedCells.add(visitOrder[stepIdx]);
+        stepIdx++;
+        paintPathGrid();
+      } else {
+        stopGridSearch();
+        finalPath.forEach(k => shortestCells.add(k));
+        paintPathGrid();
+        if (pathMetrics) {
+          pathMetrics.textContent = found
+            ? `${mode === 'astar' ? 'A*' : 'BFS'}: ${visitOrder.length} visited · ${finalPath.length} steps`
+            : `${mode === 'astar' ? 'A*' : 'BFS'}: Blocked (${visitOrder.length} visited)`;
+        }
+      }
+    }, 32);
+  };
+
+  if (pathRunAStar) pathRunAStar.addEventListener('click', () => runSearch('astar'));
+  if (pathRunBfs) pathRunBfs.addEventListener('click', () => runSearch('bfs'));
+  if (pathClearBtn) {
+    pathClearBtn.addEventListener('click', () => {
+      stopGridSearch();
+      walls = walls.size > 0 ? new Set() : new Set(defaultWalls);
+      visitedCells.clear();
+      shortestCells.clear();
+      paintPathGrid();
+      if (pathMetrics) pathMetrics.textContent = walls.size ? 'Reset wall barrier' : 'Walls cleared';
+    });
+  }
+}
+
+// ReelFetch Interactive A/B Role & Waveform Lab
+const reelRoleBtns = document.getElementById('reelRoleBtns');
+const reelWaveBars = document.getElementById('reelWaveBars');
+if (reelRoleBtns && reelWaveBars) {
+  const roleProfiles = {
+    orig: { label: 'Original', peak: '-1.4 dBFS', dur: '00:14.2', file: 'clip_original_48khz.wav', freq: 330, bars: [34, 62, 78, 48, 88, 70, 42, 92, 68, 54, 84, 74, 46, 64, 52, 36] },
+    clipA: { label: 'Clip A', peak: '-0.8 dBFS', dur: '00:14.2', file: 'clip_A_48khz.wav', freq: 440, bars: [42, 76, 90, 58, 96, 82, 54, 98, 78, 66, 92, 84, 56, 74, 62, 44] },
+    clipB: { label: 'Clip B', peak: '-3.1 dBFS', dur: '00:14.0', file: 'clip_B_48khz.wav', freq: 277.18, bars: [28, 48, 60, 38, 68, 54, 34, 72, 50, 42, 64, 58, 36, 52, 40, 26] },
+  };
+  let activeReelRole = 'orig';
+  const reelBadge = document.getElementById('reelRoleBadge');
+  const reelLabelOut = document.getElementById('reelLabelOut');
+  const reelPeakOut = document.getElementById('reelPeakOut');
+  const reelDurOut = document.getElementById('reelDurOut');
+  const reelFileOut = document.getElementById('reelFileOut');
+  const reelToneBtn = document.getElementById('reelToneBtn');
+
+  const barEls = Array.from({ length: 16 }, () => {
+    const bar = document.createElement('span');
+    bar.className = 'reel-wave-bar';
+    reelWaveBars.append(bar);
+    return bar;
+  });
+
+  const renderReelLab = roleKey => {
+    activeReelRole = roleKey;
+    const p = roleProfiles[roleKey] || roleProfiles.orig;
+    reelRoleBtns.querySelectorAll('[data-reel-role]').forEach(btn => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.reelRole === roleKey));
+    });
+    if (reelBadge) reelBadge.textContent = `Role: ${p.label}`;
+    if (reelLabelOut) reelLabelOut.textContent = p.label;
+    if (reelPeakOut) reelPeakOut.textContent = p.peak;
+    if (reelDurOut) reelDurOut.textContent = p.dur;
+    if (reelFileOut) reelFileOut.textContent = p.file;
+    barEls.forEach((bar, i) => {
+      bar.style.height = `${p.bars[i]}%`;
+    });
+  };
+
+  reelRoleBtns.querySelectorAll('[data-reel-role]').forEach(btn => {
+    btn.addEventListener('click', () => renderReelLab(btn.dataset.reelRole));
+  });
+  if (reelToneBtn) {
+    reelToneBtn.addEventListener('click', () => {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const p = roleProfiles[activeReelRole] || roleProfiles.orig;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(p.freq, now);
+      gain.gain.setValueAtTime(0.14, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.3);
+    });
+  }
+  renderReelLab('orig');
+}
+
+// Saldo Interactive Multi-Account Ledger Lab
+const saldoQuickBtns = document.getElementById('saldoQuickBtns');
+if (saldoQuickBtns) {
+  const initialSaldo = { bpi: 34200, gcash: 10850, cash: 3700, spend: 3420 };
+  let saldoState = { ...initialSaldo };
+  const fmtPhp = n => `₱${n.toLocaleString('en-US')}`;
+  const saldoNetOut = document.getElementById('saldoNetOut');
+  const saldoBpiOut = document.getElementById('saldoBpiOut');
+  const saldoGcashOut = document.getElementById('saldoGcashOut');
+  const saldoCashOut = document.getElementById('saldoCashOut');
+  const saldoSpendOut = document.getElementById('saldoSpendOut');
+  const saldoBudgetBar = document.getElementById('saldoBudgetBar');
+  const saldoLastTx = document.getElementById('saldoLastTx');
+  const saldoResetBtn = document.getElementById('saldoResetBtn');
+
+  const renderSaldoLab = note => {
+    const net = saldoState.bpi + saldoState.gcash + saldoState.cash;
+    if (saldoNetOut) saldoNetOut.textContent = `Total: ${fmtPhp(net)}`;
+    if (saldoBpiOut) saldoBpiOut.textContent = fmtPhp(saldoState.bpi);
+    if (saldoGcashOut) saldoGcashOut.textContent = fmtPhp(saldoState.gcash);
+    if (saldoCashOut) saldoCashOut.textContent = fmtPhp(saldoState.cash);
+    if (saldoSpendOut) saldoSpendOut.textContent = fmtPhp(saldoState.spend);
+    if (saldoBudgetBar) saldoBudgetBar.value = Math.min(10000, saldoState.spend);
+    if (saldoLastTx && note) saldoLastTx.textContent = note;
+  };
+
+  saldoQuickBtns.querySelectorAll('[data-saldo-tx]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const kind = btn.dataset.saldoTx;
+      if (kind === 'income') {
+        saldoState.bpi += 2500;
+        renderSaldoLab('Recorded +₱2,500 Income into BPI Bank');
+      } else if (kind === 'coffee') {
+        saldoState.gcash = Math.max(0, saldoState.gcash - 285);
+        saldoState.spend += 285;
+        renderSaldoLab('Recorded −₱285 Coffee via GCash');
+      } else if (kind === 'bills') {
+        saldoState.bpi = Math.max(0, saldoState.bpi - 850);
+        saldoState.spend += 850;
+        renderSaldoLab('Recorded −₱850 Utilities via BPI Bank');
+      }
+    });
+  });
+  if (saldoResetBtn) {
+    saldoResetBtn.addEventListener('click', () => {
+      saldoState = { ...initialSaldo };
+      renderSaldoLab('Reset to starting balances (₱48,750 total)');
+    });
+  }
+  renderSaldoLab();
+}
+
 // Interactive Skill-to-Proof Linking
 const skillProofMap = {
   annotation: { title: 'Data Annotation', text: 'Used daily at RWS and Innodata evaluating multimodal AI training datasets.', target: '#role-rws', label: 'View RWS & Innodata roles →' },
@@ -2129,7 +2380,7 @@ const skillProofMap = {
   react: { title: 'React', text: 'Built the responsive Simot Sarap frontend and powers Relay React 19 UI components.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
   nextjs: { title: 'Next.js 16', text: 'Built the full-stack Relay workflow automation platform using Next.js 16 App Router, React 19, and server APIs.', target: '#project-relay', label: 'Jump to Relay →' },
   tailwind: { title: 'Tailwind CSS', text: 'Styled responsive sections, cards, and mobile navigation on Simot Sarap and Relay.', target: '#project-simotsarap', label: 'Jump to Simot Sarap →' },
-  javascript: { title: 'JavaScript', text: 'Powers Vesper Audio, Simot Sarap, LabelGrid, RestBench, Relay, Shift Ledger, Saldo, PulseGrid, PathCraft, and all 19 featured projects.', target: '#projects', label: 'Jump to Featured Projects →' },
+  javascript: { title: 'JavaScript', text: 'Powers Vesper Audio, Simot Sarap, LabelGrid, RestBench, Relay, Shift Ledger, Saldo, PulseGrid, PathCraft, and all 18 featured projects.', target: '#projects', label: 'Jump to Featured Projects →' },
   htmlcss: { title: 'HTML & CSS', text: 'Modular CSS tokens & responsive grids across Vesper Audio, ChromaLab, Koto Cabin, this portfolio, and DepEd web updates.', target: '#project-vesper', label: 'Jump to Vesper Audio →' },
   canvas: { title: 'HTML5 Canvas', text: 'Built pixel matting (Cutout Studio), bounding-box editors (LabelGrid), document deskewing (FolioVault), oscilloscopes (PulseGrid), and 60fps pathfinding (PathCraft).', target: '#project-cutout-studio', label: 'Jump to Cutout Studio →' },
   webaudio: { title: 'Web Audio API', text: 'Engineered lookahead 5-voice drum synthesis (PulseGrid) and real-time studio monitor DSP filtering (Vesper Audio).', target: '#project-pulsegrid', label: 'Jump to PulseGrid →' },
@@ -2148,7 +2399,7 @@ const skillProofMap = {
   networking: { title: 'Networking', text: 'Covered networking fundamentals and maintenance through System Administration certification at STI.', target: '#experience', label: 'View certification →' },
   sysadmin: { title: 'System Administration', text: 'Certified in System Administration at STI College Fairview and practiced at DepEd NCR.', target: '#experience', label: 'View certification →' },
   git: { title: 'Git & GitHub', text: 'Version control and open-source publishing across 16 public repositories on @aintzetsu.', target: '#githubSnapshot', label: 'View GitHub repositories →' },
-  vercel: { title: 'Vercel', text: 'Production deployment across all 19 featured projects (Simot Sarap, Vesper Audio, LabelGrid, FolioVault, RestBench, Relay, Shift Ledger, ReelFetch, Saldo, etc.) plus this portfolio.', target: '#projects', label: 'Jump to Featured Projects →' },
+  vercel: { title: 'Vercel', text: 'Production deployment across all 18 featured projects (Simot Sarap, Vesper Audio, LabelGrid, FolioVault, RestBench, Relay, Shift Ledger, ReelFetch, Saldo, etc.) plus this portfolio.', target: '#projects', label: 'Jump to Featured Projects →' },
   design: { title: 'Graphic Design', text: 'Digital design production honed as Freelance Embroidery Designer at Wilcom Embroidery Studio.', target: '#role-wilcom', label: 'View design experience →' }
 };
 
@@ -2308,6 +2559,7 @@ const paletteActions = [
   { title: 'Jump to Skills', hint: '#skills', run: () => { location.hash = '#skills'; } },
   { title: 'Jump to Contact', hint: '#contact', run: () => { location.hash = '#contact'; } },
   { title: 'Preview CV (PDF)', hint: 'Dialog', run: () => { if (previewButton) previewButton.click(); } },
+  { title: 'Open ATS Web Resume', hint: 'resume.html', run: () => window.open('resume.html', '_blank', 'noopener,noreferrer') },
   { title: 'Toggle Light / Dark Theme', hint: 'Theme', run: toggleTheme },
   { title: 'Switch Accent: Cobalt Blue', hint: 'Accent', run: () => applyAccent('cobalt', true) },
   { title: 'Switch Accent: Emerald Teal', hint: 'Accent', run: () => applyAccent('teal', true) },
@@ -2473,7 +2725,7 @@ function runTerminalCommand(rawInput) {
   }
   if (cmd === 'apps' || cmd === 'vercel') {
     appendTermLine('All 18 Featured Web Apps (alongside ejg-portfolio):');
-    appendTermLine('• Simot Sarap, Vesper Audio, LabelGrid, FolioVault, Cutout Studio, RestBench, PathCraft, ChromaLab, Folio Notes, LedgerFlow, SprintDeck, Meridian Sync, PulseGrid, Koto Cabin, Relay, Shift Ledger, ReelFetch, Saldo, Job Radar PH');
+    appendTermLine('• Simot Sarap, Vesper Audio, LabelGrid, FolioVault, Cutout Studio, RestBench, PathCraft, ChromaLab, Folio Notes, LedgerFlow, SprintDeck, Meridian Sync, PulseGrid, Koto Cabin, Relay, Shift Ledger, ReelFetch, Saldo');
     appendTermAction('Jump to All 18 Featured Projects', () => {
       terminalModal.close();
       location.hash = '#projects';
@@ -2531,7 +2783,7 @@ function runTerminalCommand(rawInput) {
   if (cmd === 'projects') {
     appendTermLine('1) Simot Sarap — zetsume-simotsarap.vercel.app');
     appendTermLine('2) Vesper Audio — vesper-audio.vercel.app (GitHub: aintzetsu/vesper-audio)');
-    appendTermLine('+ 17 more live Vercel web apps including Relay, Shift Ledger, ReelFetch & Saldo (run "apps" to list all).');
+    appendTermLine('+ 16 more live Vercel web apps including Relay, Shift Ledger, ReelFetch & Saldo (run "apps" to list all).');
     appendTermAction('Inspect Featured Projects', () => {
       terminalModal.close();
       location.hash = '#projects';
@@ -3347,4 +3599,10 @@ if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-mot
     });
   }, { threshold: 0.08 });
   document.querySelectorAll('.timeline-item, .credential-card, .skill-group').forEach(element => observer.observe(element));
+}
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => undefined);
+  });
 }

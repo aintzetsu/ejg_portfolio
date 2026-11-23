@@ -2037,6 +2037,180 @@ html[data-theme="dark"] .cv-count {
   }
 }
 
+/* PathCraft A* / BFS Mini Grid Lab & ReelFetch Wave Bars */
+.path-grid {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.path-cell {
+  aspect-ratio: 1;
+  min-height: 22px;
+  padding: 0;
+  border: 1px solid #35312c;
+  border-radius: 5px;
+  background: #23201c;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  transition: transform 0.1s, background 0.12s, border-color 0.12s;
+}
+
+.path-cell.is-wall {
+  background: #554f47;
+  border-color: #70685d;
+}
+
+.path-cell.is-visited {
+  background: #1d4ed8;
+  border-color: #3b82f6;
+}
+
+.path-cell.is-path {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.path-cell.is-start {
+  background: #15803d;
+  border-color: #22c55e;
+}
+
+.path-cell.is-goal {
+  background: #b45309;
+  border-color: #f59e0b;
+}
+
+.reel-wave-bars {
+  height: 44px;
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  align-items: end;
+  gap: 4px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.reel-wave-bar {
+  border-radius: 4px;
+  background: var(--accent);
+  opacity: 0.85;
+  transition: height 0.22s ease, opacity 0.22s ease;
+}
+
+/* Printable Web Resume Sheet (resume.html) */
+.resume-sheet {
+  padding-block: 36px 72px;
+  max-width: 920px;
+  display: grid;
+  gap: 24px;
+}
+
+.resume-header {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+  align-items: start;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.resume-header h1 {
+  margin: 4px 0 8px;
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.resume-role {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.resume-contact-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+  font-size: 0.86rem;
+}
+
+.resume-contact-list a {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.resume-block {
+  padding: 24px 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.resume-block h2 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: var(--font-mono);
+}
+
+.resume-entry {
+  margin-bottom: 14px;
+}
+
+.resume-entry:last-child,
+.resume-block p:last-child {
+  margin-bottom: 0;
+}
+
+.resume-entry-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.resume-entry-head span {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.resume-projects-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.resume-projects-list a {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.resume-two-col {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 720px) {
+  .resume-header,
+  .resume-two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
 .media-preview-trigger {
   width: 100%;
   border: 0;
@@ -3919,5 +4093,16 @@ dialog iframe {
   }
   .extra-role {
     display: block !important;
+  }
+  .resume-sheet {
+    padding-block: 0;
+    gap: 14px;
+    max-width: 100%;
+  }
+  .resume-header,
+  .resume-block {
+    padding: 14px 16px;
+    border-color: #ddd;
+    break-inside: avoid;
   }
 }
